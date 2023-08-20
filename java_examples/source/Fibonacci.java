@@ -24,8 +24,10 @@ public class Fibonacci
     private static final int SECOND_PREV_LAST_NUMB_OFFSET = 2;
     
            
-    ArrayList<Long> result = new ArrayList<Long>();
+    final ArrayList<Long> result; 
     final int n;
+    
+    ArrayList<Long> resultBuffer;
   
     
     public static void main(String[] args)
@@ -56,25 +58,26 @@ public class Fibonacci
     
     public Fibonacci(int n)
     {
-        this.n = checkN(n);
-        runFibonacci();
+        this.n = getValidN(n);
+        resultBuffer = new ArrayList<Long>();   
+        result = getBufferedFibonacciList();
     }
     
     
-    public ArrayList<Long> getFullItemsList()
+    public ArrayList<Long> getFibonacciList()
     {
         return result;
     }
     
     
-    public long getLastNumber()
+    public long getResult()
     {
         int lastNumberIndex = result.size() - FIRST_PREV_LAST_NUMB_OFFSET;
         return result.get(lastNumberIndex); 
     }
     
     
-    private int checkN(int n)
+    private int getValidN(int n)
     {
         if (isValidNRange(n))
         {
@@ -93,10 +96,11 @@ public class Fibonacci
     }
     
         
-    private void runFibonacci()
-    {        
+    private ArrayList<Long> getBufferedFibonacciList()
+    {     
         setInittingValues();      
-        setFactValues();
+        setRealValues();      
+        return resultBuffer; 
     }
     
     
@@ -104,22 +108,22 @@ public class Fibonacci
     {
         for (int i = INIT_START_INDEX; i < INIT_VALUES_LIMIT; ++i)
         {
-            result.add(INIT_VALUE);         
+            resultBuffer.add(INIT_VALUE);         
         }
     }
     
     
-    private void setFactValues()
+    private void setRealValues()
     {
         for (int i = INIT_VALUES_LIMIT; i < n; ++i)
         {
             int firstPrevNumbIndex = i - FIRST_PREV_LAST_NUMB_OFFSET;
-            long firstPrevNumb = result.get(firstPrevNumbIndex);
+            long firstPrevNumb = resultBuffer.get(firstPrevNumbIndex);
             
             int secondPrevNumbIndex = i - SECOND_PREV_LAST_NUMB_OFFSET;
-            long secondPrevNumb = result.get(secondPrevNumbIndex);
+            long secondPrevNumb = resultBuffer.get(secondPrevNumbIndex);
             
-            result.add(firstPrevNumb + secondPrevNumb);  
+            resultBuffer.add(firstPrevNumb + secondPrevNumb);  
         }     
     }
     
@@ -142,7 +146,7 @@ public class Fibonacci
         int fibonacciN = Integer.parseInt(args[FIRST_MAIN_ARG]);                
         Fibonacci aFibonacci = new Fibonacci(fibonacciN);  
             
-        System.err.println(aFibonacci.getFullItemsList());   
-        System.out.println(aFibonacci.getLastNumber()); 
+        System.err.println(aFibonacci.getFibonacciList());   
+        System.out.println(aFibonacci.getResult()); 
     }
 }
