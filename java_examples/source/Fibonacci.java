@@ -7,23 +7,37 @@ public class Fibonacci
         "Задайте 1 целочисленный аргумент командной строки!";
     private static final String ILLEGAL_ARGUMENT =
         "Значение n должно быть в диапазоне от 1 до 92 включительно!";
-         
+    private static final String UNKNOWN_ERROR = "Неизвестная ошибка!";
+        
+    private static final int MIN_VALUE = 1;
+    private static final int MAX_VALUE = 92;
+    
+    private static final int FAIL = 1;
+    private static final int VALID_MAIN_ARGS_SIZE = 1;
+    private static final int FIRST_MAIN_ARG = 0;
+        
+    private static final long INIT_VALUE = 1;
+    private static final int INIT_START_INDEX = 0;
+    private static final int INIT_VALUES_LIMIT = 2;
+    
+    private static final int FIRST_PREV_LAST_NUMB_OFFSET = 1;
+    private static final int SECOND_PREV_LAST_NUMB_OFFSET = 2;
+    
+           
     ArrayList<Long> result = new ArrayList<Long>();
     int n;
   
     
     public static void main(String[] args)
     { 
-        if (args.length != 1)
+        if (isStartingFail(args.length))
         {
             showErrorMessage(ERROR_MESSAGE);
         }
         
         try
-        {                   
-            Fibonacci aFibonacci = new Fibonacci(Integer.parseInt(args[0]));  
-            System.err.println(aFibonacci.getFullItemsList());   
-            System.out.println(aFibonacci.getLastNumber());                        
+        {   
+            showResult(args);                              
         }
         catch (NumberFormatException ex)
         {
@@ -32,7 +46,11 @@ public class Fibonacci
         catch (IllegalArgumentException ex)
         {
             showErrorMessage(ILLEGAL_ARGUMENT);
-        }                
+        } 
+        catch (Exception ex)
+        {
+            showErrorMessage(UNKNOWN_ERROR);
+        }               
     }
     
     
@@ -51,20 +69,27 @@ public class Fibonacci
     
     public long getLastNumber()
     {
-        return result.get(result.size() - 1); 
+        int lastNumberIndex = result.size() - FIRST_PREV_LAST_NUMB_OFFSET;
+        return result.get(lastNumberIndex); 
     }
     
     
     private void setN(int n)
     {
-        if (n < 1 || n > 92)
-        {
-            throw new IllegalArgumentException(ILLEGAL_ARGUMENT);
-        }
-        else
+        if (isValidNRange(n))
         {
             this.n = n;
         }
+        else
+        {
+            throw new IllegalArgumentException(ILLEGAL_ARGUMENT);
+        }
+    }
+    
+    
+    private boolean isValidNRange(int n)
+    {
+        return ((n >= MIN_VALUE) && (n <= MAX_VALUE));
     }
     
         
@@ -77,25 +102,47 @@ public class Fibonacci
     
     private void setInittingValues()
     {
-        for (int i = 0; i < 2; ++i)
+        for (int i = INIT_START_INDEX; i < INIT_VALUES_LIMIT; ++i)
         {
-            result.add((long)1);         
+            result.add(INIT_VALUE);         
         }
     }
     
     
     private void setFactValues()
     {
-        for (int i = 2; i < n; ++i)
+        for (int i = INIT_VALUES_LIMIT; i < n; ++i)
         {
-            result.add(result.get(i - 1) + result.get(i - 2));  
+            int firstPrevNumbIndex = i - FIRST_PREV_LAST_NUMB_OFFSET;
+            long firstPrevNumb = result.get(firstPrevNumbIndex);
+            
+            int secondPrevNumbIndex = i - SECOND_PREV_LAST_NUMB_OFFSET;
+            long secondPrevNumb = result.get(secondPrevNumbIndex);
+            
+            result.add(firstPrevNumb + secondPrevNumb);  
         }     
+    }
+    
+    
+    private static boolean isStartingFail(int mainArgsSize)
+    {
+        return (mainArgsSize != VALID_MAIN_ARGS_SIZE);
     }
     
     
     private static void showErrorMessage(String msg)
     {
         System.err.println(msg);
-        System.exit(1);
+        System.exit(FAIL);
     }  
+    
+    
+    private static void showResult(String[] args)
+    {
+        int fibonacciN = Integer.parseInt(args[FIRST_MAIN_ARG]);                
+        Fibonacci aFibonacci = new Fibonacci(fibonacciN);  
+            
+        System.err.println(aFibonacci.getFullItemsList());   
+        System.out.println(aFibonacci.getLastNumber()); 
+    }
 }
