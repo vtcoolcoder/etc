@@ -25,7 +25,7 @@ public class Fibonacci
     
            
     ArrayList<Long> result = new ArrayList<Long>();
-    int n;
+    final int n;
   
     
     public static void main(String[] args)
@@ -56,7 +56,7 @@ public class Fibonacci
     
     public Fibonacci(int n)
     {
-        setN(n);
+        this.n = checkN(n);
         runFibonacci();
     }
     
@@ -74,11 +74,11 @@ public class Fibonacci
     }
     
     
-    private void setN(int n)
+    private int checkN(int n)
     {
         if (isValidNRange(n))
         {
-            this.n = n;
+            return n;
         }
         else
         {
