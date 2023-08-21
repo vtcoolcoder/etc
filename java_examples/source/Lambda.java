@@ -22,14 +22,14 @@ public class Lambda
         () -> System.out.println(THIRD_FUN)
     };
     
-    private static final Runnable[] FUNCTIONS_2 =
+    private final Runnable[] FUNCTIONS_2 =
     {
         () -> runFirstFunction(),
         () -> runSecondFunction(),
         () -> runThirdFunction()
     };
     
-    private static final Runnable[][] FUNCTIONS = 
+    private final Runnable[][] FUNCTIONS = 
     {
         FUNCTIONS_1,
         FUNCTIONS_2
@@ -37,6 +37,12 @@ public class Lambda
 
   
     public static void main(String[] args)
+    {
+        new Lambda();    
+    }
+    
+    
+    public Lambda()
     {
         for (Runnable[] currentFunctionsList: FUNCTIONS)
         {
@@ -46,7 +52,7 @@ public class Lambda
     }
     
     
-    private static void testHighOrderFunc(Runnable ... funcs)
+    private void testHighOrderFunc(Runnable ... funcs)
     {
         for (Runnable f: funcs)
         {
@@ -55,20 +61,20 @@ public class Lambda
     }
     
     
-    private static void runFirstFunction()
+    private void runFirstFunction()
     {
         System.out.println(CALLED_PERSON + "runFirstFunction()" + DOT);
         
     }
     
     
-    private static void runSecondFunction()
+    private void runSecondFunction()
     {
         System.out.println(CALLED_PERSON + "runSecondFunction()" + DOT);
     }
     
     
-    private static void runThirdFunction()
+    private void runThirdFunction()
     {
         System.out.print(CALLED_PERSON + "runThirdFunction()" + DOT);
     }
