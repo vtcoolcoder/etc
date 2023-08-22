@@ -6,14 +6,11 @@ public class Lambda
     private static final String CALLED = "Вызвана ";
     private static final String LAMBDA = "явно лямбда-";
     private static final String FUNCTION = "функция"; 
-    private static final String FIRST_FUN = 
-        CALLED + "первая " + LAMBDA + FUNCTION + DOT;
-    private static final String SECOND_FUN = 
-        CALLED + "вторая " + LAMBDA + FUNCTION + DOT;
-    private static final String THIRD_FUN = 
-        CALLED + "третья " + LAMBDA + FUNCTION + DOT;
-    private static final String CALLED_PERSON = 
-        CALLED + "написанная " + FUNCTION + ": ";
+    private static final String TAIL = LAMBDA + FUNCTION + DOT;
+    private static final String FIRST_FUN = CALLED + "первая " + TAIL;
+    private static final String SECOND_FUN = CALLED + "вторая " + TAIL;
+    private static final String THIRD_FUN = CALLED + "третья " + TAIL;
+    private static final String PERSON = CALLED + "написанная " + FUNCTION + ": ";
 
     private static final Runnable[] FUNCTIONS_1 =
     {
@@ -63,19 +60,18 @@ public class Lambda
     
     private void runFirstFunction()
     {
-        System.out.println(CALLED_PERSON + "runFirstFunction()" + DOT);
-        
+        System.out.println(PERSON + "runFirstFunction()" + DOT);      
     }
     
     
     private void runSecondFunction()
     {
-        System.out.println(CALLED_PERSON + "runSecondFunction()" + DOT);
+        System.out.println(PERSON + "runSecondFunction()" + DOT);
     }
     
     
     private void runThirdFunction()
     {
-        System.out.print(CALLED_PERSON + "runThirdFunction()" + DOT);
+        System.out.print(PERSON + "runThirdFunction()" + DOT);
     }
 }
