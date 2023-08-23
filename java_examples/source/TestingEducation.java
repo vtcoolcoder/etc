@@ -1,4 +1,4 @@
-import java.util.ArrayList;
+import java.util.*;
 
 
 public class TestingEducation
@@ -8,55 +8,104 @@ public class TestingEducation
     
     public static void main(String[] args)
     {
-        showResult();
+        showResult(Integer.parseInt(args[0]));
     }
     
     
-    private static ArrayList<boolean[]> getAllTestCases()
+    private static int convertDecToBin(int converted)
     {
-        ArrayList<boolean[]> result = new ArrayList<boolean[]>();
-        
-        for (byte first = 0; first <= 1; ++first)
+        int result = 0;
+           
+        for (int count = 0; converted > 0; converted /= 2, ++count)
         {
-            for (byte second = 0; second <= 1; ++second)
-            {
-                for (byte third = 0; third <= 1; ++third)
-                {
-                    for (byte fourth = 0; fourth <= 1; ++fourth)
-                    {
-                        for (byte fiveth = 0; fiveth <= 1; ++fiveth)
-                        {
-                            result.add(new boolean[] {
-                                           convertByteToBool(first),
-                                           convertByteToBool(second),
-                                           convertByteToBool(third),
-                                           convertByteToBool(fourth),
-                                           convertByteToBool(fiveth) });  
-                        }
-                    }
-                }
+            result += (converted % 2) * ((int) Math.pow(10, count));
+        }
+       
+        return result;
+    }
+    
+    
+    private static ArrayList<Boolean> convertPsevdoBinToBoolList(int converted)
+    {
+        ArrayList<Boolean> result = new ArrayList<Boolean>();
+        ArrayList<Boolean> buffer = new ArrayList<Boolean>();
+        
+        if (converted == 0)
+        {
+            result.add(convertByteToBool((byte)0));
+            return result;
+        }
+               
+        for (; converted > 0; converted /= 10)
+        {
+            result.add(convertByteToBool((byte)(converted % 10)));
+        }
+        
+        
+        for (int i = result.size() - 1; i >= 0; --i)
+        {
+            buffer.add(result.get(i));
+        }
+        
+        result = buffer;
+        
+        return result;
+    }
+    
+    
+    private static ArrayList<Boolean> getBinaryList(int quantity, int iterNumber,
+                                                    int iterCount)
+    {
+        ArrayList<Boolean> result = new ArrayList<Boolean>();
+        ArrayList<ArrayList<Boolean>> buffer = new ArrayList<ArrayList<Boolean>>();
+        
+        for (int i = 0; i < iterCount; ++i)
+        {
+            for (int j = 0; j < quantity; ++j)
+            {        
+                buffer.add(convertPsevdoBinToBoolList(
+                               convertDecToBin(iterNumber)));
             }
         }
         
+        result = buffer.get(iterNumber); 
+            
+        return result;
+    }
+    
+    
+    private static ArrayList<ArrayList<Boolean>> getAllTestCases(int casesQuantity)
+    {    
+        ArrayList<ArrayList<Boolean>> result = 
+            new ArrayList<ArrayList<Boolean>>();
+        
+        int iterCount = (int) Math.pow(2, casesQuantity);
+        
+        for (int i = 0; i < iterCount; ++i)
+        { 
+            result.add(getBinaryList(casesQuantity, i, iterCount));
+        }
+
         return result;
     }
     
     
     private static boolean convertByteToBool(byte converted)
     {
-        return converted == 1 ? true : false;
+        return converted == 0 ? false : true;
     }
     
     
-    private static void showResult()
-    {
-        for (boolean[] currentCasesList: getAllTestCases())
+    private static void showResult(int quantity)
+    { 
+        for (var currentCasesList: getAllTestCases(quantity))
         {
             System.out.println("Current testing cases:");
-            
-            for (byte i = 0; i < currentCasesList.length; ++i)
+                      
+            for (int i = 0; i < currentCasesList.size(); ++i)
             {
-                System.out.println("\tCase №" + (i + 1) + ": " + currentCasesList[i]);
+                System.out.println("\tCase №" + (i + 1) + ": " + 
+                    currentCasesList.get(i));
             }
             
             System.out.println("Testing results: " + 
@@ -66,7 +115,7 @@ public class TestingEducation
     }
     
     
-    public TestingEducation(boolean[] casesList)
+    public TestingEducation(ArrayList<Boolean> casesList)
     {
         passed = true;
         
