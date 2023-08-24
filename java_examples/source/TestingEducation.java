@@ -16,7 +16,7 @@ public class TestingEducation
     {
         int result = 0;
            
-        for (int count = 0; converted > 0; converted /= 2, ++count)
+        for (int count = 0; converted > 0; converted >>= 1, ++count)
         {
             result += (converted % 2) * ((int) Math.pow(10, count));
         }
