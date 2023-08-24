@@ -25,63 +25,17 @@ public class TestAddingZero
         {
             for (String currentCase: currentCaseList)
             {
-                int size = log2(currentCaseList.length);
+                int size = currentCaseList.length;
                 System.out.println(addZeroDigitSymbolIntoBegin(currentCase, size));
             }
         }
     }
     
-// 
-// 
-// int quantity = log2(currentCaseList.length)
-// 2 -> 1 
-// 4 -> 2 
-// 8 -> 3 
-// 16 -> 4 
-// Math.log(x, 2)    
-/*
-* quantity = 1:
-* 0 -> "0" 
-* 1 -> "1" 
-*
-* quantity = 2:
-* 0 -> "00"     добавить "0" (quantity - strSize) раз
-* 1 -> "01"     добавить "0" (quantity - strSize) раз
-* 10 -> "10" 
-* 11 -> "11" 
-*
-* quantity = 3:
-* 0 -> "000"     добавить "0" (quantity - strSize) раз
-* 1 -> "001"     добавить "0" (quantity - strSize) раз
-* 10 -> "010"    добавить "0" (quantity - strSize) раз
-* 11 -> "011"    добавить "0" (quantity - strSize) раз
-* 100 -> "100" 
-* 101 -> "101" 
-* 110 -> "110" 
-* 111 -> "111" 
-*
-* quantity = 4:
-* 0 -> "0000"     добавить "0" (quantity - strSize) раз
-* 1 -> "0001"     добавить "0" (quantity - strSize) раз
-* 10 -> "0010"    добавить "0" (quantity - strSize) раз
-* 11 -> "0011"    добавить "0" (quantity - strSize) раз
-* 100 -> "0100"   добавить "0" (quantity - strSize) раз
-* 101 -> "0101"   добавить "0" (quantity - strSize) раз
-* 110 -> "0110"   добавить "0" (quantity - strSize) раз
-* 111 -> "0111"   добавить "0" (quantity - strSize) раз
-* 1000 -> "1000" 
-* 1001 -> "1001"
-* 1010 -> "1010"
-* 1011 -> "1011"
-* 1100 -> "1100"
-* 1101 -> "1101"
-* 1110 -> "1110"
-* 1111 -> "1111"
-*
-*/
 
-    private static String addZeroDigitSymbolIntoBegin(String str, final int quantity)
-    {      
+    private static String addZeroDigitSymbolIntoBegin(String str, 
+                                                      final int containerSize)
+    {    
+        int quantity = log2(containerSize);  
         int strSize = str.length();
              
         if (quantity == strSize)
@@ -103,19 +57,14 @@ public class TestAddingZero
     }
     
     
-    private static int log2(int n)
+    private static int log2(final int n)
     {
         final int BASE = 2;
-        int result = 0;
-        int buffer = 0;
+        int result = 0;       
         
-        for (; ; ++result)
+        for (int buffer = 0; buffer < n; )
         {
-            buffer = (int) Math.pow(BASE, result);
-            if (buffer == n)
-            {
-                break;
-            }
+            buffer = (int) Math.pow(BASE, ++result);
         }
         
         return result;
