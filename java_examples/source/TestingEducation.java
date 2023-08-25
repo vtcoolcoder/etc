@@ -3,34 +3,45 @@ import java.util.*;
 
 public class TestingEducation
 {
-    private static final String ERROR = "Задайте 1 целочисленный параметр больше 0!";
+    private static final int ARGS_LIMIT = 1;
+    private static final int ONLY_ONE_ARG = 0;
+    private static final int FAIL_EXIT_CODE = 1;
+    private static final int BINARY_DEGREE_BASE = 2;
+    private static final int MIN_ARG_VALUE = 1;
+    private static final int MAX_ARG_VALUE = 22; // by default = 22
+    
+    private static final String INVALID_ARG_ERROR = 
+        "Задайте 1 целочисленный параметр в диапазоне от " + MIN_ARG_VALUE +
+        " до " + MAX_ARG_VALUE + " -- включительно!";
     private static final String UNKNOWN_ERROR = "Неизвестная ошибка!";
     private static final String ADDED_SYMBOL = "0";
     
-    private static final int LIMIT_ARGS = 1;
-    private static final int ONLY_ONE_ARG = 0;
-    private static final int FAIL_EXIT_CODE = 1;
-    private static final int DEGREE_BASE = 2;
-
+    
     private int casesQuantity;
     private int iterCount;
            
     
     public static void main(String[] args)
     {
-        if (args.length != LIMIT_ARGS)
+        if (!isValidArgsLimit(args.length))
         {     
-            showErrorMessage(ERROR);
+            showErrorMessage(INVALID_ARG_ERROR);
         }
         
         try
         {
             int casesQuantity = Integer.parseInt(args[ONLY_ONE_ARG]);
+            
+            if (!isValidArgRange(casesQuantity))
+            {
+                showErrorMessage(INVALID_ARG_ERROR);
+            }
+            
             new TestingEducation(casesQuantity).showResult();
         }
         catch (NumberFormatException ex)
         {
-            showErrorMessage(ERROR);
+            showErrorMessage(INVALID_ARG_ERROR);
         }
         catch (Exception ex)
         {
@@ -46,10 +57,23 @@ public class TestingEducation
     }
     
     
+    private static boolean isValidArgsLimit(int checkedNumber)
+    {
+        return (checkedNumber == ARGS_LIMIT);
+    }
+    
+    
+    private static boolean isValidArgRange(int checkedNumber)
+    {
+        return (checkedNumber >= MIN_ARG_VALUE) && 
+               (checkedNumber <= MAX_ARG_VALUE);
+    }
+    
+    
     public TestingEducation(int casesQuantity)
     {   
         this.casesQuantity = casesQuantity;
-        iterCount = (int) Math.pow(DEGREE_BASE, casesQuantity);   
+        iterCount = (int) Math.pow(BINARY_DEGREE_BASE, casesQuantity);   
     }
     
     
@@ -81,79 +105,68 @@ public class TestingEducation
     
     
     private ArrayList<ArrayList<Boolean>> getAllTestCases()
-    {    
+    {
         var result = new ArrayList<ArrayList<Boolean>>();
         
         for (int i = 0; i < iterCount; ++i)
-        { 
-            result.add(getBinaryList(i));
+        {                     
+            result.add(convertStringToBoolList(
+                           insertZeroDigitSymbolIntoBegin(
+                               convertDecToBinString(i))));        
         }
-
+        
         return result;
     }
     
     
-    private ArrayList<Boolean> getBinaryList(int iterNumber)
+    private StringBuilder convertDecToBinString(int converted)
     {
-        var result = new ArrayList<Boolean>();
-        var buffer = new ArrayList<ArrayList<Boolean>>();
-        String cached = "";
-        
-        for (int i = 0; i < iterCount; ++i)
-        {
-            for (int j = 0; j < casesQuantity; ++j)
-            {   
-                cached = "" + convertDecToBin(iterNumber);        
-                cached = addZeroDigitSymbolIntoBegin(cached);        
-                buffer.add(convertStringToBoolList(cached));   
-            }
-        }
-        
-        result = buffer.get(iterNumber); 
-        return result;
-    }
-    
-    
-    private int convertDecToBin(int converted)
-    {
-        int result = 0;
+        var result = new StringBuilder();
+        var buffer = new ArrayList<Character>(); 
            
-        for (int count = 0; converted > 0; converted >>= 1, ++count)
+        for ( ; converted > 0; converted >>= 1)
         {
-            result += (converted % DEGREE_BASE) * ((int) Math.pow(10, count));
+            int currentDigit = (converted % BINARY_DEGREE_BASE); 
+            char currentSymbol = ("" + currentDigit).charAt(0); 
+            buffer.add(currentSymbol);
         }
-       
+        
+        for (int i = buffer.size() - 1; i >= 0; i--)
+        {
+            char currentSymbol = buffer.get(i);
+            result.append(currentSymbol);
+        }
+         
         return result;
     }
     
     
-    private String addZeroDigitSymbolIntoBegin(String str)
+    private StringBuilder insertZeroDigitSymbolIntoBegin(StringBuilder str)
     {    
         int strSize = str.length();
+        var result = new StringBuilder();   
              
         if (casesQuantity == strSize)
         {
             return str;
-        }
-        
-        String result = "";   
+        }      
         
         for (int i = 0; i < casesQuantity - strSize; ++i)
         {
-            result += ADDED_SYMBOL;
+            result.append(ADDED_SYMBOL);
         }
         
-        result += str;
+        result.append(str);
         
         return result;
     }
     
   
-    private ArrayList<Boolean> convertStringToBoolList(String converted)
+    private ArrayList<Boolean> convertStringToBoolList(StringBuilder converted)
     {
         var result = new ArrayList<Boolean>();
     
-        for (char currentSymbol: converted.toCharArray())
+        for (char currentSymbol: converted.toString().toCharArray())
         {
             result.add(convertCharToBool(currentSymbol));
         }
