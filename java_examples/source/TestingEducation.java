@@ -8,7 +8,7 @@ public class TestingEducation
     private static final int FAIL_EXIT_CODE = 1;
     private static final int BINARY_DEGREE_BASE = 2;
     private static final int MIN_ARG_VALUE = 1;
-    private static final int MAX_ARG_VALUE = 22; 
+    private static final int MAX_ARG_VALUE = 1000000; 
     
     private static final String INVALID_ARG_ERROR = 
         "Задайте 1 целочисленный параметр в диапазоне от " + MIN_ARG_VALUE +
@@ -24,8 +24,6 @@ public class TestingEducation
     
     private int casesQuantity;
     private int iterCount;
-    
-    private ArrayList<ArrayList<Boolean>> allTestCases;
            
     
     public static void main(String[] args)
@@ -44,7 +42,7 @@ public class TestingEducation
                 showErrorMessage(INVALID_ARG_ERROR);
             }
             
-            new TestingEducation(casesQuantity).showResult();
+            new TestingEducation(casesQuantity).showAllTestCases();
         }
         catch (NumberFormatException ex)
         {
@@ -81,7 +79,6 @@ public class TestingEducation
     {   
         this.casesQuantity = casesQuantity;
         iterCount = (int) Math.pow(BINARY_DEGREE_BASE, casesQuantity);         
-        initAllTestCases();
     }
     
         
@@ -91,50 +88,31 @@ public class TestingEducation
     }
     
     
-    public void showResult()
+    private void showAllTestCases()
     {
         System.out.println();
-        int allTestCasesIter = 0;
-           
-        for (var currentCasesList: getAllTestCases())
-        {
+        
+        for (int i = 0; i < iterCount; ++i)
+        {                     
+            var currentCasesList = convertStringToBoolList(
+                                   insertZeroDigitSymbolIntoBegin(
+                                   convertDecToBinString(i)));  
+                
             System.out.println(CURRENT_TESTING_CASES);
                       
-            for (int i = 0; i < currentCasesList.size(); ++i)
+            for (int j = 0; j < currentCasesList.size(); ++j)
             {
-                System.out.println(CASE_NUMBER + (i + 1) + ": " + 
-                    currentCasesList.get(i));
+                System.out.println(CASE_NUMBER + (j + 1) + ": " + 
+                    currentCasesList.get(j));
             }
             
             System.out.println(TESTING_RESULTS + getResult(currentCasesList));
             
-            if (allTestCasesIter < iterCount - 1)
+            if (i < iterCount - 1)
             {
                 System.out.println();
-            }
-            
-            allTestCasesIter++;
+            }       
         }
-    }
-    
-    
-    private void initAllTestCases()
-    {
-        allTestCases = new ArrayList<ArrayList<Boolean>>();
-        
-        for (int i = 0; i < iterCount; ++i)
-        {                     
-            allTestCases.add(
-                convertStringToBoolList(
-                insertZeroDigitSymbolIntoBegin(
-                convertDecToBinString(i))));        
-        }
-    }
-    
-    
-    private ArrayList<ArrayList<Boolean>> getAllTestCases()
-    {
-        return allTestCases;
     }
     
     
