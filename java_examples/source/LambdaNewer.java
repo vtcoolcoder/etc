@@ -1,8 +1,21 @@
+
+
 public class LambdaNewer
 { 
+    private static final String GREETING = "Hello, world!";
+    private static final String BYE = "Good bye!";
+
+    private static final double SQR = 1.0/2.0;
+    private static final double CUBE = 1.0/3.0;
+    private static final double PENTA = 1.0/5.0;
+    private static final double SEPTA = 1.0/7.0;
+    private static final double UNDECIMA = 1.0/11.0;
+    private static final double TERCDECIMA = 1.0/13.0;
+   
+    
     public interface Function
     {
-        public double run(int n);
+        public double run(double n);
     }
    
    
@@ -15,14 +28,18 @@ public class LambdaNewer
             LambdaNewer::showGoodBye
         );
         
-        showCustomProgression(1000, 1101, 1,
+        showCustomProgression(0, 21, 1,
             LambdaNewer::getSelf,
             LambdaNewer::getSqr,
-            LambdaNewer::getCube,
+            LambdaNewer::getCube);
+            
+        showCustomProgression(1_000_000, 10_000_000, 500_000,    
             LambdaNewer::getSqrt,
             LambdaNewer::getCubeRoot,
             LambdaNewer::getPentaRoot,
-            LambdaNewer::getSeptaRoot
+            LambdaNewer::getSeptaRoot,
+            LambdaNewer::getUndecimaRoot,
+            LambdaNewer::getTercdecimaRoot
         );
     }
     
@@ -38,13 +55,13 @@ public class LambdaNewer
     
     private static void showGreeting()
     {
-        System.out.println("Hello, world!");
+        System.out.println(GREETING);
     }
     
     
     private static void showGoodBye()
     {
-        System.out.println("Good bye!");
+        System.out.println(BYE);
     }
     
     
@@ -89,44 +106,62 @@ public class LambdaNewer
     }
     
     
-    private static double getSelf(int n)
+    private static double getSelf(double n)
     {
         return n;
     }
     
     
-    private static double getSqr(int n)
+    private static double getSqr(double n)
     {
         return n*n;
     }
     
     
-    private static double getCube(int n)
+    private static double getCube(double n)
     {
         return n*n*n;
     }
     
     
-    private static double getSqrt(int n)
+    private static double getRoot(double base, double degree)
     {
-        return Math.sqrt(n);
+        return Math.pow(base, degree);
     }
     
     
-    private static double getCubeRoot(int n)
+    private static double getSqrt(double n)
     {
-        return Math.pow(n, 1.0/3.0);
+        return getRoot(n, SQR);
     }
     
     
-    private static double getPentaRoot(int n)
+    private static double getCubeRoot(double n)
     {
-        return Math.pow(n, 1.0/5.0);
+        return getRoot(n, CUBE);
     }
     
     
-    private static double getSeptaRoot(int n)
+    private static double getPentaRoot(double n)
     {
-        return Math.pow(n, 1.0/7.0);
+        return getRoot(n, PENTA);
+    }
+    
+    
+    private static double getSeptaRoot(double n)
+    {
+        return getRoot(n, SEPTA);
+    }
+    
+    
+    private static double getUndecimaRoot(double n)
+    {
+        return getRoot(n, UNDECIMA);
+    }
+    
+    
+    private static double getTercdecimaRoot(double n)
+    {
+        return getRoot(n, TERCDECIMA);
     }
 }
