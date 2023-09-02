@@ -125,7 +125,9 @@ public class LearnRecursion
         return runRecursiveFib(n-1) + runRecursiveFib(n-2);
     }
     
-    
+    /**
+    * Это пример рекурсии с кэшированием (вариант динамического программирования)
+    */
     private static long runRecursiveDynamicFib(int n)
     { 
         ++dynamicCounter;
