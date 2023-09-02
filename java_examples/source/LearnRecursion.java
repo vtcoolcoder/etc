@@ -3,7 +3,7 @@ import java.util.HashMap;
 
 public class LearnRecursion
 {
-    private static final String ILLEGAL = "Параметр должен быть не отрицательным!";
+    private static final String ILLEGAL = "Параметр должен быть не меньше 1!";
     private static final String CALLED = "Количество рекурсивных вызовов: ";
     private static final String CYCLE = "Циклом: ";
     private static final String RECURSION = "Рекурсией "; 
@@ -13,8 +13,6 @@ public class LearnRecursion
         RECURSION + "без динамического программирования: ";
     private static final String PREFIX = "fib(";
     private static final String SUFFIX = ") -> ";
-    private static final String SOMETHING_PREFIX = "something(";
-    private static final String SOMETHING_SUFFIX = SUFFIX;
     private static final String ERROR_MESSAGE = 
         "Задайте 1 целочисленный параметр больше нуля!";
     
@@ -25,7 +23,7 @@ public class LearnRecursion
     
     private static long dynamicCounter=0L;
     private static long counter=0L;
-    private static long somethingCounter=0L;
+    
     private static int number;
     
     /*
@@ -46,6 +44,13 @@ public class LearnRecursion
     
     public static void main(String[] args)
     {
+        checkInputtingData(args);
+        showResults();     
+    }
+    
+    
+    private static void checkInputtingData(String[] args)
+    {
         if (args.length != ARGS_LIMIT)
         {
             showErrorMessage();
@@ -62,22 +67,6 @@ public class LearnRecursion
         {
             showErrorMessage();
         }
-        
-        System.out.println(PREFIX + number + SUFFIX);
-        System.out.println(CYCLE + runCycleFib(number));
-        System.out.println();
-        
-        System.out.println(WITH_DYNAMIC + runRecursiveDynamicFib(number));
-        System.out.println(CALLED + dynamicCounter);
-        System.out.println();
-        
-        System.out.println(WITHOUT_DYNAMIC + runRecursiveFib(number));
-        System.out.println(CALLED + counter);
-        System.out.println();
-        
-        System.out.println(SOMETHING_PREFIX + number + SOMETHING_SUFFIX);
-        System.out.println(WITHOUT_DYNAMIC + runRecursiveSomething(number));
-        System.out.println(CALLED + somethingCounter);
     }
     
     
@@ -88,24 +77,24 @@ public class LearnRecursion
     }
     
     
-    private static long runRecursiveSomething(int n)
+    private static void showResults()
+    {   
+        printCurrentResult(PREFIX + number + SUFFIX, 
+                           CYCLE + runCycleFib(number));
+                           
+        printCurrentResult(WITH_DYNAMIC + runRecursiveDynamicFib(number),
+                           CALLED + dynamicCounter);
+                           
+        printCurrentResult(WITHOUT_DYNAMIC + runRecursiveFib(number),
+                           CALLED + counter);
+    }
+    
+    
+    private static void printCurrentResult(String first, String second)
     {
-        ++somethingCounter;
-        
-        if (n < 2)
-        {
-            throw new IllegalArgumentException(ILLEGAL);
-        }    
-        else if (n == 2)
-        {
-            return 0;
-        }
-        else if(n == 3)
-        {
-            return 2;
-        }
-        
-        return (2*n - 4) + runRecursiveSomething(n-1);
+        System.out.println(first);
+        System.out.println(second);
+        System.out.println();
     }
     
     
@@ -136,18 +125,16 @@ public class LearnRecursion
         {
             throw new IllegalArgumentException(ILLEGAL);
         }
+        else if (cache.containsKey(n))
+        {
+            return cache.get(n);
+        }   
         else if (n == 1 || n == 2)
         {
             return 1L;
         }
-        else if (cache.containsKey(n))
-        {
-            return cache.get(n);
-        }    
-        
-        long cacheR = runRecursiveDynamicFib(n-1);    
-        long cacheL = runRecursiveDynamicFib(n-2);
-        long result = cacheR + cacheL;
+               
+        long result = runRecursiveDynamicFib(n-1) + runRecursiveDynamicFib(n-2);
         cache.put(n, result);
         
         return result;
