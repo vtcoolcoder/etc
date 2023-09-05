@@ -27,6 +27,11 @@ public class DiffProgressions
     private static ArrayList<Integer> 
     generateArithmeticProgression(final int start, final int stop, final int step)
     {
+        if (isInvalidArithmProgArgs(start, stop, step))
+        {
+            throw new IllegalArgumentException();
+        }
+    
         ArrayList<Integer> result = new ArrayList<>();
         int offset = (stop - start + 1) / step;
         
@@ -41,14 +46,30 @@ public class DiffProgressions
     }
     
     
+    private static boolean 
+    isInvalidArithmProgArgs(final int start, final int stop, final int step)
+    {
+        return
+             step == 0 ||
+             start == stop ||
+            (step > 0 && stop < start) ||
+            (step < 0 && stop > start);
+    }
+    
+    
     private static ArrayList<Integer> 
     generateGeometricProgression(final int start, final int stop, final int step)
     {
+        if (isInvalidArithmGeoProgArgs(start, stop, step))
+        {
+            throw new IllegalArgumentException();
+        }
+    
         ArrayList<Integer> result = new ArrayList<>();
         
         for (int i = start; 
-             step >= 0 ? i < stop : i >= stop; 
-             i *= (step >= 0 ? step : (1.0 / -step)))
+             step > 0 ? i < stop : i >= stop; 
+             i *= (step > 0 ? step : (1.0 / -step)))
         {
             result.add(i);
         }
@@ -61,15 +82,32 @@ public class DiffProgressions
     generateArithmeticGeoProgression(final int start, final int stop, 
                                      final int step, final int added)
     {
+        if (isInvalidArithmGeoProgArgs(start, stop, step))
+        {
+            throw new IllegalArgumentException();
+        }
+    
         ArrayList<Integer> result = new ArrayList<>();
         
         for (int i = start; 
-             step >= 0 ? i < stop : i >= stop; 
-             i *= (step >= 0 ? step : (1.0 / -step)), i += added)
+             step > 0 ? i < stop : i >= stop; 
+             i *= (step > 0 ? step : (1.0 / -step)), i += added)
         {
             result.add(i);
         }
         
         return result;
+    }
+    
+    
+    private static boolean
+    isInvalidArithmGeoProgArgs(final int start, final int stop, final int step)
+    {
+        return
+            step == 0 || 
+            step == 1 ||
+            start == stop ||
+            (step > 0 && stop < start) ||
+            (step < 0 && stop > start);
     }
 }
