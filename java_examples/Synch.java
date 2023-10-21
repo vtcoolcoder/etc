@@ -1,7 +1,7 @@
 // Эта программа не синхронизирована
 class CallMe
 {
-    void call(String msg)
+    synchronized void call(String msg)
     {
         System.out.print("[" + msg);
         
