@@ -17,7 +17,14 @@ public class OuterDemo implements Greetable {
             new OuterDemo().new InnerNonStatic();
         OuterDemo anOuterDemo = new OuterDemo();
         
-        showGreetings(anInnerStatic, anInnerNonStatic, anOuterDemo);
+        showGreetings(anInnerStatic, 
+                      anInnerNonStatic, 
+                      anOuterDemo,
+                      new Greetable() {
+                          public void greeting() { 
+                              System.out.println("Hello from AnonymousClass!");
+                          }
+                      } );
     }
     
     private static void showGreetings(Greetable ... greetings) {
