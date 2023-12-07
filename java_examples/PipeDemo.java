@@ -10,12 +10,7 @@ public class PipeDemo {
 
 
     public static void main(String[] args) {
-        runEcho(PipeDemo::wrapReverse);     
-    }
-    
-    
-    private static StringBuffer wrapReverse(StringBuffer item) { 
-        return item != null ? item.reverse() : new StringBuffer();
+        runEcho(s -> s.reverse());     
     }
     
     
