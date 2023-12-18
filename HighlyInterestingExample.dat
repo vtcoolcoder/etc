@@ -1,0 +1,8 @@
+interface MyFun<T> { void func(T refByInstance);}
+class A { void greet() { System.out.println("Greeting!");}}
+class B { void hello() { System.out.println("Hello");}}
+class C { void bye() { System.out.println("Bye!");}}
+<V> void showMessage(MyFun<V> fun, V v) { fun.func(v);}
+showMessage(A::greet, new A())
+showMessage(B::hello, new B())
+showMessage(C::bye, new C())
