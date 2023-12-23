@@ -3,7 +3,7 @@ public class NewSeventeenJavaFearuresDemo {
         MALE("мужской"), 
         FEMALE("женский"); 
         
-        Gender(String gender) { this.gender = gender; }
+        Gender(final String gender) { this.gender = gender; }
         
         public String getGender() { return gender; }
         
@@ -17,7 +17,7 @@ public class NewSeventeenJavaFearuresDemo {
         GRAY("серый"), 
         BROWN("коричневый");
         
-        EyeColor(String color) { this.color = color; }
+        EyeColor(final String color) { this.color = color; }
         
         public String getColor() { return color; }
         
@@ -31,10 +31,11 @@ public class NewSeventeenJavaFearuresDemo {
         BROWN("шатен"), 
         ORANGE("рыж"); 
         
-        HairColor(String color) { this.color = color; }
+        HairColor(final String color) { this.color = color; }
         
-        public String getColor(Gender gender) {
+        public String getColor(final Gender gender) {
             char lastSymbol = color.charAt(color.length() - 1);
+            
             return switch (gender) {
                 case MALE -> lastSymbol == 'ж' ? color + "ий" : color;
                 case FEMALE -> lastSymbol == 'ж' ? color + "ая" : color + "ка";
@@ -138,23 +139,23 @@ public class NewSeventeenJavaFearuresDemo {
         Хобби: %s
         """;
         
-        return String.format(
-            FORMAT, 
-            student.id(),
-            student.name(),
-            student.surname(),
-            student.gender().getGender(),
-            student.age(),
-            student.height(),
-            student.weight(),
-            student.eyeColor().getColor(),
-            student.hairColor().getColor(student.gender()),
-            student.hobby());
+        return String.format(FORMAT, 
+                             student.id(),
+                             student.name(),
+                             student.surname(),
+                             student.gender().getGender(),
+                             student.age(),
+                             student.height(),
+                             student.weight(),
+                             student.eyeColor().getColor(),
+                             student.hairColor().getColor(student.gender()),
+                             student.hobby());
     }
     
     
     private static String showEyeDetail(final Student student) {
         final String INFO = "Глаза ";
+        
         return switch (student.eyeColor()) {
             case BLUE, GREEN -> {
                 System.err.println(INFO + "светлые");
