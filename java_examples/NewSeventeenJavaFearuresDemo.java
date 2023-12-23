@@ -45,56 +45,73 @@ public class NewSeventeenJavaFearuresDemo {
     }
     
     
-    private record Student(
-        int id,
-        String name,
-        String surname,
-        Gender gender,
-        byte age,
-        short height,
-        short weight,
-        EyeColor eyeColor,
-        HairColor hairColor,
-        String hobby
-    ) {}
+    private record Student(int id,
+                           String name,
+                           String surname,
+                           Gender gender,
+                           byte age,
+                           short height,
+                           short weight,
+                           EyeColor eyeColor,
+                           HairColor hairColor,
+                           String hobby) 
+    {
+        private static int commonId;
+        
+        Student(String name, 
+                String surname, 
+                Gender gender, 
+                byte age,
+                short height,
+                short weight,
+                EyeColor eyeColor,
+                HairColor hairColor,
+                String hobby) 
+        {
+            this(commonId++, 
+                 name, 
+                 surname, 
+                 gender, 
+                 age, 
+                 height, 
+                 weight, 
+                 eyeColor, 
+                 hairColor, 
+                 hobby);
+        }      
+    }       
     
     
     private static Student[] students = {
-        new Student(
-            0, 
-            "Василий",
-            "Иванов",
-            Gender.MALE,
-            (byte) 20,
-            (short) 170,
-            (short) 70,
-            EyeColor.BLUE,
-            HairColor.BLONDE,
-            "бильярд"),
+        new Student("Василий",
+                    "Иванов",
+                    Gender.MALE,
+                    (byte) 20,
+                    (short) 170,
+                    (short) 70,
+                    EyeColor.BLUE,
+                    HairColor.BLONDE,
+                    "бильярд"),
             
-        new Student(
-            1,
-            "Марина",
-            "Сидорова",
-            Gender.FEMALE,
-            (byte) 18,
-            (short) 175,
-            (short) 60,
-            EyeColor.GREEN,
-            HairColor.ORANGE,
-            "макияж"),
+        new Student("Марина",
+                    "Сидорова",
+                    Gender.FEMALE,
+                    (byte) 18,
+                    (short) 175,
+                    (short) 60,
+                    EyeColor.GREEN,
+                    HairColor.ORANGE,
+                    "макияж"),
             
-        new Student(
-            2,
-            "Кристина",
-            "Цветаева",
-            Gender.FEMALE,
-            (byte) 21,
-            (short) 165,
-            (short) 55,
-            EyeColor.GRAY,
-            HairColor.BROWN,
-            "рисование")
+        new Student("Кристина",
+                    "Цветаева",
+                    Gender.FEMALE,
+                    (byte) 21,
+                    (short) 165,
+                    (short) 55,
+                    EyeColor.GRAY,
+                    HairColor.BROWN,
+                    "рисование")
     };
     
     
