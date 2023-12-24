@@ -66,11 +66,11 @@ public class AnnotationUsingDemo {
     
     
     private static void tryRecursivelyRunShowMetaInfo(final AnnotatedElement item) {
-        if (item instanceof Class) {
-            showMetaInfo(((Class) item).getDeclaredFields());
-            showMetaInfo(((Class) item).getDeclaredMethods());
-        } else if (item instanceof Method) {
-            showMetaInfo(((Method) item).getParameters());
+        if (item instanceof Class clazz) {
+            showMetaInfo(clazz.getDeclaredFields());
+            showMetaInfo(clazz.getDeclaredMethods());
+        } else if (item instanceof Method method) {
+            showMetaInfo(method.getParameters());
         }       
     }
 }
