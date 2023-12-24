@@ -35,18 +35,25 @@ public class AnnotationUsingDemo {
     
     private static void showMetaInfo(final AnnotatedElement... items) {
         for (AnnotatedElement item : items) {
-            if (item != null) {         
-                printAnnotationFields(item); 
-                tryRecursivelyRunShowMetaInfo(item);
-            }
+            processAnnotatedElement(item);
+        }
+    }
+    
+    
+    private static void processAnnotatedElement(final AnnotatedElement item) {
+        if (item != null) {         
+            printAnnotationFields(item); 
+            tryRecursivelyRunShowMetaInfo(item);
         }
     }
     
     
     private static void printAnnotationFields(final AnnotatedElement item) {
-        MyDemoAnnotation annotation = item.getDeclaredAnnotation(MyDemoAnnotation.class);
+        var annotation = item.getDeclaredAnnotation(MyDemoAnnotation.class);
         
-        if (annotation != null) {
+        if (annotation != null && 
+            annotation instanceof MyDemoAnnotation) {
+            
             final String FORMAT = """
             Item: %s
             MyDemoAnnotation.id: %s
