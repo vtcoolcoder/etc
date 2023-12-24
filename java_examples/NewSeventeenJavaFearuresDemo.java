@@ -59,6 +59,8 @@ public class NewSeventeenJavaFearuresDemo {
     {
         private static int commonId;
         
+        public static int getStudentCount() { return commonId; }
+        
         Student(String name, 
                 String surname, 
                 Gender gender, 
@@ -83,7 +85,7 @@ public class NewSeventeenJavaFearuresDemo {
     }       
     
     
-    private static Student[] students = {
+    private static final Student[] STUDENTS = {
         new Student("Василий",
                     "Иванов",
                     Gender.MALE,
@@ -117,10 +119,19 @@ public class NewSeventeenJavaFearuresDemo {
     
     
     public static void main(String[] args) {
+        showStudentInfo(STUDENTS);
+    }
+    
+    
+    private static void showStudentInfo(Student... students) {
+        final String FIRST_FORMAT = "%s: %s%n";
+        final String SECOND_FORMAT = FIRST_FORMAT + "%s%n";
+        
+        System.out.printf(FIRST_FORMAT, "Всего студентов", Student.getStudentCount() + "\n");
+        
         for (Student student : students) {
-            System.out.println("Студент: " + 
-                               showEyeDetail(student) + "\n" + 
-                               getStudentInfo(student));
+            System.out.printf(SECOND_FORMAT, "Студент", showEyeDetail(student), 
+                                                       getStudentInfo(student));
         }
     }
     
