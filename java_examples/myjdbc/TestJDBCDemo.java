@@ -8,19 +8,19 @@ import java.util.Set;
 import java.util.HashSet;
 import java.util.Arrays;
 
+import java.util.function.Consumer;
+
 
 public class TestJDBCDemo {      
     private static final Set<String> SUBJECT_LIST = new HashSet<>();
     private static final Set<String> CUSTOM_SUBJECT_LIST = new HashSet<>();
-    
-    private static final String OLD_DATABASE_NAME = "java";
     
     private static String[] commandLineArgs;
     
     
     public static void main(String[] args) throws Exception {
         commandLineArgs = args;
-        new Processor(new Connector(OLD_DATABASE_NAME), TestJDBCDemo::processConnection);
+        new Processor(new Connector(), TestJDBCDemo::processConnection);
     }
     
      
@@ -63,21 +63,26 @@ public class TestJDBCDemo {
     
     private static void processNotes(final Statement statement) throws SQLException {    
         defineSubjectList().stream()
-                           .forEach(item -> {
-                               try {
-                                   String gettingNotes = 
-                                       String.format(Queries.NOTE_FORMAT.getQuery(), item); 
-                                   ResultSet notes = statement.executeQuery(gettingNotes);
-                                   printNotes(item, notes);
-                               } catch (SQLException ex) {
-                                   throw new RuntimeException(ex);
-                               }
-                           });
+                           .forEach(getHandler(statement));
     }
     
     
     private static Set<String> defineSubjectList() {
         return commandLineArgs.length == 0 ? SUBJECT_LIST : CUSTOM_SUBJECT_LIST;
+    }
+    
+    
+    private static Consumer getHandler(final Statement statement) throws SQLException {   
+        return item -> {
+            try {
+                final String gettingNotes = 
+                    String.format(Queries.NOTE_FORMAT.getQuery(), item); 
+                final ResultSet notes = statement.executeQuery(gettingNotes);
+                printNotes((String) item, notes);
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+        };
     }
     
     
