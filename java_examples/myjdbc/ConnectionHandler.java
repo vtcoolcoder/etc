@@ -1,5 +1,6 @@
-import java.sql.Connection; 
+package myjdbc;
 
+import java.sql.Connection; 
 
 @FunctionalInterface
 public interface ConnectionHandler {

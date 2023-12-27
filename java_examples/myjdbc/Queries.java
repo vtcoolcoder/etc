@@ -1,3 +1,5 @@
+package myjdbc;
+
 public enum Queries {
     UNIQUE_SUBJECTS(
             """
@@ -5,17 +7,11 @@ public enum Queries {
             FROM javanotes;
             """),
     
-    NOTE_FORMAT(
+    NOTES(
             """
             SELECT note
             FROM javanotes
             WHERE subject = '%s';
-            """),
-    
-    GENERAL_FORMAT(
-            """
-            Тема: %s
-            Заметка:%n%s%n
             """);
     
     private final String query;

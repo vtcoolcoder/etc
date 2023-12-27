@@ -1,3 +1,5 @@
+package myjdbc;
+
 import java.sql.Connection; 
 import java.sql.DriverManager; 
 import java.sql.SQLException; 
@@ -14,7 +16,7 @@ import java.util.function.Consumer;
 public class TestJDBCDemo {      
     private static final Set<String> SUBJECT_LIST = new HashSet<>();
     private static final Set<String> CUSTOM_SUBJECT_LIST = new HashSet<>();
-    private static final Set<JavaNote> JAVA_NOTES = new HashSet<>();
+    private static final Set<Note> NOTES = new HashSet<>();
     
     private static String[] commandLineArgs;
     
@@ -22,7 +24,7 @@ public class TestJDBCDemo {
     public static void main(String[] args) throws Exception {
         commandLineArgs = args;
         new Processor(new Connector(), TestJDBCDemo::processConnection);
-        showJavaNotes();
+        showNotes(PrintFormatter.COMPACT_FORMAT);
     }
     
      
@@ -75,25 +77,27 @@ public class TestJDBCDemo {
     
     
     private static Consumer getHandler(final Statement statement) throws SQLException {   
-        return subject -> {
-            try {
-                final String gettingNotes = 
-                    String.format(Queries.NOTE_FORMAT.getQuery(), subject); 
-                final ResultSet notes = statement.executeQuery(gettingNotes);
-                fillJavaNotes((String) subject, notes);
-            } catch (SQLException ex) {
-                throw new RuntimeException(ex);
+        return item -> {
+            if (item instanceof String subject) {
+                try {
+                    final String gettingNotes = 
+                        String.format(Queries.NOTES.getQuery(), subject); 
+                    final ResultSet notes = statement.executeQuery(gettingNotes);
+                    fillNotes(subject, notes);
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }    
             }
         };
     }
     
     
-    private static void fillJavaNotes(final String subject, 
-                                      final ResultSet notes) 
-                                      throws SQLException {     
+    private static void fillNotes(final String subject, 
+                                  final ResultSet notes) 
+                                  throws SQLException {     
         iterateByResultSet(notes, result -> {
-            String note = result.getString(Fields.note.name());
-            JAVA_NOTES.add(new JavaNote(subject, note));
+            final String note = result.getString(Fields.note.name());
+            NOTES.add(new Note(subject, note));
         });
     }
     
@@ -105,14 +109,23 @@ public class TestJDBCDemo {
     }
     
     
-    private static void showJavaNotes() {
-        JAVA_NOTES.stream().forEach(TestJDBCDemo::printJavaNote);
+    private static void showNotes() {
+        showNotes(PrintFormatter.GENERAL_FORMAT);
     }
     
     
-    private static void printJavaNote(JavaNote javanote) {
-        System.out.printf(Queries.GENERAL_FORMAT.getQuery(), 
-                          javanote.subject(), 
-                          javanote.note());
+    private static void showNotes(final PrintFormatter format) {
+        NOTES.stream().forEach(getPrintNote(format));
+    }
+    
+    
+    private static Consumer getPrintNote(final PrintFormatter format) {
+        return item -> {
+            if (item instanceof Note note) {
+                System.out.printf(format.getFormat(), 
+                                  note.subject(), 
+                                  note.note());
+            }
+        };
     }
 }

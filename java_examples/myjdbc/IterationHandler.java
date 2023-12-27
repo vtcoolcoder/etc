@@ -1,5 +1,6 @@
-import java.sql.SQLException; 
+package myjdbc;
 
+import java.sql.SQLException; 
 
 @FunctionalInterface
 public interface IterationHandler<E> {

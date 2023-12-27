@@ -1,3 +1,5 @@
+package myjdbc;
+
 public enum ErrorMessages {
     INVALID_QUERY("Ошибка в запросе!"),
     NO_CONNECTION("Не удалось получить соединение!");
