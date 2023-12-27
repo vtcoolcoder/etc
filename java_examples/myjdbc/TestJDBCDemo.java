@@ -14,6 +14,7 @@ import java.util.function.Consumer;
 public class TestJDBCDemo {      
     private static final Set<String> SUBJECT_LIST = new HashSet<>();
     private static final Set<String> CUSTOM_SUBJECT_LIST = new HashSet<>();
+    private static final Set<JavaNote> JAVA_NOTES = new HashSet<>();
     
     private static String[] commandLineArgs;
     
@@ -21,6 +22,7 @@ public class TestJDBCDemo {
     public static void main(String[] args) throws Exception {
         commandLineArgs = args;
         new Processor(new Connector(), TestJDBCDemo::processConnection);
+        showJavaNotes();
     }
     
      
@@ -73,12 +75,12 @@ public class TestJDBCDemo {
     
     
     private static Consumer getHandler(final Statement statement) throws SQLException {   
-        return item -> {
+        return subject -> {
             try {
                 final String gettingNotes = 
-                    String.format(Queries.NOTE_FORMAT.getQuery(), item); 
+                    String.format(Queries.NOTE_FORMAT.getQuery(), subject); 
                 final ResultSet notes = statement.executeQuery(gettingNotes);
-                printNotes((String) item, notes);
+                fillJavaNotes((String) subject, notes);
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
             }
@@ -86,12 +88,12 @@ public class TestJDBCDemo {
     }
     
     
-    private static void printNotes(final String subject, 
-                                   final ResultSet notes) 
-                                   throws SQLException {     
+    private static void fillJavaNotes(final String subject, 
+                                      final ResultSet notes) 
+                                      throws SQLException {     
         iterateByResultSet(notes, result -> {
             String note = result.getString(Fields.note.name());
-            System.out.printf(Queries.GENERAL_FORMAT.getQuery(), subject, note);
+            JAVA_NOTES.add(new JavaNote(subject, note));
         });
     }
     
@@ -100,5 +102,17 @@ public class TestJDBCDemo {
                                            final IterationHandler<ResultSet> func)
                                            throws SQLException {
         while (item.next()) { func.handle(item); }
+    }
+    
+    
+    private static void showJavaNotes() {
+        JAVA_NOTES.stream().forEach(TestJDBCDemo::printJavaNote);
+    }
+    
+    
+    private static void printJavaNote(JavaNote javanote) {
+        System.out.printf(Queries.GENERAL_FORMAT.getQuery(), 
+                          javanote.subject(), 
+                          javanote.note());
     }
 }
