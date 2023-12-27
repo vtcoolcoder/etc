@@ -9,9 +9,9 @@ import java.sql.SQLException;
 
 public class Connector {
     private static final String BASE_URL = "jdbc:mysql://localhost:3306/";
-    private static final String SUFFIX = "?characterEncoding=utf8";
-    private static final String USER = "root";
-    private static final String PWD = "mysql";
+    private static final String SUFFIX = "?characterEncoding=utf8"; 
+    private static final String USER = "noter"; 
+    private static final String PWD = "&Q9<д±c⅛Л4⸮йN7§f2Ъ"; 
     private static final String DEFAULT_DATABASE = "my_rough_notes";
     
     private final String URL;
