@@ -6,8 +6,8 @@ import java.util.Arrays;
 
 
 public class CommandLineArgsParserTester {
-    private static final CommandLineArgsParserTester MAIN_OBJ = 
-        new CommandLineArgsParserTester();
+    private static CommandLineArgsParserTester MAIN_OBJ; 
+        
     
     private static final String[] DEFAULT = { "help", "verbose", "print", "version" };
     private static final String FORMAT = "Имя параметра: %s | Значения:%n";
@@ -16,12 +16,14 @@ public class CommandLineArgsParserTester {
     
     public CommandLineArgsParserTester() { this(DEFAULT); }
     
-    public CommandLineArgsParserTester(String... customParams) {
+    public CommandLineArgsParserTester(String[] customParams) {
         CUSTOM_PARAMS = Set.copyOf(Arrays.asList(customParams));
     }
    
     
     public static void main(String[] args) {
+        MAIN_OBJ = new CommandLineArgsParserTester();
+    
         CommandLineArgsParser parser =
             CommandLineArgsParser.newCommandLineArgsParser(args, CUSTOM_PARAMS);
             
