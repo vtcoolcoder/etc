@@ -44,6 +44,32 @@ public record Student(
     Рост: %d
     Вес: %d
     """;
+    
+    
+    private record ServiceParams(
+            String errorMsg,
+            String nameOrSurname,
+            int ageOrHeightOrWeight,
+            int min,
+            int max) 
+    {
+         ServiceParams(
+                 final String errorMsg,
+                 final String nameOrSurname) 
+         { 
+             this(errorMsg, nameOrSurname, -1, -1, -1);
+         }
+         
+         
+         ServiceParams(
+                 final String errorMsg,
+                 final int ageOrHeightOrWeight,
+                 final int min,
+                 final int max) 
+         {
+             this(errorMsg, "", ageOrHeightOrWeight, min, max);
+         }
+    }
 
 
     private static int counter = 0;
@@ -103,49 +129,41 @@ public record Student(
     
     
     private static void checkName(final String name) { 
-        checkNameOrSurname(name, WRONGNAME); 
+        checkNameOrSurname(new ServiceParams(WRONGNAME, name)); 
     }
     
     
     private static void checkSurname(final String surname) { 
-        checkNameOrSurname(surname, WRONGSURNAME); 
+        checkNameOrSurname(new ServiceParams(WRONGSURNAME, surname)); 
     }
     
     
     private static void checkAge(final int age) { 
-        checkAgOrHtOrWt(age, AGEMIN, AGEMAX, WRONGAGE); 
+        checkAgOrHtOrWt(new ServiceParams(WRONGAGE, age, AGEMIN, AGEMAX)); 
     }
     
     
     private static void checkHeight(final int height) { 
-        checkAgOrHtOrWt(height, HEIGHTMIN, HEIGHTMAX, WRONGHEIGHT); 
+        checkAgOrHtOrWt(new ServiceParams(WRONGHEIGHT, height, HEIGHTMIN, HEIGHTMAX)); 
     }
     
     
     private static void checkWeight(final int weight) { 
-        checkAgOrHtOrWt(weight, WEIGHTMIN, WEIGHTMAX, WRONGWEIGHT); 
+        checkAgOrHtOrWt(new ServiceParams(WRONGWEIGHT, weight, WEIGHTMIN, WEIGHTMAX)); 
     }
     
     
-    private static void checkNameOrSurname(final String nameOrSurname, 
-                                           final String errorMsg) 
-    {
-        if (! nameOrSurname.matches(REGEXP)) 
-        {
-            throw new IllegalArgumentException(errorMsg);
+    private static void checkNameOrSurname(final ServiceParams args) {
+        if (! args.nameOrSurname().matches(REGEXP)) {
+            throw new IllegalArgumentException(args.errorMsg());
         }
     }
     
     
-    private static void checkAgOrHtOrWt(final int ageOrHeightOrWeight,
-                                        final int min, 
-                                        final int max,
-                                        final String errorMsg) 
-    {
-        if (ageOrHeightOrWeight < min || 
-            ageOrHeightOrWeight > max) 
-        {
-            throw new IllegalArgumentException(errorMsg);
+    private static void checkAgOrHtOrWt(final ServiceParams args) {
+        if (args.ageOrHeightOrWeight() < args.min() || 
+            args.ageOrHeightOrWeight() > args.max()) {
+            throw new IllegalArgumentException(args.errorMsg());
         }
     }
 }
