@@ -1,5 +1,5 @@
 public class ShowStudents {
-    private static final Student[] STUDENTS = {
+    public static final Student[] STUDENTS = {
             new Student("Аня", "Романова", 21, 170, 55),
             new Student("Диана", "Липатова", 19, 175, 60),
             new Student("Любовь", "Орлова", 20, 165, 50),
