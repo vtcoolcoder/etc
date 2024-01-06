@@ -22,15 +22,15 @@ public record Student(
     
     private static final String AMOUNT = "Всего студентов: ";
     private static final String MUSTBE = "должен быть"; 
-    private static final String WRONGIDRANGE = String.format("id %s не меньше %d!", MUSTBE, IDMIN);
+    private static final String WRONGIDRANGE = "id %s не меньше %d!".formatted(MUSTBE, IDMIN);
     private static final String WRONGIDUNIQUE = "id: %d уже существует!";
     private static final String PREFIX = "Некорректн";
     private static final String WRONGNAME = PREFIX + "ое имя!";
     private static final String WRONGSURNAME = PREFIX + "ая фамилия!";
     private static final String AHWFMT = "%s " + MUSTBE + " в диапазоне от %d до %d включительно!";
-    private static final String WRONGAGE = String.format(AHWFMT, "Возраст", AGEMIN, AGEMAX);
-    private static final String WRONGHEIGHT = String.format(AHWFMT, "Рост", HEIGHTMIN, HEIGHTMAX);
-    private static final String WRONGWEIGHT = String.format(AHWFMT, "Вес", WEIGHTMIN, WEIGHTMAX);
+    private static final String WRONGAGE = AHWFMT.formatted("Возраст", AGEMIN, AGEMAX);
+    private static final String WRONGHEIGHT = AHWFMT.formatted("Рост", HEIGHTMIN, HEIGHTMAX);
+    private static final String WRONGWEIGHT = AHWFMT.formatted("Вес", WEIGHTMIN, WEIGHTMAX);
     
     private static final String REGEXP = """
     [AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtVvUuWwXxYyZz\
@@ -74,7 +74,7 @@ public record Student(
 
     @Override
     public String toString() {
-        return String.format(SHOWFORMAT, id, name, surname, age, height, weight);
+        return SHOWFORMAT.formatted(id, name, surname, age, height, weight);
     }
     
     
@@ -97,7 +97,7 @@ public record Student(
         if (id < IDMIN) {
             throw new IllegalArgumentException(WRONGIDRANGE);
         } else if (existingUniqueId.contains(id)) {
-            throw new IllegalArgumentException(String.format(WRONGIDUNIQUE, id));
+            throw new IllegalArgumentException(WRONGIDUNIQUE.formatted(id));
         }
     }
     
