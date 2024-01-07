@@ -1,5 +1,6 @@
 import java.util.Set;
 import java.util.HashSet;
+import java.io.Serializable;
 
 
 public record Student(
@@ -8,9 +9,13 @@ public record Student(
         String surname,
         int age,
         int height,
-        int weight) 
+        int weight) implements Serializable
 {
+    static final long serialVersionUID = 6283487951643796546L;
     private static final Set<Integer> existingUniqueId = new HashSet<>();
+    
+    private static final boolean ON = true;
+    private static final boolean OFF = false;
     
     private static final int IDMIN = 1;
     private static final int AGEMIN = 1;
@@ -46,6 +51,10 @@ public record Student(
     """;
     
     
+    private static int counter = 0;
+    private static boolean isDeserialization = OFF;
+    
+    
     private record ServiceParams(
             String errorMsg,
             String nameOrSurname,
@@ -71,10 +80,7 @@ public record Student(
          }
     }
 
-
-    private static int counter = 0;
-    
-    
+   
     public Student(
             final String name,
             final String surname,
@@ -119,11 +125,17 @@ public record Student(
     }
     
     
+    public static void enableDeserializationMode() { isDeserialization = ON; }
+    public static void disableDeserializationMode() { isDeserialization = OFF; }
+    
+    
     private static void checkId(final int id) {
         if (id < IDMIN) {
             throw new IllegalArgumentException(WRONGIDRANGE);
-        } else if (existingUniqueId.contains(id)) {
-            throw new IllegalArgumentException(WRONGIDUNIQUE.formatted(id));
+        } else if (! isDeserialization) {
+            if (existingUniqueId.contains(id)) {
+                throw new IllegalArgumentException(WRONGIDUNIQUE.formatted(id));
+            }
         }
     }
     
