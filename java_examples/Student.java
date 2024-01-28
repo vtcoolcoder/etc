@@ -11,7 +11,9 @@ public record Student(
         int height,
         int weight) implements Serializable
 {
+    @java.io.Serial
     static final long serialVersionUID = 6283487951643796546L;
+    
     private static final Set<Integer> existingUniqueId = new HashSet<>();
     
     private static final boolean ON = true;
