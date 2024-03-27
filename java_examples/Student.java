@@ -1,5 +1,10 @@
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Random;
 
 
 public record Student(
@@ -8,9 +13,9 @@ public record Student(
         String surname,
         int age,
         int height,
-        int weight) implements java.io.Serializable
+        int weight) implements Serializable
 {
-    @java.io.Serial
+    @Serial
     private static final long serialVersionUID = 6283487951643796546L;
     
     private static final Set<Integer> existingUniqueId = new HashSet<>();
@@ -25,6 +30,32 @@ public record Student(
     private static final int HEIGHTMAX = 250;
     private static final int WEIGHTMIN = 20;
     private static final int WEIGHTMAX = 300;
+    
+    
+    private static final String[] DEFAULT_FEMALE_NAMES = {
+            "Ася", "Диана", "Вероника", "Настя", "Регина", "Оля", "Жанна", 
+            "Елена", "Гузель", "Марина", "Ксения", "Яна", "Виталина", "Резеда", 
+            "Светлана", "Алёна", "Лолита", "Татьяна", "Юлия", "Галина", "Элина", 
+            "Любовь", "Надежда" };
+            
+    private static final String[] DEFAULT_FEMALE_SURNAMES = {
+            "Иванова", "Андрюшина", "Сарычева", "Цветаева", "Закиева", "Романова", "Ильина", 
+            "Мишустина", "Орлова", "Аксинина", "Кирюшина", "Жукова", "Тагирова", "Хабибуллина", 
+            "Курочкина", "Тахавиева", "Сидорова", "Уракова", "Дурова", "Есенина", "Пушкина", 
+            "Булгакова", "Тарасова" };
+            
+    private static final String[] DEFAULT_MALE_NAMES = { 
+            "Николай", "Роман", "Григорий", "Борис", "Виталий", "Глеб", "Андрей", 
+            "Александр", "Тимофей", "Вадим", "Пётр", "Сергей", "Дмитрий", "Влад", 
+            "Степан", "Феофан", "Юрий", "Кирилл", "Евгений", "Константин", "Виктор", 
+            "Антон", "Олег" };
+            
+    private static final String[] DEFAULT_MALE_SURNAMES = { 
+            "Чугунов", "Осягин", "Жандаров", "Котляров", "Никифоров", "Потапов", "Поликарпов", 
+            "Иванов", "Петров", "Сидоров", "Задорнов", "Зорин", "Смирнов", "Долматов", 
+            "Любимов", "Дроздов", "Рябов", "Перепелов", "Веселов", "Журавлёв", "Степанов", 
+            "Соловьёв", "Воробьёв" };
+    
     
     private static final String AMOUNT = "Всего студентов: ";
     private static final String MUSTBE = "должен быть"; 
@@ -56,6 +87,10 @@ public record Student(
     private static boolean isDeserialization = OFF;
     
     
+    private enum Sex { FEMALE, MALE }
+    private record FullName(String name, String surname) {}
+    
+    
     private record ServiceParams(
             String errorMsg,
             String nameOrSurname,
@@ -83,25 +118,59 @@ public record Student(
     
     
     public static void main(String[] args) {
-        final java.util.List<Student> students = new java.util.ArrayList<>();
+        System.err.println("Запуск тестового режима...\n");
     
-        final String[] names = { "Геральт", "Йениффер", "Цири" };
-        final String[] surnames = { "Ведьмак", "Чародейка", "ХаосаДитя" };
-        final int[] ages = { 45, 35, 18 };
-        final int[] heights = { 180, 170, 165 };
-        final int[] weights = { 80, 60, 55 };
+        final List<Student> STUDENTS = new ArrayList<>();
+    
+        final String[] NAMES = { "Геральт", "Йениффер", "Цири" };
+        final String[] SURNAMES = { "Ведьмак", "Чародейка", "ХаосаДитя" };
+        final int[] AGES = { 45, 35, 18 };
+        final int[] HEIGHTS = { 180, 170, 165 };
+        final int[] WEIGHTS = { 80, 60, 55 };
         
-        for (int i = 0; i < names.length; i++) {
-            students.add(new Student(names[i], surnames[i], ages[i], heights[i], weights[i]));
+        final int STARTED_SIZE = NAMES.length;
+        
+        for (int i = 0; i < STARTED_SIZE; i++) {
+            STUDENTS.add(new Student(NAMES[i], SURNAMES[i], AGES[i], HEIGHTS[i], WEIGHTS[i]));
         }
         
-        final Student existingRandomStudent = students.get(
-                new java.util.Random().nextInt(names.length));
+        final Student EXISTING_RANDOM_STUDENT = STUDENTS.get(
+                new Random().nextInt(STARTED_SIZE));
         
-        students.add(new Student(existingRandomStudent));
+        STUDENTS.add(new Student(EXISTING_RANDOM_STUDENT));
         
-        students.stream()
+        final int STARTED_OFFSET = STUDENTS.size();
+        
+        STUDENTS.stream()
                 .forEach(System.out::println);
+                
+        System.err.println("Генерация случайных студентов...\n");
+        
+        for (int i = 0; i < 23 * 7; i++) {
+            STUDENTS.add(new Student());
+        }
+        
+        for (int i = STARTED_OFFSET; i < STUDENTS.size(); i++) {
+            System.out.println(STUDENTS.get(i));
+        }
+    }
+    
+    
+    public Student() {
+        this(getRandomFullName(),
+             getRandomValue(AGEMIN, AGEMAX),
+             getRandomValue(HEIGHTMIN, HEIGHTMAX),
+             getRandomValue(WEIGHTMIN, WEIGHTMAX));
+    }
+    
+    
+    private Student(
+            final FullName fullName, 
+            final int age, 
+            final int height, 
+            final int weight) 
+    {
+        this(fullName.name(), fullName.surname(), age, height, weight);
     }
     
     
@@ -206,5 +275,36 @@ public record Student(
             args.ageOrHeightOrWeight() > args.max()) {
             throw new IllegalArgumentException(args.errorMsg());
         }
+    }
+    
+    
+    private static FullName getRandomFullName() {     
+        return switch (getRandomSex()) {
+            case FEMALE -> getRandomFullName(DEFAULT_FEMALE_NAMES, DEFAULT_FEMALE_SURNAMES);
+            case MALE -> getRandomFullName(DEFAULT_MALE_NAMES, DEFAULT_MALE_SURNAMES);
+        };
+    }
+    
+    
+    private static Sex getRandomSex() {
+        final int randomSex = new Random().nextInt(2);
+        return randomSex == 0 ? Sex.FEMALE : Sex.MALE;
+    }
+    
+    
+    private static FullName getRandomFullName(final String[] names, final String[] surnames) {
+        return new FullName(
+                names[getRandomValue(names.length)], 
+                surnames[getRandomValue(surnames.length)]);
+    }
+    
+    
+    private static int getRandomValue(final int limit) {
+        return new Random().nextInt(limit);
+    }
+    
+    
+    private static int getRandomValue(final int min, final int max) {
+        return new Random().nextInt(min, max + 1);
     }
 }
