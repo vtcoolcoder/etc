@@ -1,6 +1,5 @@
 import java.util.Set;
 import java.util.HashSet;
-import java.io.Serializable;
 
 
 public record Student(
@@ -9,10 +8,10 @@ public record Student(
         String surname,
         int age,
         int height,
-        int weight) implements Serializable
+        int weight) implements java.io.Serializable
 {
     @java.io.Serial
-    static final long serialVersionUID = 6283487951643796546L;
+    private static final long serialVersionUID = 6283487951643796546L;
     
     private static final Set<Integer> existingUniqueId = new HashSet<>();
     
@@ -80,6 +79,34 @@ public record Student(
          {
              this(errorMsg, "", ageOrHeightOrWeight, min, max);
          }
+    }
+    
+    
+    public static void main(String[] args) {
+        final java.util.List<Student> students = new java.util.ArrayList<>();
+    
+        final String[] names = { "Геральт", "Йениффер", "Цири" };
+        final String[] surnames = { "Ведьмак", "Чародейка", "ХаосаДитя" };
+        final int[] ages = { 45, 35, 18 };
+        final int[] heights = { 180, 170, 165 };
+        final int[] weights = { 80, 60, 55 };
+        
+        for (int i = 0; i < names.length; i++) {
+            students.add(new Student(names[i], surnames[i], ages[i], heights[i], weights[i]));
+        }
+        
+        final Student existingRandomStudent = students.get(
+                new java.util.Random().nextInt(names.length));
+        
+        students.add(new Student(existingRandomStudent));
+        
+        students.stream()
+                .forEach(System.out::println);
+    }
+    
+    
+    public Student(final Student another) {
+        this(another.name, another.surname, another.age, another.height, another.weight);
     }
 
    
