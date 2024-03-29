@@ -31,6 +31,9 @@ public record Student(
     private static final int WEIGHTMIN = 20;
     private static final int WEIGHTMAX = 300;
     
+    private static final int MIN_STUDENT_COUNT = 1;
+    private static final int MAX_STUDENT_COUNT = 2323;
+    
     
     private static final String[] DEFAULT_FEMALE_NAMES = {
             "Ася", "Диана", "Вероника", "Настя", "Регина", "Оля", "Жанна", 
@@ -89,6 +92,7 @@ public record Student(
     
     private enum Sex { FEMALE, MALE }
     private record FullName(String name, String surname) {}
+    private record WhatMode(boolean isTestMode, int studentCount) {}
     
     
     private record ServiceParams(
@@ -118,6 +122,46 @@ public record Student(
     
     
     public static void main(String[] args) {
+        WhatMode whatMode = isRunningTestMode(args);
+        
+        if (whatMode.isTestMode()) {
+            test();
+        } else {
+            showRandomStudents(whatMode.studentCount());
+        }
+    }
+    
+    
+    private static WhatMode isRunningTestMode(final String[] args) {
+        final WhatMode TEST_MODE = new WhatMode(true, -1);
+    
+        if (args.length == 0) { 
+            return TEST_MODE;
+        }
+        
+        try {
+            int studentCount = Integer.parseInt(args[0]);
+            
+            if (isValidRange(studentCount)) {
+                final WhatMode SHOW_STUDENTS = new WhatMode(false, studentCount);
+                return SHOW_STUDENTS;
+            } else {
+                return TEST_MODE;
+            }
+            
+        } catch (NumberFormatException e) {
+            return TEST_MODE;
+        }
+    }
+    
+    
+    private static boolean isValidRange(final int studentCount) {
+        return studentCount >= MIN_STUDENT_COUNT && 
+               studentCount <= MAX_STUDENT_COUNT;
+    }
+    
+    
+    private static void test() {
         System.err.println("Запуск тестового режима...\n");
     
         final List<Student> STUDENTS = new ArrayList<>();
@@ -141,8 +185,7 @@ public record Student(
         
         final int STARTED_OFFSET = STUDENTS.size();
         
-        STUDENTS.stream()
-                .forEach(System.out::println);
+        STUDENTS.stream().forEach(System.out::println);
                 
         System.err.println("Генерация случайных студентов...\n");
         
@@ -152,6 +195,13 @@ public record Student(
         
         for (int i = STARTED_OFFSET; i < STUDENTS.size(); i++) {
             System.out.println(STUDENTS.get(i));
+        }
+    }
+    
+    
+    private static void showRandomStudents(final int studentCount) {
+        for (int i = 0; i < studentCount; i++) {
+            System.out.println(new Student());
         }
     }
     
