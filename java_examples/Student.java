@@ -293,9 +293,12 @@ public record Student(
     
     
     private static FullName getRandomFullName(final String[] names, final String[] surnames) {
-        return new FullName(
-                names[getRandomValue(names.length)], 
-                surnames[getRandomValue(surnames.length)]);
+        return new FullName(getNameOrSurname(names), getNameOrSurname(surnames));
+    }
+    
+    
+    private static String getNameOrSurname(final String[] item) {
+        return item[getRandomValue(item.length)];
     }
     
     
