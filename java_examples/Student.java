@@ -18,7 +18,7 @@ public record Student(
     @Serial
     private static final long serialVersionUID = 6283487951643796546L;
     
-    private static final Set<Integer> existingUniqueId = new HashSet<>();
+    private static final Set<Integer> EXISTING_UNIQUE_ID = new HashSet<>();
     
     private static final boolean ON = true;
     private static final boolean OFF = false;
@@ -122,33 +122,19 @@ public record Student(
     
     
     public static void main(String[] args) {
-        WhatMode whatMode = isRunningTestMode(args);
-        
-        if (whatMode.isTestMode()) {
-            test();
-        } else {
-            showRandomStudents(whatMode.studentCount());
-        }
+        WhatMode whatMode = isRunningTestMode(args); 
+        Void aVoid = whatMode.isTestMode() ? test() : showRandomStudents(whatMode.studentCount());    
     }
     
     
     private static WhatMode isRunningTestMode(final String[] args) {
         final WhatMode TEST_MODE = new WhatMode(true, -1);
     
-        if (args.length == 0) { 
-            return TEST_MODE;
-        }
+        if (args.length == 0) { return TEST_MODE; }
         
         try {
             int studentCount = Integer.parseInt(args[0]);
-            
-            if (isValidRange(studentCount)) {
-                final WhatMode SHOW_STUDENTS = new WhatMode(false, studentCount);
-                return SHOW_STUDENTS;
-            } else {
-                return TEST_MODE;
-            }
-            
+            return isValidRange(studentCount) ? new WhatMode(false, studentCount) : TEST_MODE;    
         } catch (NumberFormatException e) {
             return TEST_MODE;
         }
@@ -161,7 +147,7 @@ public record Student(
     }
     
     
-    private static void test() {
+    private static Void test() {
         System.err.println("Запуск тестового режима...\n");
     
         final List<Student> STUDENTS = new ArrayList<>();
@@ -196,13 +182,17 @@ public record Student(
         for (int i = STARTED_OFFSET; i < STUDENTS.size(); i++) {
             System.out.println(STUDENTS.get(i));
         }
+        
+        return null;
     }
     
     
-    private static void showRandomStudents(final int studentCount) {
+    private static Void showRandomStudents(final int studentCount) {
         for (int i = 0; i < studentCount; i++) {
             System.out.println(new Student());
         }
+        
+        return null;
     }
     
     
@@ -248,7 +238,7 @@ public record Student(
         checkHeight(height);
         checkWeight(weight);
            
-        existingUniqueId.add(id);
+        EXISTING_UNIQUE_ID.add(id);
     }
 
 
@@ -281,7 +271,7 @@ public record Student(
         if (id < IDMIN) {
             throw new IllegalArgumentException(WRONGIDRANGE);
         } else if (! isDeserialization) {
-            if (existingUniqueId.contains(id)) {
+            if (EXISTING_UNIQUE_ID.contains(id)) {
                 throw new IllegalArgumentException(WRONGIDUNIQUE.formatted(id));
             }
         }
