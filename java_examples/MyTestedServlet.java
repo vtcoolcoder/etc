@@ -1,3 +1,5 @@
+import java.util.Date;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 
@@ -18,6 +20,7 @@ public class MyTestedServlet extends HttpServlet {
     </head>
     <body>
         <h1>Добро пожаловать на мой первый тестовый сервлет!</h1>
+        <h2>Текущее время: %s</h2>
     </body>
     </html>
     """;
@@ -28,6 +31,6 @@ public class MyTestedServlet extends HttpServlet {
             throws ServletException, IOException {
         PrintWriter writer = response.getWriter();
         
-        writer.println(HTML);
+        writer.println(HTML.formatted(new Date()));
     }
 }
