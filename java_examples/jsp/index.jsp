@@ -43,9 +43,41 @@
 	<p>
 		<%@ page import="mylib.Student" %>
 		<%
+			Student.enableWebFormatMode();
+
 			for (int i = 0; i < studentLimit; i++) {
-				out.println(new Student().toWebString() + "<br>");
+				out.println(new Student() + "<br>");
 			}
+			
+			Object[][] wrongArgs = { 
+					{ "23", "69", -1, -1, -1 },
+					{ "Юля", "098", -1, -1, -1 },
+					{ "Ася", "Казанцева", -1, -1, -1 },
+					{ "Рита", "Романова", 19, -1, -1 },
+					{ "Катя", "Митрошина", 30, 170, -1 } };
+        
+			Object[][] correctArgs = { { "Оля", "Максимова", 23, 165, 55 } };
+
+			Object[][][] dataArgs = { wrongArgs, correctArgs };
+
+			for (Object[][] currentDataArgs : dataArgs) {
+				for (Object[] args : currentDataArgs) {
+					String curName = (String) args[0];
+					String curSurname = (String) args[1];
+					int curAge = (int) args[2];
+					int curHeight = (int) args[3];
+					int curWeight = (int) args[4];
+        
+					try {
+						Student trialStudent = new Student(curName, curSurname, curAge, curHeight, curWeight);
+						out.println("<h3>Test-created student:</h3>" + trialStudent);
+					} catch (RuntimeException e) {
+						out.println(e.getMessage() + "<br>");
+					}
+				}
+			}
+
+			Student.disableWebFormatMode();
 		%>
 	</p>
 
