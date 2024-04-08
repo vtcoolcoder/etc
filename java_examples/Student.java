@@ -94,18 +94,26 @@ public record Student(
     private static final String SHOWFORMAT = selectShowFormat(ShowFormat.CONSOLE);
     private static final String WEBFORMAT = selectShowFormat(ShowFormat.WEB);
     
+    private static final String ERROR_MESSAGE_FORMAT = "[ОШИБКА]: Некорректный параметр { %s: %s }%s";
+    private static final String EXTRA_MESSAGE_PROMPT_FORMAT = "%s[ПОДРОБНОСТИ]: ";
+    private static final String EXTRA_CL_MSG_PREFIX = "\n\t";
+    private static final String EXTRA_WEB_MSG_PREFIX = "<br>&nbsp;&nbsp;&nbsp;&nbsp;";
+    
     
     private static int counter = 0;
     private static boolean isDeserialization = OFF;
+    private static boolean isWebFormat = OFF;
     
     
     private enum ShowFormat { CONSOLE, WEB }
     private enum Sex { FEMALE, MALE }
+    private enum Fields { NAME, SURNAME, AGE, HEIGHT, WEIGHT }
     private record FullName(String name, String surname) {}
     private record WhatMode(boolean isTestMode, int studentCount) {}
     
     
     private record ServiceParams(
+            Fields field,
             String errorMsg,
             String nameOrSurname,
             int ageOrHeightOrWeight,
@@ -113,20 +121,22 @@ public record Student(
             int max) 
     {
          ServiceParams(
+                 final Fields field,
                  final String errorMsg,
                  final String nameOrSurname) 
          { 
-             this(errorMsg, nameOrSurname, -1, -1, -1);
+             this(field, errorMsg, nameOrSurname, -1, -1, -1);
          }
          
          
          ServiceParams(
+                 final Fields field,
                  final String errorMsg,
                  final int ageOrHeightOrWeight,
                  final int min,
                  final int max) 
          {
-             this(errorMsg, "", ageOrHeightOrWeight, min, max);
+             this(field, errorMsg, "", ageOrHeightOrWeight, min, max);
          }
     }
     
@@ -254,7 +264,7 @@ public record Student(
 
     @Override
     public String toString() {
-        return getFinalPresentation(ShowFormat.CONSOLE);
+        return isWebFormat ? toWebString() : getFinalPresentation(ShowFormat.CONSOLE);
     }
     
     
@@ -281,54 +291,75 @@ public record Student(
     public static void enableDeserializationMode() { isDeserialization = ON; }
     public static void disableDeserializationMode() { isDeserialization = OFF; }
     
+    public static void enableWebFormatMode() { isWebFormat = ON; }
+    public static void disableWebFormatMode() { isWebFormat = OFF; }
+    
     
     private static void checkId(final int id) {
         if (id < IDMIN) {
-            throw new IllegalArgumentException(WRONGIDRANGE);
+            throw new IllegalArgumentException(
+                    generateErrorMessage("id", "" + id, WRONGIDRANGE));
         } else if (! isDeserialization) {
             if (EXISTING_UNIQUE_ID.contains(id)) {
-                throw new IllegalArgumentException(WRONGIDUNIQUE.formatted(id));
+                throw new IllegalArgumentException(
+                        generateErrorMessage("id", "" + id, WRONGIDUNIQUE.formatted(id)));
             }
         }
     }
     
     
     private static void checkName(final String name) { 
-        checkNameOrSurname(new ServiceParams(WRONGNAME, name)); 
+        checkNameOrSurname(new ServiceParams(Fields.NAME, WRONGNAME, name)); 
     }
     
     
     private static void checkSurname(final String surname) { 
-        checkNameOrSurname(new ServiceParams(WRONGSURNAME, surname)); 
+        checkNameOrSurname(new ServiceParams(Fields.SURNAME, WRONGSURNAME, surname)); 
     }
     
     
     private static void checkAge(final int age) { 
-        checkAgOrHtOrWt(new ServiceParams(WRONGAGE, age, AGEMIN, AGEMAX)); 
+        checkAgOrHtOrWt(new ServiceParams(Fields.AGE, WRONGAGE, age, AGEMIN, AGEMAX)); 
     }
     
     
     private static void checkHeight(final int height) { 
-        checkAgOrHtOrWt(new ServiceParams(WRONGHEIGHT, height, HEIGHTMIN, HEIGHTMAX)); 
+        checkAgOrHtOrWt(new ServiceParams(Fields.HEIGHT, WRONGHEIGHT, height, HEIGHTMIN, HEIGHTMAX)); 
     }
     
     
     private static void checkWeight(final int weight) { 
-        checkAgOrHtOrWt(new ServiceParams(WRONGWEIGHT, weight, WEIGHTMIN, WEIGHTMAX)); 
+        checkAgOrHtOrWt(new ServiceParams(Fields.WEIGHT, WRONGWEIGHT, weight, WEIGHTMIN, WEIGHTMAX)); 
     }
     
     
     private static void checkNameOrSurname(final ServiceParams args) {
-        if (! args.nameOrSurname().matches(REGEXP)) {
-            throw new IllegalArgumentException(args.errorMsg());
+        final String ITEM = args.nameOrSurname();
+        
+        if (! ITEM.matches(REGEXP)) {
+            throw new IllegalArgumentException(
+                    switch (args.field()) {
+                        case NAME -> generateErrorMessage("name", ITEM, null);
+                        case SURNAME -> generateErrorMessage("surname", ITEM, null);
+                        default -> "";
+                    });                   
         }
     }
     
     
     private static void checkAgOrHtOrWt(final ServiceParams args) {
-        if (args.ageOrHeightOrWeight() < args.min() || 
-            args.ageOrHeightOrWeight() > args.max()) {
-            throw new IllegalArgumentException(args.errorMsg());
+        final int ITEM = args.ageOrHeightOrWeight();
+        
+        if ((ITEM < args.min()) || (ITEM > args.max())) {
+            final String EXTRA = args.errorMsg();
+            
+            throw new IllegalArgumentException(
+                    switch (args.field()) {
+                        case AGE -> generateErrorMessage("age", "" + ITEM, EXTRA);           
+                        case HEIGHT -> generateErrorMessage("height", "" + ITEM, EXTRA);              
+                        case WEIGHT -> generateErrorMessage("weight", "" + ITEM, EXTRA);
+                        default -> "";
+                    });       
         }
     }
     
@@ -390,5 +421,15 @@ public record Student(
     
     private String getPresentationByFormat(final String formattedItem) {
         return formattedItem.formatted(id, name, surname, age, height, weight);
+    }
+    
+    
+    private static String generateErrorMessage(final String param, 
+                                               final String value,
+                                               final String errorMessage) {
+        return ERROR_MESSAGE_FORMAT.formatted(param, value, errorMessage != null 
+                ? (EXTRA_MESSAGE_PROMPT_FORMAT.formatted(
+                        isWebFormat ? EXTRA_WEB_MSG_PREFIX : EXTRA_CL_MSG_PREFIX) 
+                                + errorMessage) : "");
     }
 }
