@@ -1,3 +1,6 @@
+package mylib;
+
+
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Set;
@@ -74,22 +77,29 @@ public record Student(
     
     private static final String REGEXP = """
     [AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtVvUuWwXxYyZz\
-    АаБбВвГгДдЕеЁёЖжЗзИиЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщЪъЫыЬьЭэЮюЯя]+""";
+    АаБбВвГгДдЕеЁёЖжЗзИиЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщЪъЫыЬьЭэЮюЯя]+""";   
     
-    private static final String SHOWFORMAT = """
-    id: %d
-    Имя: %s
-    Фамилия: %s
-    Возраст: %d
-    Рост: %d
-    Вес: %d
+    private static final String CONSOLE_INLINE = "";
+    private static final String WEB_INLINE = "<br>";
+    
+    private static final String TEMPLATE_FORMAT = """
+    id: %%d%s
+    Имя: %%s%s
+    Фамилия: %%s%s
+    Возраст: %%d%s
+    Рост: %%d%s
+    Вес: %%d%s
     """;
+    
+    private static final String SHOWFORMAT = selectShowFormat(ShowFormat.CONSOLE);
+    private static final String WEBFORMAT = selectShowFormat(ShowFormat.WEB);
     
     
     private static int counter = 0;
     private static boolean isDeserialization = OFF;
     
     
+    private enum ShowFormat { CONSOLE, WEB }
     private enum Sex { FEMALE, MALE }
     private record FullName(String name, String surname) {}
     private record WhatMode(boolean isTestMode, int studentCount) {}
@@ -244,7 +254,12 @@ public record Student(
 
     @Override
     public String toString() {
-        return SHOWFORMAT.formatted(id, name, surname, age, height, weight);
+        return getFinalPresentation(ShowFormat.CONSOLE);
+    }
+    
+    
+    public String toWebString() {
+        return getFinalPresentation(ShowFormat.WEB);
     }
     
     
@@ -349,5 +364,31 @@ public record Student(
     
     private static int getRandomValue(final int min, final int max) {
         return new Random().nextInt(min, max + 1);
+    }
+    
+    
+    private static String selectShowFormat(final ShowFormat format) {
+        return switch (format) {
+            case CONSOLE -> getFormattingString(CONSOLE_INLINE);
+            case WEB -> getFormattingString(WEB_INLINE);
+        };
+    }
+    
+    
+    private static String getFormattingString(final String inline) {
+        return TEMPLATE_FORMAT.formatted(inline, inline, inline, inline, inline, inline);
+    }
+    
+    
+    private String getFinalPresentation(final ShowFormat format) {
+        return switch (format) {
+            case CONSOLE -> getPresentationByFormat(SHOWFORMAT);
+            case WEB -> getPresentationByFormat(WEBFORMAT);
+        };
+    }
+    
+    
+    private String getPresentationByFormat(final String formattedItem) {
+        return formattedItem.formatted(id, name, surname, age, height, weight);
     }
 }
