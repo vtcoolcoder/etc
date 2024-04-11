@@ -1,3 +1,5 @@
+import java.util.function.Predicate;
+
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
 
@@ -40,7 +42,8 @@ public class Vector2DTest {
 
     public static void main(String[] args) {
         initExpectings(args);
-        runManualTesting();
+        runManualTesting(Vector2DTest.class, 
+                method -> method.getName().startsWith(TEST_METHODS_NAME_PREFIX));     
     }
     
     
@@ -85,17 +88,25 @@ public class Vector2DTest {
     }
     
     
-    private static void runManualTesting() {
-        Vector2DTest test = new Vector2DTest();
-        Method[] methods = test.getClass().getMethods();
+    private static void runManualTesting(final Class<?> clazz, 
+                                         final Predicate<Method> predicate) {
+        final Object tested;
+    
+        try {
+            tested = clazz.getConstructor().newInstance();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }  
+        
+        Method[] methods = tested.getClass().getMethods();
         
         Arrays.stream(methods)
-              .filter(method -> method.getName().startsWith(TEST_METHODS_NAME_PREFIX))
+              .filter(predicate)
               .forEach(method -> {
                   String methodName = method.getName();
                   
                   try {
-                      method.invoke(test);
+                      method.invoke(tested);
                       System.out.printf(OK_FORMAT, methodName, STATUS_OK);
                   } catch (InvocationTargetException outer) {
                   
