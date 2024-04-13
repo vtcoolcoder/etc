@@ -1,8 +1,5 @@
 package myjdbc;
 
-import java.util.function.Consumer;
-import java.util.function.BiConsumer;
-import java.util.function.Supplier;
 
 import java.util.Set;
 import java.util.TreeSet;
@@ -59,6 +56,9 @@ public class MyNotesForWeb {
                 
         String UPDATE_NOTE = "UPDATE %s SET %s = ? WHERE %s = ?"
                 .formatted(JAVANOTES, NOTE, ID);
+                
+        String DELETE_NOTE = "DELETE FROM %s WHERE %s = ?"
+                .formatted(JAVANOTES, ID);
     }
     
        
@@ -69,45 +69,56 @@ public class MyNotesForWeb {
        
     private static PreparedStatement globalPreparedStatement;
     
+    
+    private static void templatedPrepare(Handler<PreparedStatement> consumer, String SQL) {
+        engine(connection -> prepareStatementEngine(connection, statement -> {
+                if (statement instanceof PreparedStatement prepare) {  
+                    consumer.accept(prepare);
+                } 
+        }, SQL));
+    }
+    
+    
+    public static void deleteNote(final int id) { 
+        templatedPrepare(prepare -> {
+                prepare.setInt(1, id);
+                prepare.executeUpdate();
+        }, Queries.DELETE_NOTE);
+    }
+    
        
     public static void updateNote(final String content, final int id) {
-        engine(connection -> prepareStatementEngine(connection, statement -> {
-                if (statement instanceof PreparedStatement prepare) {
-                    prepare.setString(1, content);
-                    prepare.setInt(2, id);
-                    prepare.executeUpdate();
-                } 
-        }, Queries.UPDATE_NOTE));
+        templatedPrepare(prepare -> {
+                prepare.setString(1, content);
+                prepare.setInt(2, id);
+                prepare.executeUpdate();
+        }, Queries.UPDATE_NOTE);
     }
     
     
     public static String getNoteContentById(final int id) {
         StringBuilder noteContent = new StringBuilder();
-    
-        engine(connection -> prepareStatementEngine(connection, statement -> {
-                if (statement instanceof PreparedStatement prepare) {
-                   prepare.setInt(1, id);
-                   ResultSet resultSet = prepare.executeQuery();
-                   while (resultSet.next()) {
-                       noteContent.append(resultSet.getString(Queries.NOTE));
-                   }
-                }
-        }, Queries.NOTE_BY_ID));
+     
+        templatedPrepare(prepare -> {
+                prepare.setInt(1, id);
+                ResultSet resultSet = prepare.executeQuery();
+                iterateByResultSet(resultSet, rsltSet -> {
+                        noteContent.append(rsltSet.getString(Queries.NOTE));
+                });
+        }, Queries.NOTE_BY_ID);
     
         return noteContent.toString();    
     }
     
     
-    public static void addNote(final Note... notes) {
-        engine(connection -> prepareStatementEngine(connection, statement -> {
-                if (statement instanceof PreparedStatement prepare) {
-                   for (Note note : notes) {
-                        prepare.setString(1, note.subject());
-                        prepare.setString(2, note.note());
-                        prepare.executeUpdate();
-                    }
+    public static void addNote(final Note... notes) {   
+        templatedPrepare(prepare -> {
+                for (Note note : notes) {
+                    prepare.setString(1, note.subject());
+                    prepare.setString(2, note.note());
+                    prepare.executeUpdate();
                 }
-        }, Queries.ADD_NOTE));
+        }, Queries.ADD_NOTE);
     }
     
     
@@ -133,15 +144,15 @@ public class MyNotesForWeb {
     public static Map<String, Set<Note>> getNotesBySelectedSubjects(final Set<String> selected) {       
         Map<String, Set<Note>> result = new TreeMap<>(String::compareTo);
         
-        engine(connection -> prepareStatementEngine(connection, statement -> {
-                globalPreparedStatement = (PreparedStatement) statement;
+        templatedPrepare(prepare -> {
+                globalPreparedStatement = prepare;
                     
                 selected.stream()
                         .filter(SUBJECTS::contains)
                         .map(MyNotesForWeb::processSpecificNotes)
                         .forEach(notes -> result.put(
                                 notes.subject(), notes.notes()));
-        }, Queries.FULL_SPECIFIC));
+        }, Queries.FULL_SPECIFIC);
                                
         return result;
     }
@@ -191,27 +202,26 @@ public class MyNotesForWeb {
     }
     
        
-    private static void processSubjects(final Statement statement) 
-                                        throws SQLException {     
-        ResultSet subjects = statement.executeQuery(Queries.DISTINCT_SUBJECTS);      
+    private static void processSubjects(final Statement statement) throws SQLException {     
+        ResultSet subjects = statement.executeQuery(Queries.DISTINCT_SUBJECTS);   
         
-        while (subjects.next()) { 
-            String currentSubject = subjects.getString(Queries.SUBJECT);
-            if (! (currentSubject.isEmpty() || currentSubject.isBlank())) {
-                SUBJECTS.add(currentSubject);
-            }
-        }
+        iterateByResultSet(subjects, subjs -> {
+                String currentSubject = subjs.getString(Queries.SUBJECT);
+                if (! (currentSubject.isEmpty() || currentSubject.isBlank())) {
+                    SUBJECTS.add(currentSubject);
+                }
+        });   
     }
     
       
     private static void processAllNotes(final Statement statement) throws SQLException {
-        ResultSet notes = statement.executeQuery(Queries.ALL_NOTES);      
+        ResultSet notes = statement.executeQuery(Queries.ALL_NOTES);   
         
-        while (notes.next()) { 
-            String noteSubject = notes.getString(Queries.SUBJECT);
-            String noteContent = notes.getString(Queries.NOTE);
-            NOTES.add(new Note(noteSubject, noteContent));
-        }
+        iterateByResultSet(notes, nts -> {
+                String noteSubject = nts.getString(Queries.SUBJECT);
+                String noteContent = nts.getString(Queries.NOTE);
+                NOTES.add(new Note(noteSubject, noteContent));
+        });  
     }
     
     
@@ -223,12 +233,12 @@ public class MyNotesForWeb {
             globalPreparedStatement.setString(1, requiredSubject);   
             ResultSet notes = globalPreparedStatement.executeQuery();  
             
-            while (notes.next()) {
-                int id = notes.getInt(Queries.ID);
-                String noteSubject = notes.getString(Queries.SUBJECT);
-                String noteContent = notes.getString(Queries.NOTE);
-                resultingNotes.add(new Note(id, noteSubject, noteContent));
-            }
+            iterateByResultSet(notes, nts -> {
+                    int id = nts.getInt(Queries.ID);
+                    String noteSubject = nts.getString(Queries.SUBJECT);
+                    String noteContent = nts.getString(Queries.NOTE);
+                    resultingNotes.add(new Note(id, noteSubject, noteContent));
+            });
             
             result = new NotesBySubject(requiredSubject, resultingNotes);
                                                  
@@ -239,4 +249,15 @@ public class MyNotesForWeb {
         return result;     
     }
     
+    
+    private static void iterateByResultSet(ResultSet resultSet, 
+                                           Handler<ResultSet> consumer) {
+        try {
+            while (resultSet.next()) {
+                consumer.accept(resultSet);
+            }
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }     
+    }
 }
