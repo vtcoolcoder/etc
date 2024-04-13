@@ -11,7 +11,7 @@ public class Processor {
                 func.handleConnection(connection); 
             }          
         } catch (SQLException ex) {
-            System.err.println(ErrorMessages.NO_CONNECTION.getMessage());
+            System.err.println(ErrorMessages.NO_CONNECTION);
         }
     }
 }

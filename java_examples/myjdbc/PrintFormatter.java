@@ -12,5 +12,5 @@ public enum PrintFormatter {
     private String format;
     
     PrintFormatter(final String format) { this.format = format; }
-    public String getFormat() { return format; }
+    @Override public String toString() { return format; }
 }

@@ -3,15 +3,15 @@ package myjdbc;
 public enum Queries {
     UNIQUE_SUBJECTS(
             """
-            SELECT DISTINCT subject
-            FROM javanotes;
+            SELECT DISTINCT ?
+            FROM ?
             """),
     
     NOTES(
             """
-            SELECT note
-            FROM javanotes
-            WHERE subject = '%s';
+            SELECT ?
+            FROM ?
+            WHERE ? = '?';
             """);
     
     private final String query;

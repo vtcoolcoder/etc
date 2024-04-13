@@ -103,8 +103,8 @@ public class TestJDBCDemo {
     
     
     private static void iterateByResultSet(final ResultSet item, 
-                                           final IterationHandler<ResultSet> func)
-                                           throws SQLException {
+                                   final IterationHandler<ResultSet> func)
+                                   throws SQLException {
         while (item.next()) { func.handle(item); }
     }
     

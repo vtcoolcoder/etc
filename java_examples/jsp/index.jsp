@@ -1,9 +1,9 @@
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
-<%@ page language="java" import="java.util.Date, java.util.TimeZone" %>
+<%@ page language="java" import="java.util.Date" %>
 <%@ page import="mylib.MyContent" %>
 
+<%@ page import="java.util.TimeZone" %>
 <% TimeZone.setDefault(TimeZone.getTimeZone("Europe/Moscow")); %>
-
 
 <!DOCTYPE html>
 <html>
