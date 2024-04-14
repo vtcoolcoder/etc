@@ -15,7 +15,7 @@
     <select name="subject" size="7">
     <%= SERVICE.showDefault() %>
     </select>      
-    <b>Тема:</b><input type="text" name="subject">
+    <b>Новая тема:</b><input type="text" name="subject">
     <textarea name="createdNote" cols="130" rows="35" wrap="hard"></textarea>
     <input type="submit" name="mode" value="Добавить заметку"></form>
 </body>

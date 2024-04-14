@@ -3,7 +3,6 @@ package myjdbc;
 
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -20,7 +19,14 @@ public class MyNotesForWeb {
         void accept(T o) throws SQLException;
     }
     
+    @FunctionalInterface
+    private interface BiHandler<T, E> {
+        void accept(T o, E e) throws SQLException;
+    }
+    
+     
     private record NotesBySubject(String subject, Set<Note> notes) {}
+
 
     private interface Queries {
     
@@ -62,11 +68,9 @@ public class MyNotesForWeb {
     }
     
        
-    private static final Set<String> SUBJECTS = new TreeSet<>();
-    private static final Set<Note> NOTES = new TreeSet<>();
-    private static final Set<Note> SELECTED_NOTES = new TreeSet<>();
-    
-       
+    private static Set<String> SUBJECTS = new TreeSet<>(String::compareToIgnoreCase);
+    private static Set<Note> NOTES = new TreeSet<>();
+        
     private static PreparedStatement globalPreparedStatement;
     
        
@@ -125,60 +129,83 @@ public class MyNotesForWeb {
     }
     
     
-    public static Map<String, Set<Note>> getNotesBySelectedSubjects(final String selected) {
-        Set<String> oneSubject = new HashSet<>();
-        oneSubject.add(selected);
-        return getNotesBySelectedSubjects(oneSubject);
+    public static 
+    Map<String, Set<Note>> getNotesBySelectedSubjects(final String selected) {
+        return getDataUsingProcessing(result -> {
+                if (SUBJECTS.contains(selected)) {
+                    NotesBySubject notes = processSpecificNotes(selected);
+                    result.put(notes.subject(), notes.notes());
+                }
+        });
     }
     
     
-    public static Map<String, Set<Note>> getNotesBySelectedSubjects(final Set<String> selected) {       
-        Map<String, Set<Note>> result = new TreeMap<>(String::compareTo);
-        
-        templatedPrepare(prepare -> {
-                globalPreparedStatement = prepare;
-                    
+    public static 
+    Map<String, Set<Note>> getNotesBySelectedSubjects(final Set<String> selected) {       
+        return getDataUsingProcessing(result -> {
                 selected.stream()
                         .filter(SUBJECTS::contains)
                         .map(MyNotesForWeb::processSpecificNotes)
-                        .forEach(notes -> result.put(
-                                notes.subject(), notes.notes()));
-        }, Queries.FULL_SPECIFIC);
-                               
-        return result;
+                        .forEach(notes -> result.put(notes.subject(), notes.notes()));
+        });
     }
     
     
     public static void main(String[] args) {    
         for (Note note : getAllNotes()) {
             System.out.println(note);
-        }
+        }        
     }  
     
     
-    private static void templatedPrepare(Handler<PreparedStatement> consumer, String SQL) {
+    private static Map<String, Set<Note>> getDataUsingProcessing(
+            final Handler<Map<String, Set<Note>>> action) 
+    {
+        Map<String, Set<Note>> result = new TreeMap<>(String::compareToIgnoreCase);
+        
+        templatedPrepare((prepare, resultLmb) -> {
+                globalPreparedStatement = prepare;
+                action.accept(resultLmb);    
+        }, result, Queries.FULL_SPECIFIC);
+                               
+        return result;
+    }
+    
+    
+    private static void templatedPrepare(
+            final Handler<PreparedStatement> consumer, 
+            final String SQL) 
+    {
+        useBaseTemplate(prepare -> consumer.accept(prepare), SQL);
+    }
+        
+    
+    private static void templatedPrepare(
+            final BiHandler<PreparedStatement, Map<String, Set<Note>>> consumer, 
+            final Map<String, Set<Note>> result,
+            final String SQL) 
+    { 
+        useBaseTemplate(prepare -> consumer.accept(prepare, result), SQL); 
+    }
+        
+      
+    private static void useBaseTemplate(
+            final Handler<PreparedStatement> action, 
+            final String SQL) 
+    {
         engine(connection -> prepareStatementEngine(connection, statement -> {
                 if (statement instanceof PreparedStatement prepare) {  
-                    consumer.accept(prepare);
+                    action.accept(prepare);
                 } 
         }, SQL));
     }
     
     
-    private static void statementEngine(Connection connection,
-                                        Handler<Statement> consumer) {
-        try (Statement statement = connection.createStatement()) 
-        {
-            consumer.accept(statement);
-        } catch (SQLException inner) {
-            throw new RuntimeException(inner);
-        }
-    }
-    
-    
-    private static void prepareStatementEngine(Connection connection, 
-                                               Handler<Statement> consumer,
-                                               String sql) {
+    private static void prepareStatementEngine(
+            final Connection connection, 
+            final Handler<Statement> consumer,
+            final String sql) 
+    {
         try (PreparedStatement statement = connection.prepareStatement(sql)) 
         {
             consumer.accept(statement);
@@ -188,7 +215,20 @@ public class MyNotesForWeb {
     }
     
     
-    private static void engine(ConnectionHandler handler) {
+    private static void statementEngine(
+            final Connection connection,
+            final Handler<Statement> consumer) 
+    {                                
+        try (Statement statement = connection.createStatement()) 
+        {
+            consumer.accept(statement);
+        } catch (SQLException inner) {
+            throw new RuntimeException(inner);
+        }
+    }
+    
+    
+    private static void engine(final ConnectionHandler handler) {
         try {
             new Processor(new Connector(), handler);
         } catch (Exception outer) {
@@ -197,12 +237,15 @@ public class MyNotesForWeb {
     }
     
     
-    private static void update(Handler<Statement> consumer) {
+    private static void update(final Handler<Statement> consumer) {
         engine(connection -> statementEngine(connection, consumer));
     }
     
        
-    private static void processSubjects(final Statement statement) throws SQLException {     
+    private static 
+    void processSubjects(final Statement statement) throws SQLException {
+        SUBJECTS = new TreeSet<>(String::compareToIgnoreCase);
+             
         ResultSet subjects = statement.executeQuery(Queries.DISTINCT_SUBJECTS);   
         
         iterateByResultSet(subjects, subjs -> {
@@ -214,7 +257,10 @@ public class MyNotesForWeb {
     }
     
       
-    private static void processAllNotes(final Statement statement) throws SQLException {
+    private static 
+    void processAllNotes(final Statement statement) throws SQLException {
+        NOTES = new TreeSet<>();
+        
         ResultSet notes = statement.executeQuery(Queries.ALL_NOTES);   
         
         iterateByResultSet(notes, nts -> {
@@ -225,7 +271,8 @@ public class MyNotesForWeb {
     }
     
     
-    private static NotesBySubject processSpecificNotes(final String requiredSubject) {
+    private static 
+    NotesBySubject processSpecificNotes(final String requiredSubject) {
         NotesBySubject result = null;
         Set<Note> resultingNotes = new TreeSet<>();
         
@@ -250,8 +297,10 @@ public class MyNotesForWeb {
     }
     
     
-    private static void iterateByResultSet(ResultSet resultSet, 
-                                           Handler<ResultSet> consumer) {
+    private static void iterateByResultSet(
+            final ResultSet resultSet, 
+            final Handler<ResultSet> consumer) 
+    {
         try {
             while (resultSet.next()) {
                 consumer.accept(resultSet);

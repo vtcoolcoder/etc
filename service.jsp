@@ -8,24 +8,24 @@
 <% 
     final int SUBSTRLIMIT = 69;
   
-    final String TEMPLATEFMT = "<p>Вы не %%s %%%s%s.<br>Пожалуйста, %%s %%%s%s.</p>"; 
-    final String NOTEFMT = TEMPLATEFMT.fotmatted("заметки", "заметки"); 
+    final String TEMPLATEFMT = "\n<p>Вы не %%s %%%%s%s.<br>Пожалуйста, %%s %%%%s%s.</p>\n"; 
+    final String NOTEFMT = TEMPLATEFMT.formatted(" заметки", " заметки"); 
     final String UNSELECTEDSUBJFMT = NOTEFMT.formatted("выбрали", "выберите");
     final String ERRCREATEFMT = NOTEFMT.formatted("задали", "задайте");
-    final String FRAGMENTFMT = TEMPLATEFMT.formatted("")
+    final String FRAGMENTFMT = TEMPLATEFMT.formatted("", "")
                                           .formatted("выбрали", "выберите");
     
-    final String CHECKBOXFMT = "<input type=\"checkbox\" name=\"%s\" %s> %s<br>";
+    final String CHECKBOXFMT = "\t\t<input type=\"checkbox\" name=\"%s\" %s> %s<br>\n";
     final String RECORD_FORMAT = 
-            "<h3><b>Тема:</b> <i><u>%s</u></i> <b>| Заметка:</b></h3><div>%s</div><hr>";
-    final String OPTFMT = "<option value=\"%s\">%s</option>";
+            "\n<h3><b>Тема:</b> <i><u>%s</u></i> <b>| Заметка:</b></h3>\n<div>\n%s\n</div><hr>\n";
+    final String OPTFMT = "\t<option value=\"%s\">%s</option>\n";
     final String RADIOFMT = 
-            "<h3><input type=\"radio\" name=\"selectedNote\" value=\"%d\" %s><br>Фрагмент:</h3>" +
-            "<code><b>%s</b></code> .......<hr>";
-    final String HIDDENSUBJFMT = "<input type=\"hidden\" name=\"subject\" value=\"%s\">";
-    final String SELECTEDSUBJFMT = "<h2><b>Выбранная тема: </b><i><u>%s</u></i></h2>";
-    final String HIDDENSELECTEDNOTEFMT = "<input type=\"hidden\" name=\"selectedNote\" value=\"%s\">";
-    final String SELECTEDFRAGMENTFMT = "<h2><b>Выбранный фрагмент:</b><br><i><u>%s</u></i> .......</h2>";
+            "<h3><input type=\"radio\" name=\"selectedNote\" value=\"%d\" %s><br>Фрагмент:</h3>\n" +
+            "<div><b>%s</b></div> .......<hr>\n";
+    final String HIDDENSUBJFMT = "<input type=\"hidden\" name=\"subject\" value=\"%s\">\n";
+    final String SELECTEDSUBJFMT = "<h2><b>Выбранная тема: </b><i><u>%s</u></i></h2>\n";
+    final String HIDDENSELECTEDNOTEFMT = "<input type=\"hidden\" name=\"selectedNote\" value=\"%s\">\n";
+    final String SELECTEDFRAGMENTFMT = "<h2><b>Выбранный фрагмент:</b><br><i><u>%s</u></i> .......</h2>\n";
     
     
     class Service {
@@ -36,12 +36,7 @@
         private String SELECTED_NOTE = request.getParameter("selectedNote");
         private String EDITED_NOTE = request.getParameter("editedNote");
         private String DELETED_NOTE = SELECTED_NOTE;
-        
-        private Map<String, String[]> PARAMS = request.getParameterMap(); 
-        private Set<String> AVAILABLE_SUBJECTS = MyNotesForWeb.getSubjectSet(); 
-        private Set<String> SELECTED_SUBJECTS = getSelectedSubjects();
-        
-        
+         
         private Modes mode;
         private boolean isUnselectedSubject = false;
         private boolean isUnselectedNote = false;
@@ -49,30 +44,14 @@
         
         
         public Service() throws IOException { 
-            switch (MODE != null ? MODE : "") {
-                case Modes.Consts.SUBJECT:
-                    this.mode = Modes.SUBJECT;
-                    break;
-                case Modes.Consts.NOTE:
-                    this.mode = Modes.NOTE;
-                    break;
-                case Modes.Consts.EDIT:
-                    this.mode = Modes.EDIT;
-                    break;
-                case Modes.Consts.DELETE:
-                    this.mode = Modes.DELETE;
-                    break;
-                case Modes.Consts.CREATE:
-                    this.mode = Modes.CREATE;
-                    break;
-                case Modes.Consts.BYDEFAULT:
-                    this.mode = Modes.BYDEFAULT;
-                    break;
-            }
+            initMode();
+        
+            
         }
         
         public String getMode() { return MODE; }
         public String getSubject() { return SUBJECT; }
+        public String getCreatedNote() { return CREATED_NOTE; }
         public String getSelectedNote() { return SELECTED_NOTE; }
         public String getEditedNote() { return EDITED_NOTE; }
         public String getDeletedNote() { return DELETED_NOTE; }
@@ -81,8 +60,8 @@
         public String showCheckboxesWithSubjects() {
             StringBuilder sb = new StringBuilder();
             
-            for (String subject : AVAILABLE_SUBJECTS) {   
-                String checked = SELECTED_SUBJECTS.contains(subject) ? "checked" : "";
+            for (String subject : getAvailableSubjects()) {   
+                String checked = getSelectedSubjects().contains(subject) ? "checked" : "";
                 sb.append(CHECKBOXFMT.formatted(subject, checked, subject));
             }
             
@@ -93,27 +72,28 @@
         public String showNotesBySelectedSubjects() {
             StringBuilder sb = new StringBuilder();
         
-            if (Modes.SUBJECT.equals(mode) && SELECTED_SUBJECTS.isEmpty()) {
-                sb.append(UNSELECTEDSUBJFMT.formatted("тему", "тему"));
-                //isUnselectedSubject = true;
-            } else {
-               sb.append("<h2>Заметки по выбранным темам:</h2>");
-                
-                Map<String, Set<Note>> availableRecords = 
-                        MyNotesForWeb.getNotesBySelectedSubjects(SELECTED_SUBJECTS);
+            if (Modes.SUBJECT.equals(mode)) {
+                if (getSelectedSubjects().isEmpty()) {
+                    sb.append(UNSELECTEDSUBJFMT.formatted("тему", "тему"));
+                } else {
+                    sb.append("<h2>Заметки по выбранным темам:</h2>");
+                    
+                    Map<String, Set<Note>> availableRecords = 
+                        MyNotesForWeb.getNotesBySelectedSubjects(getSelectedSubjects());
                         
-                for (Map.Entry<String, Set<Note>> entry : availableRecords.entrySet()) {
-                    Set<Note> notes = entry.getValue();
-                    
-                    for (Note note : notes) {
-                        sb.append(RECORD_FORMAT.formatted(
-                                note.subject(), note.note()));
-                    }
-                    
-                    sb.append("<hr>");
-                }   
+                    for (Map.Entry<String, Set<Note>> entry : availableRecords.entrySet()) {
+                        Set<Note> notes = entry.getValue();
+                        
+                        for (Note note : notes) {
+                            sb.append(RECORD_FORMAT.formatted(
+                                    note.subject(), note.note()));
+                        }
+                        
+                        sb.append("<hr>");
+                    }   
+                }
             }
-        
+            
             return sb.toString();
         }
         
@@ -193,7 +173,7 @@
             if (isCreateMode()) {
                 if (isValidCreatedNote()) { createNote(); } 
                 else { 
-                    generateErrorMessages(sb, SUBJECT, CREATED_NOTE); 
+                    generateErrorMessages(sb, "тему", "содержимое"); 
                     result = sb.toString();
                 }
             }
@@ -232,14 +212,12 @@
             StringBuilder sb = new StringBuilder();
             
             int ID = -1;  
-            try { ID = Integer.parseInt(SELECTED_NOTE); } 
+            try { ID = Integer.parseInt(DELETED_NOTE); } 
             catch (NumberFormatException ex) {}
             final String CONTENT = (ID != -1) ? MyNotesForWeb.getNoteContentById(ID) : "";
             
-            if (Modes.DELETE.equals(mode)) {          
-                MyNotesForWeb.deleteNote(
-                        DELETED_NOTE != null ? DELETED_NOTE : "", ID);
-            } else {
+            if (Modes.DELETE.equals(mode)) { MyNotesForWeb.deleteNote(ID); }
+            else {
                 if ((!isUnselectedSubject ^ SELECTED_NOTE != null ^ !isUnselectedNote) 
                         && Modes.NOTE.equals(mode)) 
                 {
@@ -252,6 +230,33 @@
             
             return sb.toString();
         }
+        
+        
+        private void initMode() {
+            switch (MODE != null ? MODE : "") {
+                case Modes.Consts.SUBJECT:
+                    this.mode = Modes.SUBJECT;
+                    break;
+                case Modes.Consts.NOTE:
+                    this.mode = Modes.NOTE;
+                    break;
+                case Modes.Consts.EDIT:
+                    this.mode = Modes.EDIT;
+                    break;
+                case Modes.Consts.DELETE:
+                    this.mode = Modes.DELETE;
+                    break;
+                case Modes.Consts.CREATE:
+                    this.mode = Modes.CREATE;
+                    break;
+                case Modes.Consts.BYDEFAULT:
+                    this.mode = Modes.BYDEFAULT;
+                    break;
+            }
+        }
+        
+        
+        private Set<String> getAvailableSubjects() { return MyNotesForWeb.getSubjectSet(); }
         
         
         private String iterate(Map<String, Set<Note>> availableRecords, 
@@ -299,9 +304,7 @@
         
         private void generateErrorMessages(final StringBuilder sb, final String... items) {
             for (String item : items) {
-                if (! isValidCreatedItem(item)) { 
-                    sb.append(getErrorMsg(getItemFormattingWord(item))); 
-                }
+                if (! isValidCreatedItem(item)) { sb.append(getErrorMsg(item)); }
             }
         }
         
@@ -309,26 +312,16 @@
         private String getErrorMsg(final String item) { return ERRCREATEFMT.formatted(item, item); }
         
         
-        private String getItemFormattingWord(final String item) {
-            switch (item) {
-                case SUBJECT:
-                    return "тему";
-                case CREATED_NOTE:
-                    return "содержимое";
-            }
-        }
-        
-        
         private Set<String> getSelectedSubjects() {
     			      Set<String> result = new TreeSet<>();
     			      
-    			      for (Map.Entry<String, String[]> entry : PARAMS.entrySet()) {
+    			      for (Map.Entry<String, String[]> entry : request.getParameterMap().entrySet()) {
         	        String subject = entry.getKey(); 
                 String[] wrapper = entry.getValue();
             
                 String checkboxStatus = wrapper.length > 0 ? wrapper[0] : "";
                 boolean isCheckboxOn = "on".equals(checkboxStatus);
-                boolean isValidSubjectName = AVAILABLE_SUBJECTS.contains(subject);
+                boolean isValidSubjectName = getAvailableSubjects().contains(subject);
         
                 if (isCheckboxOn && isValidSubjectName) { result.add(subject); }
         			  }

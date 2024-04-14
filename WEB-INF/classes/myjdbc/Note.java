@@ -14,9 +14,9 @@ public record Note(int id, String subject, String note) implements Comparable<No
     
     @Override
     public int compareTo(Note another) {
-        return this.equals(another) ? 0 
-                : (subject.equals(another.subject) ? note.compareTo(another.note) 
-                        : subject.compareTo(another.subject));
+        return subject.equals(another.subject) 
+                ? note.compareTo(another.note) 
+                : subject.compareToIgnoreCase(another.subject);
     }
 
     @Override

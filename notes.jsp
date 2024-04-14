@@ -12,7 +12,7 @@
     <h2>Список доступных тем:</h2>
     <form method="post" action="notes.jsp">
     <%= SERVICE.showCheckboxesWithSubjects() %>
-    <input type="submit" name="mode" value="Выбрать тему заметки"></form>   
-    <%= showNotesBySelectedSubjects() %>
+    <br><input type="submit" name="mode" value="Выбрать тему заметки"></form>   
+    <%= SERVICE.showNotesBySelectedSubjects() %>
 </body>
 </html>
