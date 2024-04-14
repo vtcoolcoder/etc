@@ -18,6 +18,9 @@
                 case Modes.Consts.EDIT:
                     this.mode = Modes.EDIT;
                     break;
+                case Modes.Consts.DELETE:
+                    this.mode = Modes.DELETE;
+                    break;
                 case Modes.Consts.BYDEFAULT:
                     this.mode = Modes.BYDEFAULT;
             }
@@ -27,6 +30,7 @@
         private String SUBJECT = request.getParameter("subject");
         private String SELECTED_NOTE = request.getParameter("selectedNote");
         private String EDITED_NOTE = request.getParameter("editedNote");
+        private String DELETED_NOTE = SELECTED_NOTE;
         
         private Modes mode;
         private boolean isUnselectedSubject = false;
@@ -37,6 +41,7 @@
         public String getSubject() { return SUBJECT; }
         public String getSelectedNote() { return SELECTED_NOTE; }
         public String getEditedNote() { return EDITED_NOTE; }
+        public String getDeletedNote() { return DELETED_NOTE;}
         
         
         public String showDefault() {
@@ -145,6 +150,32 @@
         }
         
         
+        public String showDeleteNote() {
+            StringBuilder sb = new StringBuilder();
+            
+            int ID = -1;  
+            try { ID = Integer.parseInt(SELECTED_NOTE); } 
+            catch (NumberFormatException ex) {}
+            final String CONTENT = (ID != -1) ? MyNotesForWeb.getNoteContentById(ID) : "";
+            
+            if (Modes.DELETE.equals(mode)) {          
+                MyNotesForWeb.deleteNote(
+                        DELETED_NOTE != null ? DELETED_NOTE : "", ID);
+            } else {
+                if ((!isUnselectedSubject ^ SELECTED_NOTE != null ^ !isUnselectedNote) 
+                        && Modes.NOTE.equals(mode)) 
+                {
+                    sb.append("<div>");
+                    sb.append(CONTENT); 
+                    sb.append("</div><br><br>");
+                    sb.append("<input type=\"submit\" name=\"mode\" value=\"Удалить заметку\">");
+                }
+            }
+            
+            return sb.toString();
+        }
+        
+        
         private String iterate(Map<String, Set<Note>> availableRecords, 
                                String RADIOFMT) 
         {
@@ -175,24 +206,3 @@
     
     final Service SERVICE = new Service();
 %>
-
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8" />
-    <title>Редактирование заметок</title>
-</head>
-<body>
-    <h1><b>Редактирование заметок:</b></h1>
-    <h2><b>Выберите тему редактируемой заметки:</b></h2>
-    <form method="post" action="edit.jsp">
-    <select name="subject" size="7">  
-    <%= SERVICE.showDefault() %>
-    </select><br><br> 
-    <input type="submit" name="mode" value="Выбрать тему заметки">  
-    <%= SERVICE.showChangeSubject() %>
-    <%= SERVICE.showChangeNote() %>
-    <%= SERVICE.showUpdateNote() %>
-    </form>
-</body>
-</html>

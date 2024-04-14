@@ -69,16 +69,7 @@ public class MyNotesForWeb {
        
     private static PreparedStatement globalPreparedStatement;
     
-    
-    private static void templatedPrepare(Handler<PreparedStatement> consumer, String SQL) {
-        engine(connection -> prepareStatementEngine(connection, statement -> {
-                if (statement instanceof PreparedStatement prepare) {  
-                    consumer.accept(prepare);
-                } 
-        }, SQL));
-    }
-    
-    
+       
     public static void deleteNote(final int id) { 
         templatedPrepare(prepare -> {
                 prepare.setInt(1, id);
@@ -163,6 +154,15 @@ public class MyNotesForWeb {
             System.out.println(note);
         }
     }  
+    
+    
+    private static void templatedPrepare(Handler<PreparedStatement> consumer, String SQL) {
+        engine(connection -> prepareStatementEngine(connection, statement -> {
+                if (statement instanceof PreparedStatement prepare) {  
+                    consumer.accept(prepare);
+                } 
+        }, SQL));
+    }
     
     
     private static void statementEngine(Connection connection,

@@ -1,6 +1,5 @@
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
-<%@ page import="java.util.Set" %>
-<%@ page import="myjdbc.MyNotesForWeb, myjdbc.Note" %>
+<%@ include file="service.jsp" %>
 
 <!DOCTYPE html>
 <html>
@@ -16,7 +15,8 @@
     <%= SERVICE.showDefault() %>
     </select><br><br> 
     <input type="submit" name="mode" value="Выбрать тему заметки">  
-    
+    <%= SERVICE.showChangeSubject() %>
+    <%= SERVICE.showChangeNote() %>
     </form>
 </body>
 </html>

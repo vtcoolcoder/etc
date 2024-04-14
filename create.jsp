@@ -22,7 +22,7 @@
 </head>
 <body>
     <h1>Добавление заметок:</h1>
-    <h2>Выберите тему заметки:</h2>
+    <h2>Выберите тему добавляемой заметки:</h2>
     <form method="post" action="create.jsp">
     <select name="subject" size="7">
     
