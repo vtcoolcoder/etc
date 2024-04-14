@@ -3,8 +3,11 @@ package myjdbc;
 
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.LinkedHashMap;
+import java.util.Arrays;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
@@ -72,6 +75,8 @@ public class MyNotesForWeb {
     private static Set<Note> NOTES = new TreeSet<>();
         
     private static PreparedStatement globalPreparedStatement;
+    
+    private static boolean isNeedLinkedHashMap = false;
     
        
     public static void deleteNote(final int id) { 
@@ -151,17 +156,52 @@ public class MyNotesForWeb {
     }
     
     
-    public static void main(String[] args) {    
-        for (Note note : getAllNotes()) {
+    public static void main(String[] args) {  
+        if (args.length > 0) { 
+            printExistingCustomSubjectsNotes(
+                    getExistingCustomSubjects(args));
+        } else {
+            printNotes(getAllNotes());
+        }         
+    }
+    
+    
+    private static 
+    Set<String> getExistingCustomSubjects(final String... customSubjects) {
+        Set<String> result;
+        (result = new LinkedHashSet<>(Arrays.asList(customSubjects)))
+                .retainAll(new LinkedHashSet<>(getSubjectSet()));
+        return result;
+    } 
+    
+    
+    private static 
+    void printExistingCustomSubjectsNotes(final Set<String> existingCustomSubjects) {
+        isNeedLinkedHashMap = true;
+        
+        getNotesBySelectedSubjects(existingCustomSubjects)
+                .entrySet()
+                .stream()
+                .map(Map.Entry::getValue)
+                .forEach(MyNotesForWeb::printNotes);
+                
+        isNeedLinkedHashMap = false;
+    }
+    
+    
+    private static void printNotes(final Set<Note> notes) {
+        for (Note note : notes) {
             System.out.println(note);
         }        
-    }  
+    }
     
     
     private static Map<String, Set<Note>> getDataUsingProcessing(
             final Handler<Map<String, Set<Note>>> action) 
     {
-        Map<String, Set<Note>> result = new TreeMap<>(String::compareToIgnoreCase);
+        Map<String, Set<Note>> result = isNeedLinkedHashMap 
+                ? new LinkedHashMap<>()
+                : new TreeMap<>(String::compareToIgnoreCase);
         
         templatedPrepare((prepare, resultLmb) -> {
                 globalPreparedStatement = prepare;
