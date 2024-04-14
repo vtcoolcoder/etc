@@ -6,6 +6,7 @@ public enum Modes {
     NOTE(Consts.NOTE), 
     EDIT(Consts.EDIT), 
     DELETE(Consts.DELETE),
+    CREATE(Consts.CREATE),
     BYDEFAULT(Consts.BYDEFAULT);
     
     public interface Consts {
@@ -13,6 +14,7 @@ public enum Modes {
         String NOTE = "Выбрать заметку";
         String EDIT = "Редактировать заметку";
         String DELETE = "Удалить заметку";
+        String CREATE = "Добавить заметку";
         String BYDEFAULT = "";
     }
     

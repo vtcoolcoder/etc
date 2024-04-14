@@ -17,6 +17,7 @@
     <input type="submit" name="mode" value="Выбрать тему заметки">  
     <%= SERVICE.showChangeSubject() %>
     <%= SERVICE.showChangeNote() %>
+    <%= SERVICE.showDeleteNote() %>
     </form>
 </body>
 </html>
