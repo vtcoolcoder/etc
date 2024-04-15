@@ -1,6 +1,8 @@
 package myjdbc;
 
 
+import static java.util.stream.Collectors.toMap;
+
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.LinkedHashSet;
@@ -148,10 +150,10 @@ public class MyNotesForWeb {
     public static 
     Map<String, Set<Note>> getNotesBySelectedSubjects(final Set<String> selected) {       
         return getDataUsingProcessing(result -> {
-                selected.stream()
+                result.putAll(selected.stream()       
                         .filter(SUBJECTS::contains)
-                        .map(MyNotesForWeb::processSpecificNotes)
-                        .forEach(notes -> result.put(notes.subject(), notes.notes()));
+                        .map(MyNotesForWeb::processSpecificNotes)      
+                        .collect(toMap(NotesBySubject::subject, NotesBySubject::notes)));
         });
     }
     
@@ -180,19 +182,14 @@ public class MyNotesForWeb {
         isNeedLinkedHashMap = true;
         
         getNotesBySelectedSubjects(existingCustomSubjects)
-                .entrySet()
-                .stream()
-                .map(Map.Entry::getValue)
-                .forEach(MyNotesForWeb::printNotes);
+                .forEach((key, value) -> System.out.println(value));
                 
         isNeedLinkedHashMap = false;
     }
     
     
     private static void printNotes(final Set<Note> notes) {
-        for (Note note : notes) {
-            System.out.println(note);
-        }        
+        notes.stream().forEach(System.out::println);
     }
     
     
