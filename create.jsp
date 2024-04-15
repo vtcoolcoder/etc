@@ -9,7 +9,7 @@
 </head>
 <body>
     <h1>Добавление заметок:</h1>
-    <%= SERVICE.tryCreateNote().isPresent() ? SERVICE.tryCreateNote().get() : "" %>
+    <%= SERVICE.tryCreateNote().orElse("") %>   
     <h2>Выберите тему добавляемой заметки:</h2>
     <form method="post" action="create.jsp">
     <select name="subject" size="7">
