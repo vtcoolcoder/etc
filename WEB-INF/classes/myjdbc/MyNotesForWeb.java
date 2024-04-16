@@ -4,10 +4,8 @@ package myjdbc;
 import static java.util.stream.Collectors.toMap;
 
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.LinkedHashMap;
 import java.util.Arrays;
 
@@ -40,45 +38,68 @@ public class MyNotesForWeb {
         String NOTE = "note";
         String ID = "id";
         
-        String NOTE_BY_ID = "SELECT %s FROM %s WHERE %s = ?"
-                .formatted(NOTE, JAVANOTES, ID);
+        String NOTE_BY_ID = 
+        """
+        SELECT %s 
+        FROM %s 
+        WHERE %s = ?
+        """.formatted(NOTE, JAVANOTES, ID);
         
         String DISTINCT_SUBJECTS = 
-                "SELECT DISTINCT %s FROM %s".formatted(SUBJECT, JAVANOTES);
+        """
+        SELECT DISTINCT %s 
+        FROM %s 
+        ORDER BY LOWER(%s)
+        """.formatted(SUBJECT, JAVANOTES, SUBJECT);
         
         String SPECIFIC_NOTE =
-                """
-                SELECT %s, %s
-                FROM %s
-                WHERE %s = ?
-                """.formatted(SUBJECT, NOTE, JAVANOTES, SUBJECT);
+        """
+        SELECT %s, %s
+        FROM %s
+        WHERE %s = ?
+        ORDER BY %s
+        """.formatted(SUBJECT, NOTE, JAVANOTES, SUBJECT, NOTE);
                 
         String FULL_SPECIFIC =
-                """
-                SELECT %s, %s, %s
-                FROM %s
-                WHERE %s = ?
-                """.formatted(ID, SUBJECT, NOTE, JAVANOTES, SUBJECT);
+        """
+        SELECT %s, %s, %s
+        FROM %s
+        WHERE %s = ?
+        ORDER BY %s
+        """.formatted(ID, SUBJECT, NOTE, JAVANOTES, SUBJECT, NOTE);
         
-        String ALL_NOTES = "SELECT %s, %s FROM %s".formatted(SUBJECT, NOTE, JAVANOTES);
+        String ALL_NOTES = 
+        """
+        SELECT %s, %s 
+        FROM %s 
+        ORDER BY LOWER(%s), %s
+        """.formatted(SUBJECT, NOTE, JAVANOTES, SUBJECT, NOTE);
         
-        String ADD_NOTE = "INSERT INTO %s (%s, %s) VALUES (?, ?)"
-                .formatted(JAVANOTES, SUBJECT, NOTE);
+        String ADD_NOTE = 
+        """
+        INSERT INTO %s (%s, %s) 
+        VALUES (TRIM(?), TRIM(?))
+        """.formatted(JAVANOTES, SUBJECT, NOTE);
                 
-        String UPDATE_NOTE = "UPDATE %s SET %s = ? WHERE %s = ?"
-                .formatted(JAVANOTES, NOTE, ID);
+        String UPDATE_NOTE = 
+        """
+        UPDATE %s 
+        SET %s = TRIM(?) 
+        WHERE %s = ?
+        """.formatted(JAVANOTES, NOTE, ID);
                 
-        String DELETE_NOTE = "DELETE FROM %s WHERE %s = ?"
-                .formatted(JAVANOTES, ID);
+        String DELETE_NOTE = 
+        """
+        DELETE FROM %s 
+        WHERE %s = ?
+        """.formatted(JAVANOTES, ID);
     }
     
        
-    private static Set<String> SUBJECTS = new TreeSet<>(String::compareToIgnoreCase);
-    private static Set<Note> NOTES = new TreeSet<>();
+    private static Set<String> SUBJECTS = new LinkedHashSet<>();
+    private static Set<Note> NOTES = new LinkedHashSet<>();
         
     private static PreparedStatement globalPreparedStatement;
-    
-    private static boolean isNeedLinkedHashMap = false;
     
        
     public static void deleteNote(final int id) { 
@@ -148,23 +169,40 @@ public class MyNotesForWeb {
     
     
     public static 
-    Map<String, Set<Note>> getNotesBySelectedSubjects(final Set<String> selected) {       
+    Map<String, Set<Note>> getNotesBySelectedSubjects(final Set<String> selected) {  
         return getDataUsingProcessing(result -> {
-                result.putAll(selected.stream()       
-                        .filter(SUBJECTS::contains)
-                        .map(MyNotesForWeb::processSpecificNotes)      
-                        .collect(toMap(NotesBySubject::subject, NotesBySubject::notes)));
+                result.putAll(selected.stream()
+                        .map(MyNotesForWeb::processSpecificNotes)   
+                        .collect(toMap(NotesBySubject::subject, NotesBySubject::notes, 
+                                (k, v) -> v, LinkedHashMap::new)));
         });
     }
     
     
     public static void main(String[] args) {  
-        if (args.length > 0) { 
-            printExistingCustomSubjectsNotes(
-                    getExistingCustomSubjects(args));
+        if (isExistCLArgs(args)) {
+            if (isPrintAvailableSubjects(args)) {
+                printSubjects(getSubjectSet());
+            } else {
+                printExistingCustomSubjectsNotes(
+                        getExistingCustomSubjects(args));
+            }     
         } else {
             printNotes(getAllNotes());
         }         
+    }
+    
+    
+    private static boolean isExistCLArgs(final String[] args) { return args.length > 0; }
+    
+    
+    private static boolean isPrintAvailableSubjects(final String[] args) {
+        return "-l".equals(args[0]) || "--list".equals(args[0]);
+    }
+    
+    
+    private static void printSubjects(final Set<String> subjects) {
+        subjects.stream().forEach(System.out::println);
     }
     
     
@@ -179,12 +217,8 @@ public class MyNotesForWeb {
     
     private static 
     void printExistingCustomSubjectsNotes(final Set<String> existingCustomSubjects) {
-        isNeedLinkedHashMap = true;
-        
         getNotesBySelectedSubjects(existingCustomSubjects)
-                .forEach((key, value) -> System.out.println(value));
-                
-        isNeedLinkedHashMap = false;
+                .forEach((key, value) -> printNotes(value));
     }
     
     
@@ -196,9 +230,7 @@ public class MyNotesForWeb {
     private static Map<String, Set<Note>> getDataUsingProcessing(
             final Handler<Map<String, Set<Note>>> action) 
     {
-        Map<String, Set<Note>> result = isNeedLinkedHashMap 
-                ? new LinkedHashMap<>()
-                : new TreeMap<>(String::compareToIgnoreCase);
+        Map<String, Set<Note>> result = new LinkedHashMap<>();
         
         templatedPrepare((prepare, resultLmb) -> {
                 globalPreparedStatement = prepare;
@@ -281,22 +313,27 @@ public class MyNotesForWeb {
        
     private static 
     void processSubjects(final Statement statement) throws SQLException {
-        SUBJECTS = new TreeSet<>(String::compareToIgnoreCase);
+        SUBJECTS = new LinkedHashSet<>();
              
         ResultSet subjects = statement.executeQuery(Queries.DISTINCT_SUBJECTS);   
         
         iterateByResultSet(subjects, subjs -> {
                 String currentSubject = subjs.getString(Queries.SUBJECT);
-                if (! (currentSubject.isEmpty() || currentSubject.isBlank())) {
+                if (isCurrentSubjectValid(currentSubject)) {
                     SUBJECTS.add(currentSubject);
                 }
         });   
     }
     
+    
+    private static boolean isCurrentSubjectValid(final String currentSubject) {
+        return ! (currentSubject.isEmpty() || currentSubject.isBlank());
+    }
+    
       
     private static 
     void processAllNotes(final Statement statement) throws SQLException {
-        NOTES = new TreeSet<>();
+        NOTES = new LinkedHashSet<>();
         
         ResultSet notes = statement.executeQuery(Queries.ALL_NOTES);   
         
@@ -311,7 +348,7 @@ public class MyNotesForWeb {
     private static 
     NotesBySubject processSpecificNotes(final String requiredSubject) {
         NotesBySubject result = null;
-        Set<Note> resultingNotes = new TreeSet<>();
+        Set<Note> resultingNotes = new LinkedHashSet<>();
         
         try {
             globalPreparedStatement.setString(1, requiredSubject);   
