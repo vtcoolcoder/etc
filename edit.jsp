@@ -12,12 +12,12 @@
     <h2><b>Выберите тему редактируемой заметки:</b></h2>
     <form method="post" action="edit.jsp">
     <select name="subject" size="7">  
-    <%= SERVICE.showDefault() %>
+    <%= API.showDefault() %>
     </select><br><br> 
     <input type="submit" name="mode" value="Выбрать тему заметки">  
-    <%= SERVICE.showChangeSubject() %>
-    <%= SERVICE.showChangeNote() %>
-    <%= SERVICE.showUpdateNote() %>
+    <%= API.showChangeSubject() %>
+    <%= API.showChangeNote() %>
+    <%= API.showUpdateNote() %>
     </form>
 </body>
 </html>

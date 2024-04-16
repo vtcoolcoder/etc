@@ -9,11 +9,11 @@
 </head>
 <body>
     <h1>Добавление заметок:</h1>
-    <%= SERVICE.tryCreateNote().orElse("") %>   
+    <%= API.tryCreateNote() %>   
     <h2>Выберите тему добавляемой заметки:</h2>
     <form method="post" action="create.jsp">
     <select name="subject" size="7">
-    <%= SERVICE.showDefault() %>
+    <%= API.showDefault() %>
     </select>      
     <b>Новая тема:</b><input type="text" name="subject">
     <textarea name="createdNote" cols="130" rows="35" wrap="hard"></textarea>

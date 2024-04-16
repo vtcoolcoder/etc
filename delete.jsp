@@ -12,12 +12,12 @@
     <h2><b>Выберите тему удаляемой заметки:</b></h2>
     <form method="post" action="delete.jsp">
     <select name="subject" size="7">  
-    <%= SERVICE.showDefault() %>
+    <%= API.showDefault() %>
     </select><br><br> 
     <input type="submit" name="mode" value="Выбрать тему заметки">  
-    <%= SERVICE.showChangeSubject() %>
-    <%= SERVICE.showChangeNote() %>
-    <%= SERVICE.showDeleteNote() %>
+    <%= API.showChangeSubject() %>
+    <%= API.showChangeNote() %>
+    <%= API.showDeleteNote() %>
     </form>
 </body>
 </html>
