@@ -8,6 +8,13 @@
     <title>Добавление заметок</title>
 </head>
 <body>
+    <div>
+        <ul>
+            <li><a href="index.jsp">Читать</a></li>
+            <li><a href="update.jsp">Обновить</a></li>
+            <li><a href="delete.jsp">Удалить</a></li>
+        </ul>
+    </div>
     <h1>Добавление заметок:</h1>
     <%= API.tryCreateNote() %>   
     <h2>Выберите тему добавляемой заметки:</h2>

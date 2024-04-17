@@ -10,9 +10,9 @@
 <body>
     <div>
         <ul>
-            <li>Создать</li>
-            <li>Обновить</li>
-            <li>Удалить</li>
+            <li><a href="create.jsp">Создать</a></li>
+            <li><a href="update.jsp">Обновить</a></li>
+            <li><a href="delete.jsp">Удалить</a></li>
         </ul>
     </div>
     <h1>Заметки</h1>
