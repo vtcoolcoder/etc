@@ -23,24 +23,87 @@ public class ServiceServlet {
     private static final String NOTEFMT = TEMPLATEFMT.formatted(" заметки", " заметки"); 
     private static final String UNSELECTEDSUBJFMT = NOTEFMT.formatted("выбрали", "выберите");
     private static final String ERRCREATEFMT = NOTEFMT.formatted("задали", "задайте");
-    private static final String FRAGMENTFMT = TEMPLATEFMT.formatted("", "")
-                                                         .formatted("выбрали", "выберите");
+    private static final String FRAGMENTFMT = TEMPLATEFMT.formatted("", "").formatted("выбрали", "выберите");
     
-    private static final String CHECKBOXFMT = "\t\t<input type=\"checkbox\" name=\"%s\" %s> %s (<b><i>%d</i></b>)<br>\n";
-    private static final String HIGHLIGHT_TEMPLATE = "\t\t<br><input type=\"submit\" name=\"mode\" value=\"%s\"><br>\n";
+    private static final String CHECKBOXFMT = 
+    """
+    \t\t\
+    <label>
+        <input type="checkbox" name="%s" %s> %s
+    </label> (<b><i>%d</i></b>)<br>
+    """;
+    
+    private static final String HIGHLIGHT_TEMPLATE =
+    """
+    \t\t\
+    <br><input type="submit" name="mode" value="%s"><br>
+    """; 
+    
     private static final String HIGHLIGHTALLFMT = HIGHLIGHT_TEMPLATE.formatted(Modes.Consts.HIGHLIGHTALL);
     private static final String CANCEL_HIGHLIGHTFMT = HIGHLIGHT_TEMPLATE.formatted(Modes.Consts.CANCEL_HIGHLIGHTALL);
+    
     private static final String RECORD_FORMAT = 
-            "\n<h3><b>Тема:</b> <i><u>%s</u></i> <b>| Заметка:</b></h3>\n<div>\n%s\n</div><hr>\n";
-    private static final String OPTFMT = "\t<option value=\"%s\">%s</option>\n";
+    """
+    
+    <h3>
+        <b>Тема:</b> <i><u>%s</u></i> <b>| Заметка:</b>
+    </h3>
+    <div>
+        %s
+    </div><hr>
+    """;
+
+    private static final String OPTFMT = 
+    """
+    \t\
+    <label>
+        <option value="%s">%s</option>
+    </label>
+    """;
+    
+    
     private static final String RADIOFMT = 
-            "<h3><input type=\"radio\" name=\"selectedNote\" value=\"%d\" %s><br>Фрагмент:</h3>\n" +
-            "<div><b>%s</b></div> .......<hr>\n";
-    private static final String HIDDENSUBJFMT = "<input type=\"hidden\" name=\"subject\" value=\"%s\">\n";
-    private static final String SELECTEDSUBJFMT = "<h2><b>Выбранная тема: </b><i><u>%s</u></i></h2>\n";
-    private static final String HIDDENSELECTEDNOTEFMT = "<input type=\"hidden\" name=\"selectedNote\" value=\"%s\">\n";
-    private static final String SELECTEDFRAGMENTFMT = "<h2><b>Выбранный фрагмент:</b><br><i><u>%s</u></i> .......</h2>\n";
-    private static final String SUBJECT_AMOUNTFMT = "<h3><b>Всего тем:</b> <i>%d</i></h3>\n";
+    """
+    <h3>
+        <label>
+            <input type="radio" name="selectedNote" value="%d" %s><br>Фрагмент:
+        </label>
+    </h3>
+    <div>
+        <b>%s</b>
+    </div> .......<hr>
+    """;
+    
+    private static final String HIDDENSUBJFMT = 
+    """
+    <input type="hidden" name="subject" value="%s">
+    """;
+    
+    private static final String SELECTEDSUBJFMT = 
+    """
+    <h2>
+        <b>Выбранная тема: </b><i><u>%s</u></i>
+    </h2>
+    """;
+    
+    private static final String HIDDENSELECTEDNOTEFMT = 
+    """
+    <input type="hidden" name="selectedNote" value="%s">
+    """;
+    
+    private static final String SELECTEDFRAGMENTFMT = 
+    """
+    <h2>
+        <b>Выбранный фрагмент:</b><br><i><u>%s</u></i> .......
+    </h2>
+    """;
+    
+    private static final String SUBJECT_AMOUNTFMT = 
+    """
+    <h3>
+        <b>Всего тем:</b> <i>%d</i>
+    </h3>
+    """;
     
 
     private HttpServletRequest request;
