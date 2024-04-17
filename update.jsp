@@ -10,7 +10,7 @@
 <body>
     <h1><b>Редактирование заметок:</b></h1>
     <h2><b>Выберите тему редактируемой заметки:</b></h2>
-    <form method="post" action="edit.jsp">
+    <form method="post" action="update.jsp">
     <select name="subject" size="7">  
     <%= API.showDefault() %>
     </select><br><br> 
