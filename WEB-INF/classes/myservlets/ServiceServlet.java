@@ -26,7 +26,7 @@ public class ServiceServlet {
     private static final String FRAGMENTFMT = TEMPLATEFMT.formatted("", "")
                                                          .formatted("выбрали", "выберите");
     
-    private static final String CHECKBOXFMT = "\t\t<input type=\"checkbox\" name=\"%s\" %s> %s <b><i>(%d)</i></b><br>\n";
+    private static final String CHECKBOXFMT = "\t\t<input type=\"checkbox\" name=\"%s\" %s> %s (<b><i>%d</i></b>)<br>\n";
     private static final String HIGHLIGHT_TEMPLATE = "\t\t<br><input type=\"submit\" name=\"mode\" value=\"%s\"><br>\n";
     private static final String HIGHLIGHTALLFMT = HIGHLIGHT_TEMPLATE.formatted(Modes.Consts.HIGHLIGHTALL);
     private static final String CANCEL_HIGHLIGHTFMT = HIGHLIGHT_TEMPLATE.formatted(Modes.Consts.CANCEL_HIGHLIGHTALL);
@@ -40,7 +40,7 @@ public class ServiceServlet {
     private static final String SELECTEDSUBJFMT = "<h2><b>Выбранная тема: </b><i><u>%s</u></i></h2>\n";
     private static final String HIDDENSELECTEDNOTEFMT = "<input type=\"hidden\" name=\"selectedNote\" value=\"%s\">\n";
     private static final String SELECTEDFRAGMENTFMT = "<h2><b>Выбранный фрагмент:</b><br><i><u>%s</u></i> .......</h2>\n";
-    private static final String SUBJECT_AMOUNTFMT = "<h2><b>Всего тем:</b> <i>%d</i></h2>\n";
+    private static final String SUBJECT_AMOUNTFMT = "<h3><b>Всего тем:</b> <i>%d</i></h3>\n";
     
 
     private HttpServletRequest request;
