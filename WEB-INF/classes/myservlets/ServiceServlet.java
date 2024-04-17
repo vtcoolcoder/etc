@@ -64,11 +64,10 @@ public class ServiceServlet {
     """
     <h3>
         <label>
-            <input type="radio" name="selectedNote" value="%d" %s><br>Фрагмент:
+            <input type="radio" name="selectedNote" value="%d" %s><br>Фрагмент:<br>
+            <b>%s</b>.......
+        </label><hr>
     </h3>
-    <div>
-        <b>%s</b>
-    </div> .......</label><hr>
     """;
     
     private static final String HIDDENSUBJFMT = 
