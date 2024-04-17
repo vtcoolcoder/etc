@@ -64,8 +64,8 @@ public class ServiceServlet {
     """
     <h3>
         <label>
-            <input type="radio" name="selectedNote" value="%d" %s><br>Фрагмент:<br>
-            <b>%s</b>.......
+            <input type="radio" name="selectedNote" value="%d" %s><br><b>Фрагмент:</b><br>
+            <i>%s</i>.......
         </label><hr>
     </h3>
     """;
