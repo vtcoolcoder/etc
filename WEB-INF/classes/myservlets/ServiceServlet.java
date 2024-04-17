@@ -407,12 +407,16 @@ public class ServiceServlet {
             
             case PRELUDE -> {
                 getAvailableSubjects().stream().forEach(subject -> { 
-                    String checked = getSelectedSubjects().contains(subject) 
-                            || isHighlightAllMode()
+                    String checked = isHighlightAllMode()
+                            || getSelectedSubjects().contains(subject) 
                                     ? "checked" : "";
                     sb.append(getCheckboxFormattedLine(subject, checked));
+                    
+                });   
+                
+                if (! getAvailableSubjects().isEmpty()) {
                     sb.append(HIGHLIGHTALLFMT);
-                });               
+                }           
             }
             
             
