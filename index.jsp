@@ -8,6 +8,13 @@
     <title>Заметки</title>
 </head>
 <body>
+    <div>
+        <ul>
+            <li>Создать</li>
+            <li>Обновить</li>
+            <li>Удалить</li>
+        </ul>
+    </div>
     <h1>Заметки</h1>
     <h2>Список доступных тем:</h2>
     <form method="post" action="index.jsp">
