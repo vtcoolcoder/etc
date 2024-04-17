@@ -17,7 +17,7 @@
         </ul>
     </div>
     <h1>Заметки</h1>
-    <h2>Список доступных тем:</h2>
+    <h2>Список доступных тем</h2>
     <form method="post" action="index.jsp">
     <%= API.showCheckboxesWithSubjects() %>
     <br><input type="submit" name="mode" value="Выбрать тему заметки"></form>   
