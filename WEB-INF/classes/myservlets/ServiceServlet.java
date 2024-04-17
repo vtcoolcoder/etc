@@ -27,6 +27,8 @@ public class ServiceServlet {
                                                          .formatted("выбрали", "выберите");
     
     private static final String CHECKBOXFMT = "\t\t<input type=\"checkbox\" name=\"%s\" %s> %s<br>\n";
+    private static final String HIGHLIGHTALLFMT = "\t\t<br><input type=\"submit\" name=\"mode\" value=\"%s\">\n"
+            .formatted(Modes.Consts.HIGHLIGHTALL);
     private static final String RECORD_FORMAT = 
             "\n<h3><b>Тема:</b> <i><u>%s</u></i> <b>| Заметка:</b></h3>\n<div>\n%s\n</div><hr>\n";
     private static final String OPTFMT = "\t<option value=\"%s\">%s</option>\n";
@@ -82,6 +84,7 @@ public class ServiceServlet {
     private boolean isCreateMode() { return Modes.CREATE.equals(mode); }
     private boolean isEditMode() { return Modes.EDIT.equals(mode); }
     private boolean isDeleteMode() { return Modes.DELETE.equals(mode); }
+    private boolean isHighlightAllMode() { return Modes.HIGHLIGHTALL.equals(mode); }
     
     
     private String getCheckboxFormattedLine(String subject, String checked) { 
@@ -224,25 +227,14 @@ public class ServiceServlet {
     
     
     private void initMode() {
-        switch (MODE != null ? MODE : "") {
-            case Modes.Consts.SUBJECT:
-                this.mode = Modes.SUBJECT;
-                break;
-            case Modes.Consts.NOTE:
-                this.mode = Modes.NOTE;
-                break;
-            case Modes.Consts.EDIT:
-                this.mode = Modes.EDIT;
-                break;
-            case Modes.Consts.DELETE:
-                this.mode = Modes.DELETE;
-                break;
-            case Modes.Consts.CREATE:
-                this.mode = Modes.CREATE;
-                break;
-            case Modes.Consts.BYDEFAULT:
-                this.mode = Modes.BYDEFAULT;
-                break;
+        switch (MODE != null ? MODE : Modes.Consts.BYDEFAULT) {
+            case Modes.Consts.SUBJECT -> this.mode = Modes.SUBJECT;
+            case Modes.Consts.NOTE -> this.mode = Modes.NOTE;
+            case Modes.Consts.EDIT -> this.mode = Modes.EDIT;
+            case Modes.Consts.DELETE -> this.mode = Modes.DELETE;
+            case Modes.Consts.CREATE -> this.mode = Modes.CREATE;
+            case Modes.Consts.HIGHLIGHTALL -> this.mode = Modes.HIGHLIGHTALL;
+            case Modes.Consts.BYDEFAULT -> this.mode = Modes.BYDEFAULT;
         }
     }
     
@@ -415,9 +407,11 @@ public class ServiceServlet {
             
             case PRELUDE -> {
                 getAvailableSubjects().stream().forEach(subject -> { 
-                    String checked = 
-                            getSelectedSubjects().contains(subject) ? "checked" : "";
+                    String checked = getSelectedSubjects().contains(subject) 
+                            || isHighlightAllMode()
+                                    ? "checked" : "";
                     sb.append(getCheckboxFormattedLine(subject, checked));
+                    sb.append(HIGHLIGHTALLFMT);
                 });               
             }
             
