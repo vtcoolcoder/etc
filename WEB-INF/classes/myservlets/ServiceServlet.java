@@ -27,8 +27,9 @@ public class ServiceServlet {
                                                          .formatted("выбрали", "выберите");
     
     private static final String CHECKBOXFMT = "\t\t<input type=\"checkbox\" name=\"%s\" %s> %s<br>\n";
-    private static final String HIGHLIGHTALLFMT = "\t\t<br><input type=\"submit\" name=\"mode\" value=\"%s\"><br>\n"
-            .formatted(Modes.Consts.HIGHLIGHTALL);
+    private static final String HIGHLIGHT_TEMPLATE = "\t\t<br><input type=\"submit\" name=\"mode\" value=\"%s\"><br>\n";
+    private static final String HIGHLIGHTALLFMT = HIGHLIGHT_TEMPLATE.formatted(Modes.Consts.HIGHLIGHTALL);
+    private static final String CANCEL_HIGHLIGHTFMT = HIGHLIGHT_TEMPLATE.formatted(Modes.Consts.CANCEL_HIGHLIGHTALL);
     private static final String RECORD_FORMAT = 
             "\n<h3><b>Тема:</b> <i><u>%s</u></i> <b>| Заметка:</b></h3>\n<div>\n%s\n</div><hr>\n";
     private static final String OPTFMT = "\t<option value=\"%s\">%s</option>\n";
@@ -85,6 +86,7 @@ public class ServiceServlet {
     private boolean isEditMode() { return Modes.EDIT.equals(mode); }
     private boolean isDeleteMode() { return Modes.DELETE.equals(mode); }
     private boolean isHighlightAllMode() { return Modes.HIGHLIGHTALL.equals(mode); }
+    private boolean isCancelHighlightMode() { return Modes.CANCEL_HIGHLIGHTALL.equals(mode); }
     
     
     private String getCheckboxFormattedLine(String subject, String checked) { 
@@ -234,6 +236,7 @@ public class ServiceServlet {
             case Modes.Consts.DELETE -> this.mode = Modes.DELETE;
             case Modes.Consts.CREATE -> this.mode = Modes.CREATE;
             case Modes.Consts.HIGHLIGHTALL -> this.mode = Modes.HIGHLIGHTALL;
+            case Modes.Consts.CANCEL_HIGHLIGHTALL -> this.mode = Modes.CANCEL_HIGHLIGHTALL;
             case Modes.Consts.BYDEFAULT -> this.mode = Modes.BYDEFAULT;
         }
     }
@@ -407,15 +410,16 @@ public class ServiceServlet {
             
             case PRELUDE -> {
                 getAvailableSubjects().stream().forEach(subject -> { 
-                    String checked = isHighlightAllMode()
-                            || getSelectedSubjects().contains(subject) 
-                                    ? "checked" : "";
+                    String checked = (! isCancelHighlightMode())
+                        && (isHighlightAllMode() || getSelectedSubjects().contains(subject)) 
+                                ? "checked" : "";
                     sb.append(getCheckboxFormattedLine(subject, checked));
                     
                 });   
                 
                 if (! getAvailableSubjects().isEmpty()) {
                     sb.append(HIGHLIGHTALLFMT);
+                    sb.append(CANCEL_HIGHLIGHTFMT);
                 }           
             }
             
