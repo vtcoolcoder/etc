@@ -11,8 +11,8 @@
     <div>
         <h3>Навигация</h3>
         <ul>
-            <li><a href="index.jsp">Читать</a></li>
-            <li><a href="create.jsp">Создать</a></li>
+            <li><a href="index.jsp">Читать</a></li><br>
+            <li><a href="create.jsp">Создать</a></li><br>
             <li><a href="update.jsp">Обновить</a></li>
         </ul>
     </div>
