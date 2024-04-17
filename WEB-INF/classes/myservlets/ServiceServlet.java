@@ -27,7 +27,7 @@ public class ServiceServlet {
                                                          .formatted("выбрали", "выберите");
     
     private static final String CHECKBOXFMT = "\t\t<input type=\"checkbox\" name=\"%s\" %s> %s<br>\n";
-    private static final String HIGHLIGHTALLFMT = "\t\t<br><input type=\"submit\" name=\"mode\" value=\"%s\">\n"
+    private static final String HIGHLIGHTALLFMT = "\t\t<br><input type=\"submit\" name=\"mode\" value=\"%s\"><br>\n"
             .formatted(Modes.Consts.HIGHLIGHTALL);
     private static final String RECORD_FORMAT = 
             "\n<h3><b>Тема:</b> <i><u>%s</u></i> <b>| Заметка:</b></h3>\n<div>\n%s\n</div><hr>\n";
