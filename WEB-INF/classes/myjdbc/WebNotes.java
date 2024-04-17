@@ -6,6 +6,7 @@ import static java.util.stream.Collectors.toMap;
 import java.util.Set;
 import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Arrays;
 
@@ -39,6 +40,8 @@ public class WebNotes implements WebNotesAPI {
       
     private static Set<String> availableSubjects = new LinkedHashSet<>();
     private static Set<Note> availableNotes = new LinkedHashSet<>();
+    private static Map<String, Integer> notesBySubjectAmount = new HashMap<>();
+    private static int allSubjectsAmount;
         
     private static PreparedStatement cachedPreparedStatement;
     
@@ -124,6 +127,20 @@ public class WebNotes implements WebNotesAPI {
                         .collect(toMap(NotesBySubject::subject, NotesBySubject::notes, 
                                 (k, v) -> v, LinkedHashMap::new)));
         });
+    }
+    
+    
+    @Override
+    public Map<String, Integer> getNotesBySubjectAmount() {
+        update(WebNotes::processNotesBySubjectAmount);
+        return notesBySubjectAmount;
+    }
+    
+    
+    @Override
+    public int getAllSubjectsAmount() {
+        update(WebNotes::processAllSubjectsAmount);
+        return allSubjectsAmount;
     }
     
     
@@ -339,5 +356,27 @@ public class WebNotes implements WebNotesAPI {
         } catch (SQLException ex) {
             throw new RuntimeException(ex);
         }     
+    }
+    
+    
+    private static 
+    void processNotesBySubjectAmount(final Statement statement) throws SQLException {
+        ResultSet amount = statement.executeQuery(Queries.NOTES_BY_SUBJECT_AMOUNT);   
+        
+        iterateByResultSet(amount, amnt -> {
+                String currentSubject = amnt.getString(Queries.SUBJECT);
+                int currentAmount = amnt.getInt(Queries.AMOUNT);
+                notesBySubjectAmount.put(currentSubject, currentAmount);
+        });   
+    }
+    
+    
+    private static
+    void processAllSubjectsAmount(final Statement statement) throws SQLException {
+        ResultSet amount = statement.executeQuery(Queries.ALL_SUBJECTS_AMOUNT);   
+        
+        iterateByResultSet(amount, amnt -> {
+                allSubjectsAmount = amnt.getInt(Queries.AMOUNT);         
+        });   
     }
 }

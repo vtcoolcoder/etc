@@ -16,7 +16,11 @@ public interface WebNotesAPI {
     
     String getNoteContent(final int id); 
     
-    Set<String> getAllSubjects();          
+    Map<String, Integer> getNotesBySubjectAmount();
+    
+    Set<String> getAllSubjects();   
+    
+    int getAllSubjectsAmount();       
     
     void updateNote(final String content, final int id);
     

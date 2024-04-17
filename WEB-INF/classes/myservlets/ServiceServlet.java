@@ -26,7 +26,7 @@ public class ServiceServlet {
     private static final String FRAGMENTFMT = TEMPLATEFMT.formatted("", "")
                                                          .formatted("выбрали", "выберите");
     
-    private static final String CHECKBOXFMT = "\t\t<input type=\"checkbox\" name=\"%s\" %s> %s<br>\n";
+    private static final String CHECKBOXFMT = "\t\t<input type=\"checkbox\" name=\"%s\" %s> %s <b><i>(%d)</i></b><br>\n";
     private static final String HIGHLIGHT_TEMPLATE = "\t\t<br><input type=\"submit\" name=\"mode\" value=\"%s\"><br>\n";
     private static final String HIGHLIGHTALLFMT = HIGHLIGHT_TEMPLATE.formatted(Modes.Consts.HIGHLIGHTALL);
     private static final String CANCEL_HIGHLIGHTFMT = HIGHLIGHT_TEMPLATE.formatted(Modes.Consts.CANCEL_HIGHLIGHTALL);
@@ -40,7 +40,8 @@ public class ServiceServlet {
     private static final String SELECTEDSUBJFMT = "<h2><b>Выбранная тема: </b><i><u>%s</u></i></h2>\n";
     private static final String HIDDENSELECTEDNOTEFMT = "<input type=\"hidden\" name=\"selectedNote\" value=\"%s\">\n";
     private static final String SELECTEDFRAGMENTFMT = "<h2><b>Выбранный фрагмент:</b><br><i><u>%s</u></i> .......</h2>\n";
-
+    private static final String SUBJECT_AMOUNTFMT = "<h2><b>Всего тем:</b> <i>%d</i></h2>\n";
+    
 
     private HttpServletRequest request;
           
@@ -89,8 +90,8 @@ public class ServiceServlet {
     private boolean isCancelHighlightMode() { return Modes.CANCEL_HIGHLIGHTALL.equals(mode); }
     
     
-    private String getCheckboxFormattedLine(String subject, String checked) { 
-        return CHECKBOXFMT.formatted(subject, checked, subject); 
+    private String getCheckboxFormattedLine(String subject, String checked, int amount) { 
+        return CHECKBOXFMT.formatted(subject, checked, subject, amount); 
     }
     
     
@@ -409,15 +410,24 @@ public class ServiceServlet {
             
             
             case PRELUDE -> {
+                
+                Map<String, Integer> notesBySubjectAmount = webNotes.getNotesBySubjectAmount();
+                
+                if (isAddingExtraInfo()) {
+                    int allSubjectsAmount = webNotes.getAllSubjectsAmount();
+                    sb.append(SUBJECT_AMOUNTFMT.formatted(allSubjectsAmount));
+                }
+                
                 getAvailableSubjects().stream().forEach(subject -> { 
                     String checked = (! isCancelHighlightMode())
                         && (isHighlightAllMode() || getSelectedSubjects().contains(subject)) 
                                 ? "checked" : "";
-                    sb.append(getCheckboxFormattedLine(subject, checked));
+                    int currentNotesAmount = notesBySubjectAmount.get(subject);
+                    sb.append(getCheckboxFormattedLine(subject, checked, currentNotesAmount));
                     
                 });   
                 
-                if (! getAvailableSubjects().isEmpty()) {
+                if (isAddingExtraInfo()) {
                     sb.append(HIGHLIGHTALLFMT);
                     sb.append(CANCEL_HIGHLIGHTFMT);
                 }           
@@ -432,4 +442,7 @@ public class ServiceServlet {
             }
         }
     }
+    
+    
+    private boolean isAddingExtraInfo() { return (! getAvailableSubjects().isEmpty()); }
 }
