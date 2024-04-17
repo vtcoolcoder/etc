@@ -9,7 +9,7 @@
 </head>
 <body>
     <div>
-        <h1>Навигация</h1>
+        <h2>Навигация</h2>
         <ul>
             <li><a href="index.jsp">Читать</a></li>
             <li><a href="update.jsp">Обновить</a></li>
