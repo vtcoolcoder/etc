@@ -56,9 +56,7 @@ public class ServiceServlet {
     private static final String OPTFMT = 
     """
     \t\
-    <label>
-        <option value="%s">%s</option>
-    </label>
+    <option value="%s">%s</option>
     """;
     
     
@@ -67,11 +65,10 @@ public class ServiceServlet {
     <h3>
         <label>
             <input type="radio" name="selectedNote" value="%d" %s><br>Фрагмент:
-        </label>
     </h3>
     <div>
         <b>%s</b>
-    </div> .......<hr>
+    </div> .......</label><hr>
     """;
     
     private static final String HIDDENSUBJFMT = 
