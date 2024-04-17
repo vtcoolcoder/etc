@@ -1,21 +1,66 @@
 package myjdbc;
 
-public enum Queries {
-    UNIQUE_SUBJECTS(
-            """
-            SELECT DISTINCT ?
-            FROM ?
-            """),
+
+public interface Queries {
     
-    NOTES(
-            """
-            SELECT ?
-            FROM ?
-            WHERE ? = '?';
-            """);
+    String SUBJECT = "subject";
+    String JAVANOTES = "java";
+    String NOTE = "note";
+    String ID = "id";
     
-    private final String query;
+    String NOTE_BY_ID = 
+    """
+    SELECT %s 
+    FROM %s 
+    WHERE %s = ?
+    """.formatted(NOTE, JAVANOTES, ID);
     
-    Queries(final String query) { this.query = query; }
-    public String getQuery() { return query; }
+    String DISTINCT_SUBJECTS = 
+    """
+    SELECT DISTINCT %s 
+    FROM %s 
+    ORDER BY LOWER(%s)
+    """.formatted(SUBJECT, JAVANOTES, SUBJECT);
+    
+    String SPECIFIC_NOTE =
+    """
+    SELECT %s, %s
+    FROM %s
+    WHERE %s = ?
+    ORDER BY %s
+    """.formatted(SUBJECT, NOTE, JAVANOTES, SUBJECT, NOTE);
+            
+    String FULL_SPECIFIC =
+    """
+    SELECT %s, %s, %s
+    FROM %s
+    WHERE %s = ?
+    ORDER BY %s
+    """.formatted(ID, SUBJECT, NOTE, JAVANOTES, SUBJECT, NOTE);
+    
+    String ALL_NOTES = 
+    """
+    SELECT %s, %s 
+    FROM %s 
+    ORDER BY LOWER(%s), %s
+    """.formatted(SUBJECT, NOTE, JAVANOTES, SUBJECT, NOTE);
+    
+    String ADD_NOTE = 
+    """
+    INSERT INTO %s (%s, %s) 
+    VALUES (TRIM(?), TRIM(?))
+    """.formatted(JAVANOTES, SUBJECT, NOTE);
+            
+    String UPDATE_NOTE = 
+    """
+    UPDATE %s 
+    SET %s = TRIM(?) 
+    WHERE %s = ?
+    """.formatted(JAVANOTES, NOTE, ID);
+            
+    String DELETE_NOTE = 
+    """
+    DELETE FROM %s 
+    WHERE %s = ?
+    """.formatted(JAVANOTES, ID);
 }

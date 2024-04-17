@@ -16,101 +16,44 @@ import java.sql.ResultSet;
 import java.sql.Connection;
 
 
-public class MyNotesForWeb {  
+public class WebNotes implements WebNotesAPI {  
     @FunctionalInterface
-    private interface Handler<T> {
+    private interface SQLConsumer<T> {
         void accept(T o) throws SQLException;
     }
     
     @FunctionalInterface
-    private interface BiHandler<T, E> {
+    private interface SQLBiConsumer<T, E> {
         void accept(T o, E e) throws SQLException;
     }
-    
-     
+       
     private record NotesBySubject(String subject, Set<Note> notes) {}
 
 
-    private interface Queries {
+    private static final String FULL_PARAM_NAME = "--list";
+    private static final String BRIEF_PARAM_NAME = "-l";
     
-        String SUBJECT = "subject";
-        String JAVANOTES = "java";
-        String NOTE = "note";
-        String ID = "id";
+    private static final int FIRST_ARG = 0;
+    private static final int MIN_LENGTH = 0;
+      
+      
+    private static Set<String> availableSubjects = new LinkedHashSet<>();
+    private static Set<Note> availableNotes = new LinkedHashSet<>();
         
-        String NOTE_BY_ID = 
-        """
-        SELECT %s 
-        FROM %s 
-        WHERE %s = ?
-        """.formatted(NOTE, JAVANOTES, ID);
-        
-        String DISTINCT_SUBJECTS = 
-        """
-        SELECT DISTINCT %s 
-        FROM %s 
-        ORDER BY LOWER(%s)
-        """.formatted(SUBJECT, JAVANOTES, SUBJECT);
-        
-        String SPECIFIC_NOTE =
-        """
-        SELECT %s, %s
-        FROM %s
-        WHERE %s = ?
-        ORDER BY %s
-        """.formatted(SUBJECT, NOTE, JAVANOTES, SUBJECT, NOTE);
-                
-        String FULL_SPECIFIC =
-        """
-        SELECT %s, %s, %s
-        FROM %s
-        WHERE %s = ?
-        ORDER BY %s
-        """.formatted(ID, SUBJECT, NOTE, JAVANOTES, SUBJECT, NOTE);
-        
-        String ALL_NOTES = 
-        """
-        SELECT %s, %s 
-        FROM %s 
-        ORDER BY LOWER(%s), %s
-        """.formatted(SUBJECT, NOTE, JAVANOTES, SUBJECT, NOTE);
-        
-        String ADD_NOTE = 
-        """
-        INSERT INTO %s (%s, %s) 
-        VALUES (TRIM(?), TRIM(?))
-        """.formatted(JAVANOTES, SUBJECT, NOTE);
-                
-        String UPDATE_NOTE = 
-        """
-        UPDATE %s 
-        SET %s = TRIM(?) 
-        WHERE %s = ?
-        """.formatted(JAVANOTES, NOTE, ID);
-                
-        String DELETE_NOTE = 
-        """
-        DELETE FROM %s 
-        WHERE %s = ?
-        """.formatted(JAVANOTES, ID);
-    }
+    private static PreparedStatement cachedPreparedStatement;
     
-       
-    private static Set<String> SUBJECTS = new LinkedHashSet<>();
-    private static Set<Note> NOTES = new LinkedHashSet<>();
-        
-    private static PreparedStatement globalPreparedStatement;
     
-       
-    public static void deleteNote(final int id) { 
+    @Override   
+    public void deleteNote(final int id) { 
         templatedPrepare(prepare -> {
                 prepare.setInt(1, id);
                 prepare.executeUpdate();
         }, Queries.DELETE_NOTE);
     }
     
-       
-    public static void updateNote(final String content, final int id) {
+    
+    @Override   
+    public void updateNote(final String content, final int id) {
         templatedPrepare(prepare -> {
                 prepare.setString(1, content);
                 prepare.setInt(2, id);
@@ -119,7 +62,8 @@ public class MyNotesForWeb {
     }
     
     
-    public static String getNoteContentById(final int id) {
+    @Override
+    public String getNoteContent(final int id) {
         StringBuilder noteContent = new StringBuilder();
      
         templatedPrepare(prepare -> {
@@ -134,7 +78,8 @@ public class MyNotesForWeb {
     }
     
     
-    public static void addNote(final Note... notes) {   
+    @Override
+    public void createNote(final Note... notes) {   
         templatedPrepare(prepare -> {
                 for (Note note : notes) {
                     prepare.setString(1, note.subject());
@@ -145,22 +90,24 @@ public class MyNotesForWeb {
     }
     
     
-    public static Set<String> getSubjectSet() { 
-        update(MyNotesForWeb::processSubjects); 
-        return SUBJECTS; 
+    @Override
+    public Set<String> getAllSubjects() { 
+        update(WebNotes::processSubjects); 
+        return availableSubjects; 
     }
     
     
-    public static Set<Note> getAllNotes() { 
-        update(MyNotesForWeb::processAllNotes);
-        return NOTES; 
+    @Override
+    public Set<Note> getAllNotes() { 
+        update(WebNotes::processAllNotes);
+        return availableNotes; 
     }
     
     
-    public static 
-    Map<String, Set<Note>> getNotesBySelectedSubjects(final String selected) {
+    @Override 
+    public Map<String, Set<Note>> getNotes(final String selected) {
         return getDataUsingProcessing(result -> {
-                if (SUBJECTS.contains(selected)) {
+                if (availableSubjects.contains(selected)) {
                     NotesBySubject notes = processSpecificNotes(selected);
                     result.put(notes.subject(), notes.notes());
                 }
@@ -168,36 +115,42 @@ public class MyNotesForWeb {
     }
     
     
-    public static 
-    Map<String, Set<Note>> getNotesBySelectedSubjects(final Set<String> selected) {  
+    @Override
+    public Map<String, Set<Note>> getNotes(final Set<String> selected) {  
         return getDataUsingProcessing(result -> {
-                result.putAll(selected.stream()
-                        .map(MyNotesForWeb::processSpecificNotes)   
+                result.putAll(selected
+                        .stream()
+                        .map(WebNotes::processSpecificNotes)   
                         .collect(toMap(NotesBySubject::subject, NotesBySubject::notes, 
                                 (k, v) -> v, LinkedHashMap::new)));
         });
     }
     
     
-    public static void main(String[] args) {  
+    public static void main(String[] args) { 
+        WebNotes webNotes = new WebNotes();
+              
         if (isExistCLArgs(args)) {
             if (isPrintAvailableSubjects(args)) {
-                printSubjects(getSubjectSet());
+                printSubjects(webNotes.getAllSubjects());
             } else {
                 printExistingCustomSubjectsNotes(
-                        getExistingCustomSubjects(args));
+                        webNotes,
+                        getExistingCustomSubjects(webNotes, args));
             }     
         } else {
-            printNotes(getAllNotes());
+            printNotes(webNotes.getAllNotes());
         }         
     }
     
     
-    private static boolean isExistCLArgs(final String[] args) { return args.length > 0; }
+    private static boolean isExistCLArgs(final String[] args) { return args.length > MIN_LENGTH; }
     
     
     private static boolean isPrintAvailableSubjects(final String[] args) {
-        return "-l".equals(args[0]) || "--list".equals(args[0]);
+        final String TRIMMED_FIRST_ARG = args[FIRST_ARG].trim();
+        return BRIEF_PARAM_NAME.equals(TRIMMED_FIRST_ARG) 
+                || FULL_PARAM_NAME.equals(TRIMMED_FIRST_ARG);
     }
     
     
@@ -205,19 +158,23 @@ public class MyNotesForWeb {
         subjects.stream().forEach(System.out::println);
     }
     
-    
-    private static 
-    Set<String> getExistingCustomSubjects(final String... customSubjects) {
+       
+    private static Set<String> getExistingCustomSubjects(
+            final WebNotes webNotes, 
+            final String... customSubjects) 
+    {
         Set<String> result;
         (result = new LinkedHashSet<>(Arrays.asList(customSubjects)))
-                .retainAll(new LinkedHashSet<>(getSubjectSet()));
+                .retainAll(new LinkedHashSet<>(webNotes.getAllSubjects()));
         return result;
     } 
     
-    
-    private static 
-    void printExistingCustomSubjectsNotes(final Set<String> existingCustomSubjects) {
-        getNotesBySelectedSubjects(existingCustomSubjects)
+       
+    private static void printExistingCustomSubjectsNotes(
+            final WebNotes webNotes, 
+            final Set<String> existingCustomSubjects) 
+    {
+        webNotes.getNotes(existingCustomSubjects)
                 .forEach((key, value) -> printNotes(value));
     }
     
@@ -228,12 +185,12 @@ public class MyNotesForWeb {
     
     
     private static Map<String, Set<Note>> getDataUsingProcessing(
-            final Handler<Map<String, Set<Note>>> action) 
+            final SQLConsumer<Map<String, Set<Note>>> action) 
     {
         Map<String, Set<Note>> result = new LinkedHashMap<>();
         
         templatedPrepare((prepare, resultLmb) -> {
-                globalPreparedStatement = prepare;
+                cachedPreparedStatement = prepare;
                 action.accept(resultLmb);    
         }, result, Queries.FULL_SPECIFIC);
                                
@@ -242,7 +199,7 @@ public class MyNotesForWeb {
     
     
     private static void templatedPrepare(
-            final Handler<PreparedStatement> consumer, 
+            final SQLConsumer<PreparedStatement> consumer, 
             final String SQL) 
     {
         useBaseTemplate(prepare -> consumer.accept(prepare), SQL);
@@ -250,7 +207,7 @@ public class MyNotesForWeb {
         
     
     private static void templatedPrepare(
-            final BiHandler<PreparedStatement, Map<String, Set<Note>>> consumer, 
+            final SQLBiConsumer<PreparedStatement, Map<String, Set<Note>>> consumer, 
             final Map<String, Set<Note>> result,
             final String SQL) 
     { 
@@ -259,7 +216,7 @@ public class MyNotesForWeb {
         
       
     private static void useBaseTemplate(
-            final Handler<PreparedStatement> action, 
+            final SQLConsumer<PreparedStatement> action, 
             final String SQL) 
     {
         engine(connection -> prepareStatementEngine(connection, statement -> {
@@ -272,27 +229,27 @@ public class MyNotesForWeb {
     
     private static void prepareStatementEngine(
             final Connection connection, 
-            final Handler<Statement> consumer,
-            final String sql) 
+            final SQLConsumer<Statement> consumer,
+            final String SQL) 
     {
-        try (PreparedStatement statement = connection.prepareStatement(sql)) 
+        try (PreparedStatement statement = connection.prepareStatement(SQL)) 
         {
             consumer.accept(statement);
-        } catch (SQLException inner) {
-            throw new RuntimeException(inner);
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
         }
     }
     
     
     private static void statementEngine(
             final Connection connection,
-            final Handler<Statement> consumer) 
+            final SQLConsumer<Statement> consumer) 
     {                                
         try (Statement statement = connection.createStatement()) 
         {
             consumer.accept(statement);
-        } catch (SQLException inner) {
-            throw new RuntimeException(inner);
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
         }
     }
     
@@ -300,27 +257,27 @@ public class MyNotesForWeb {
     private static void engine(final ConnectionHandler handler) {
         try {
             new Processor(new Connector(), handler);
-        } catch (Exception outer) {
-            throw new RuntimeException(outer);
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
         }
     }
     
     
-    private static void update(final Handler<Statement> consumer) {
+    private static void update(final SQLConsumer<Statement> consumer) {
         engine(connection -> statementEngine(connection, consumer));
     }
     
        
     private static 
     void processSubjects(final Statement statement) throws SQLException {
-        SUBJECTS = new LinkedHashSet<>();
+        availableSubjects = new LinkedHashSet<>();
              
         ResultSet subjects = statement.executeQuery(Queries.DISTINCT_SUBJECTS);   
         
         iterateByResultSet(subjects, subjs -> {
                 String currentSubject = subjs.getString(Queries.SUBJECT);
                 if (isCurrentSubjectValid(currentSubject)) {
-                    SUBJECTS.add(currentSubject);
+                    availableSubjects.add(currentSubject);
                 }
         });   
     }
@@ -333,14 +290,14 @@ public class MyNotesForWeb {
       
     private static 
     void processAllNotes(final Statement statement) throws SQLException {
-        NOTES = new LinkedHashSet<>();
+        availableNotes = new LinkedHashSet<>();
         
         ResultSet notes = statement.executeQuery(Queries.ALL_NOTES);   
         
         iterateByResultSet(notes, nts -> {
                 String noteSubject = nts.getString(Queries.SUBJECT);
                 String noteContent = nts.getString(Queries.NOTE);
-                NOTES.add(new Note(noteSubject, noteContent));
+                availableNotes.add(new Note(noteSubject, noteContent));
         });  
     }
     
@@ -351,8 +308,8 @@ public class MyNotesForWeb {
         Set<Note> resultingNotes = new LinkedHashSet<>();
         
         try {
-            globalPreparedStatement.setString(1, requiredSubject);   
-            ResultSet notes = globalPreparedStatement.executeQuery();  
+            cachedPreparedStatement.setString(1, requiredSubject);   
+            ResultSet notes = cachedPreparedStatement.executeQuery();  
             
             iterateByResultSet(notes, nts -> {
                     int id = nts.getInt(Queries.ID);
@@ -373,7 +330,7 @@ public class MyNotesForWeb {
     
     private static void iterateByResultSet(
             final ResultSet resultSet, 
-            final Handler<ResultSet> consumer) 
+            final SQLConsumer<ResultSet> consumer) 
     {
         try {
             while (resultSet.next()) {
