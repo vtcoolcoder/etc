@@ -1,7 +1,8 @@
 package myservlets;
 
 
-import myjdbc.MyNotesForWeb;
+import myjdbc.WebNotesAPI;
+import myjdbc.WebNotes;
 import myjdbc.Note;
 import modes.Modes;
 import java.util.Set;
@@ -52,6 +53,8 @@ public class ServiceServlet {
     private boolean isUnselectedNote = false;
     private int counter = 0;
     
+    private WebNotesAPI webNotes;
+    
     
     ServiceServlet(HttpServletRequest request) {
         this.request = request;
@@ -64,6 +67,8 @@ public class ServiceServlet {
         DELETED_NOTE = SELECTED_NOTE;
         
         initMode();
+        
+        webNotes = new WebNotes();
     }
     
     
@@ -88,11 +93,11 @@ public class ServiceServlet {
     
     
     private void updateNote(int ID) {
-        MyNotesForWeb.updateNote((EDITED_NOTE != null) ? EDITED_NOTE : "", ID);
+        webNotes.updateNote((EDITED_NOTE != null) ? EDITED_NOTE : "", ID);
     }
     
     
-    private void deleteNote(int ID) { MyNotesForWeb.deleteNote(ID); }
+    private void deleteNote(int ID) { webNotes.deleteNote(ID); }
     
      
     private boolean isFillNotesBySelectedSubjectsError() {
@@ -109,7 +114,7 @@ public class ServiceServlet {
         sb.append("<h2>Заметки по выбранным темам:</h2>");
                 
         Map<String, Set<Note>> availableRecords = 
-            MyNotesForWeb.getNotesBySelectedSubjects(getSelectedSubjects());
+            webNotes.getNotes(getSelectedSubjects());
             
         availableRecords.forEach((key, value) -> {
                 value.stream()
@@ -166,8 +171,7 @@ public class ServiceServlet {
     
     private void fillChangeNoteDefault(StringBuilder sb) {
         Map<String, Set<Note>> availableRecords = 
-            MyNotesForWeb.getNotesBySelectedSubjects(
-                    (SUBJECT != null) ? SUBJECT : "");
+            webNotes.getNotes((SUBJECT != null) ? SUBJECT : "");
                 
         sb.append(iterate(availableRecords, RADIOFMT));              
         
@@ -189,7 +193,7 @@ public class ServiceServlet {
             ID = Integer.parseInt(SELECTED_NOTE); 
         } catch (NumberFormatException ex) {}
         
-        final String CONTENT = (ID != -1) ? MyNotesForWeb.getNoteContentById(ID) : "";
+        final String CONTENT = (ID != -1) ? webNotes.getNoteContent(ID) : "";
         
         return new IdAndContent(ID, CONTENT);
     }
@@ -244,7 +248,7 @@ public class ServiceServlet {
     
     
     private Set<String> getAvailableSubjects() { 
-        return MyNotesForWeb.getSubjectSet(); 
+        return webNotes.getAllSubjects(); 
     }
     
     
@@ -289,7 +293,7 @@ public class ServiceServlet {
     
     
     private void createNote() { 
-        MyNotesForWeb.addNote(new Note(SUBJECT, CREATED_NOTE)); 
+        webNotes.createNote(new Note(SUBJECT, CREATED_NOTE)); 
     }
     
     
@@ -315,7 +319,7 @@ public class ServiceServlet {
 			                     String subject = key; 
                        String[] wrapper = value;
                     
-                       String checkboxStatus = wrapper.length > 0 ? wrapper[0] : "";
+                       String checkboxStatus = (wrapper.length > 0) ? wrapper[0] : "";
                        boolean isCheckboxOn = "on".equals(checkboxStatus);
                        boolean isValidSubjectName = 
                                getAvailableSubjects().contains(subject);
