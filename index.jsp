@@ -9,6 +9,7 @@
 </head>
 <body>
     <div>
+        <h1>Навигация</h1>
         <ul>
             <li><a href="create.jsp">Создать</a></li>
             <li><a href="update.jsp">Обновить</a></li>
