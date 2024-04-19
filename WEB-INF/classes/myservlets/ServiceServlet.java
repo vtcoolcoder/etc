@@ -94,12 +94,16 @@ public class ServiceServlet {
     </h2>
     """;
     
-    private static final String SUBJECT_AMOUNTFMT = 
+    private static final String TEMPLATE_AMOUNTFMT = 
     """
     <h3>
-        <b>Всего тем:</b> <i>%d</i>
+        <b>Всего %s:</b> <i>%%d</i>
     </h3>
     """;
+    
+    private static final String SUBJECT_AMOUNTFMT = TEMPLATE_AMOUNTFMT.formatted("тем");
+    
+    private static final String NOTES_AMOUNTFMT = TEMPLATE_AMOUNTFMT.formatted("заметок");
     
 
     private HttpServletRequest request;
@@ -474,7 +478,11 @@ public class ServiceServlet {
                 
                 if (isAddingExtraInfo()) {
                     int allSubjectsAmount = webNotes.getAllSubjectsAmount();
+                    int allNotesAmount = webNotes.getAllNotesAmount();
+                    
                     sb.append(SUBJECT_AMOUNTFMT.formatted(allSubjectsAmount));
+                    sb.append("\n");
+                    sb.append(SUBJECT_AMOUNTFMT.formatted(allNotesAmount));
                 }
                 
                 getAvailableSubjects().stream().forEach(subject -> { 

@@ -20,7 +20,9 @@ public interface WebNotesAPI {
     
     Set<String> getAllSubjects();   
     
-    int getAllSubjectsAmount();       
+    int getAllSubjectsAmount();    
+    
+    int getAllNotesAmount();   
     
     void updateNote(final String content, final int id);
     

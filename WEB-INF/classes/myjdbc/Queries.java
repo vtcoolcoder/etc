@@ -73,9 +73,15 @@ public interface Queries {
     GROUP BY %s
     """.formatted(SUBJECT, NOTE, AMOUNT, JAVANOTES, SUBJECT);
     
-    String ALL_SUBJECTS_AMOUNT =
+    String TEMPLATE_ALL_AMOUNT =
     """
-    SELECT COUNT(%s) AS %s
+    SELECT %sCOUNT(%s) AS %s
     FROM %s
-    """.formatted(SUBJECT, AMOUNT, JAVANOTES);
+    """;
+    
+    String ALL_SUBJECTS_AMOUNT = TEMPLATE_ALL_AMOUNT
+            .formatted("DISTINCT ", SUBJECT, AMOUNT, JAVANOTES);
+    
+    String ALL_NOTES_AMOUNT = TEMPLATE_ALL_AMOUNT
+            .formatted("", NOTE, AMOUNT, JAVANOTES);
 }

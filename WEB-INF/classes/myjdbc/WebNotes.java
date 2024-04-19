@@ -42,6 +42,7 @@ public class WebNotes implements WebNotesAPI {
     private static Set<Note> availableNotes = new LinkedHashSet<>();
     private static Map<String, Integer> notesBySubjectAmount = new HashMap<>();
     private static int allSubjectsAmount;
+    private static int allNotesAmount;
         
     private static PreparedStatement cachedPreparedStatement;
     
@@ -141,6 +142,13 @@ public class WebNotes implements WebNotesAPI {
     public int getAllSubjectsAmount() {
         update(WebNotes::processAllSubjectsAmount);
         return allSubjectsAmount;
+    }
+    
+    
+    @Override
+    public int getAllNotesAmount() {
+        update(WebNotes::processAllNotesAmount);
+        return allNotesAmount;
     }
     
     
@@ -377,6 +385,16 @@ public class WebNotes implements WebNotesAPI {
         
         iterateByResultSet(amount, amnt -> {
                 allSubjectsAmount = amnt.getInt(Queries.AMOUNT);         
+        });   
+    }
+    
+    
+    private static
+    void processAllNotesAmount(final Statement statement) throws SQLException {
+        ResultSet amount = statement.executeQuery(Queries.ALL_NOTES_AMOUNT);   
+        
+        iterateByResultSet(amount, amnt -> {
+                allNotesAmount = amnt.getInt(Queries.AMOUNT);         
         });   
     }
 }
