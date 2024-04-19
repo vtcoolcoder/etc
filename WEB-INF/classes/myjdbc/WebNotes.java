@@ -165,7 +165,7 @@ public class WebNotes implements WebNotesAPI {
           
         List<Integer> allID = getAllID();
         int size = allID.size();
-        final int randomId = new Random().nextInt(size);
+        final int randomId = allID.get(new Random().nextInt(size));
         
         templatedPrepare(prepare -> {
                 prepare.setInt(1, randomId);
