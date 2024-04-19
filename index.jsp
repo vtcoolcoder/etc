@@ -19,8 +19,10 @@
     <hr>
     <h1>Заметки</h1>
     <form method="post" action="index.jsp">
+    <%= API.showRandomNote() %>
     <%= API.showCheckboxesWithSubjects() %>
-    <br><input type="submit" name="mode" value="Выбрать тему заметки"></form>   
+    <br><input type="submit" name="mode" value="Выбрать тему заметки">
+    </form>   
     <%= API.showNotesBySelectedSubjects() %>
 </body>
 </html>

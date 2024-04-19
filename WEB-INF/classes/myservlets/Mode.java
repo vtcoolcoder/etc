@@ -4,5 +4,5 @@ package myservlets;
 public enum Mode { 
     CREATE, READ, UPDATE, DELETE, 
     CHANGE_NOTE, CHANGE_SUBJECT, 
-    PRELUDE, DEFAULT 
+    PRELUDE, RANDOM, DEFAULT 
 }

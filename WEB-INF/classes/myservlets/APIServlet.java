@@ -19,6 +19,11 @@ public class APIServlet {
     }
     
     
+    public String showRandomNote() {
+        return service.getResultingContent(Mode.RANDOM);
+    }
+    
+    
     public String showNotesBySelectedSubjects() {
         return service.getResultingContent(Mode.READ);
     }
