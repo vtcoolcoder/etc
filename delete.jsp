@@ -11,11 +11,11 @@
     <div>
         <h1>Навигация</h1>
         <ul>
-            <li><a href="index.jsp">Читать</a></li><br>
-            <li><a href="create.jsp">Создать</a></li><br>
-            <li><a href="update.jsp">Обновить</a></li>
+            <li><h2><a href="index.jsp">Читать</a></h2></li>
+            <li><h2><a href="create.jsp">Создать</a></h2></li>
+            <li><h2><a href="update.jsp">Обновить</a></h2></li>
         </ul>
-    </div>
+    </div><hr>
     <h1><b>Удаление заметок:</b></h1>
     <h2><b>Выберите тему удаляемой заметки:</b></h2>
     <form method="post" action="delete.jsp">
