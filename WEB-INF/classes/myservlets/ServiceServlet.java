@@ -528,7 +528,6 @@ public class ServiceServlet {
                     sb.append("<h2>Случайная заметка:</h2>");
                     sb.append(RECORD_FORMAT.formatted(
                             randomNote.subject(), randomNote.note()));
-                    sb.append("<hr>");
                 }
             }
             
