@@ -523,7 +523,7 @@ public class ServiceServlet {
             
             
             case RANDOM -> {
-                if (isRandomNote() && isAddingExtraInfo()) {
+                if (isRandomNote()) {
                     Note randomNote = webNotes.getRandomNote();
                     sb.append("<h2>Случайная заметка:</h2>");
                     sb.append(RECORD_FORMAT.formatted(
