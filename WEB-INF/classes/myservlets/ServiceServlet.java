@@ -96,9 +96,7 @@ public class ServiceServlet {
     
     private static final String TEMPLATE_AMOUNTFMT = 
     """
-    <h3>
-        <b>Всего %s:</b> <i>%%d</i>
-    </h3>
+    <b>Всего %s:</b> <i>%%d</i><br>
     """;
     
     private static final String SUBJECT_AMOUNTFMT = TEMPLATE_AMOUNTFMT.formatted("тем");
@@ -491,10 +489,12 @@ public class ServiceServlet {
                     int allNotesAmount = webNotes.getAllNotesAmount();
                     
                     sb.append(STATISTICS); 
+                    sb.append("<h3>");
                     sb.append(SUBJECT_AMOUNTFMT.formatted(allSubjectsAmount));
                     sb.append("\n");
                     sb.append(NOTES_AMOUNTFMT.formatted(allNotesAmount));
                     sb.append("\n");
+                    sb.append("</h3>");
                     sb.append(AVAILABLE_SUBJECTS_LIST);
                 }
                 
