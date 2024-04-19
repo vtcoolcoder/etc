@@ -437,6 +437,12 @@ public class ServiceServlet {
                     } else {
                         fillNotesBySelectedSubjects(sb);        
                     }
+                } else if (isRandomNote() && isAddingExtraInfo()) {
+                    Note randomNote = webNotes.getRandomNote();
+                    sb.append("<h2>Случайная заметка:</h2>");
+                    sb.append(RECORD_FORMAT.formatted(
+                            randomNote.subject(), randomNote.note()));
+                    sb.append("<hr>");
                 }
             }
            
@@ -519,17 +525,6 @@ public class ServiceServlet {
                     sb.append(CANCEL_HIGHLIGHTFMT);
                     sb.append(RANDOM_NOTEFMT);
                 }           
-            }
-            
-            
-            case RANDOM -> {
-                if (isRandomNote() && isAddingExtraInfo()) {
-                    Note randomNote = webNotes.getRandomNote();
-                    sb.append("<h2>Случайная заметка:</h2>");
-                    sb.append(RECORD_FORMAT.formatted(
-                            randomNote.subject(), randomNote.note()));
-                    sb.append("<hr>");
-                }
             }
             
             
