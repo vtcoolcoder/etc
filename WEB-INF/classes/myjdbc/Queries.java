@@ -34,11 +34,11 @@ public interface Queries {
             
     String FULL_SPECIFIC =
     """
-    SELECT %s, %s, %s
+    SELECT *
     FROM %s
     WHERE %s = ?
     ORDER BY %s
-    """.formatted(ID, SUBJECT, NOTE, JAVANOTES, SUBJECT, NOTE);
+    """.formatted(JAVANOTES, SUBJECT, NOTE);
     
     String ALL_NOTES = 
     """
