@@ -75,7 +75,7 @@ public interface Queries {
     
     String TEMPLATE_ALL_AMOUNT =
     """
-    SELECT %sCOUNT(%s) AS %s
+    SELECT COUNT(%s%s) AS %s
     FROM %s
     """;
     

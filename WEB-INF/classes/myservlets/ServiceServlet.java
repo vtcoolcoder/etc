@@ -482,7 +482,7 @@ public class ServiceServlet {
                     
                     sb.append(SUBJECT_AMOUNTFMT.formatted(allSubjectsAmount));
                     sb.append("\n");
-                    sb.append(SUBJECT_AMOUNTFMT.formatted(allNotesAmount));
+                    sb.append(NOTES_AMOUNTFMT.formatted(allNotesAmount));
                 }
                 
                 getAvailableSubjects().stream().forEach(subject -> { 
