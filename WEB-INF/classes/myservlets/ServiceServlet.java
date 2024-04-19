@@ -515,9 +515,9 @@ public class ServiceServlet {
                 });   
                 
                 if (isAddingExtraInfo()) {
+                    sb.append(RANDOM_NOTEFMT);
                     sb.append(HIGHLIGHTALLFMT);
                     sb.append(CANCEL_HIGHLIGHTFMT);
-                    sb.append(RANDOM_NOTEFMT);
                 }           
             }
             
