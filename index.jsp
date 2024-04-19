@@ -11,11 +11,12 @@
     <div>
         <h1>Навигация</h1>
         <ul>
-            <li><a href="create.jsp">Создать</a></li><br>
-            <li><a href="update.jsp">Обновить</a></li><br>
-            <li><a href="delete.jsp">Удалить</a></li>
+            <li><h2><a href="create.jsp">Создать</a></h2></li>
+            <li><h2><a href="update.jsp">Обновить</a></h2></li>
+            <li><h2><a href="delete.jsp">Удалить</a></h2></li>
         </ul>
     </div>
+    <hr>
     <h1>Заметки</h1>
     <form method="post" action="index.jsp">
     <%= API.showCheckboxesWithSubjects() %>
