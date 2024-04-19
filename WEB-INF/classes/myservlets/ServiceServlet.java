@@ -39,6 +39,11 @@ public class ServiceServlet {
     <br><input type="submit" name="mode" value="%s"><br>
     """; 
     
+    private static final String RANDOM_NOTEFMT =
+    """
+    <br><input type="submit" name="mode" value="%s"><br>
+    """.formatted(Modes.Consts.RANDOM);
+    
     private static final String HIGHLIGHTALLFMT = HIGHLIGHT_TEMPLATE.formatted(Modes.Consts.HIGHLIGHTALL);
     private static final String CANCEL_HIGHLIGHTFMT = HIGHLIGHT_TEMPLATE.formatted(Modes.Consts.CANCEL_HIGHLIGHTALL);
     
@@ -159,6 +164,7 @@ public class ServiceServlet {
     private boolean isDeleteMode() { return Modes.DELETE.equals(mode); }
     private boolean isHighlightAllMode() { return Modes.HIGHLIGHTALL.equals(mode); }
     private boolean isCancelHighlightMode() { return Modes.CANCEL_HIGHLIGHTALL.equals(mode); }
+    private boolean isRandomNote() { return Modes.RANDOM.equals(mode); }
     
     
     private String getCheckboxFormattedLine(String subject, String checked, int amount) { 
@@ -309,6 +315,7 @@ public class ServiceServlet {
             case Modes.Consts.CREATE -> this.mode = Modes.CREATE;
             case Modes.Consts.HIGHLIGHTALL -> this.mode = Modes.HIGHLIGHTALL;
             case Modes.Consts.CANCEL_HIGHLIGHTALL -> this.mode = Modes.CANCEL_HIGHLIGHTALL;
+            case Modes.Consts.RANDOM -> this.mode = Modes.RANDOM;
             case Modes.Consts.BYDEFAULT -> this.mode = Modes.BYDEFAULT;
         }
     }
@@ -510,7 +517,19 @@ public class ServiceServlet {
                 if (isAddingExtraInfo()) {
                     sb.append(HIGHLIGHTALLFMT);
                     sb.append(CANCEL_HIGHLIGHTFMT);
+                    sb.append(RANDOM_NOTEFMT);
                 }           
+            }
+            
+            
+            case RANDOM -> {
+                if (isRandomNote() && isAddingExtraInfo()) {
+                    Note randomNote = webNotes.getRandomNote();
+                    sb.append("<h2>Случайная заметка:</h2>");
+                    sb.append(RECORD_FORMAT.formatted(
+                            randomNote.subject(), randomNote.note()));
+                    sb.append("<hr>");
+                }
             }
             
             

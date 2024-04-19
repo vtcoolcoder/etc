@@ -24,6 +24,8 @@ public interface WebNotesAPI {
     
     int getAllNotesAmount();   
     
+    Note getRandomNote();
+    
     void updateNote(final String content, final int id);
     
     void deleteNote(final int id);         

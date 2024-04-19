@@ -7,8 +7,12 @@ import java.util.Set;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Arrays;
+
+import java.util.Random;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
@@ -41,6 +45,8 @@ public class WebNotes implements WebNotesAPI {
     private static Set<String> availableSubjects = new LinkedHashSet<>();
     private static Set<Note> availableNotes = new LinkedHashSet<>();
     private static Map<String, Integer> notesBySubjectAmount = new HashMap<>();
+    private static List<Integer> allID = new ArrayList<>();
+    
     private static int allSubjectsAmount;
     private static int allNotesAmount;
         
@@ -149,6 +155,30 @@ public class WebNotes implements WebNotesAPI {
     public int getAllNotesAmount() {
         update(WebNotes::processAllNotesAmount);
         return allNotesAmount;
+    }
+    
+    
+    @Override
+    public Note getRandomNote() {   
+        class Helper { String subject, note; }
+        final Helper helper = new Helper();
+          
+        List<Integer> allID = getAllID();
+        int size = allID.size();
+        final int randomId = new Random().nextInt(size);
+        
+        templatedPrepare(prepare -> {
+                prepare.setInt(1, randomId);
+                ResultSet resultSet = prepare.executeQuery();
+                iterateByResultSet(resultSet, rsltSet -> {
+                        helper.subject = rsltSet.getString(Queries.SUBJECT);
+                        helper.note = rsltSet.getString(Queries.NOTE);
+                });
+        }, Queries.RANDOM);
+        
+        return new Note(
+                helper.subject != null ? helper.subject : "", 
+                helper.note != null ? helper.note : "");
     }
     
     
@@ -396,5 +426,21 @@ public class WebNotes implements WebNotesAPI {
         iterateByResultSet(amount, amnt -> {
                 allNotesAmount = amnt.getInt(Queries.AMOUNT);         
         });   
+    }
+    
+    
+    private static
+    void processAllID(final Statement statement) throws SQLException {
+        ResultSet IDS = statement.executeQuery(Queries.ALL_ID);   
+        
+        iterateByResultSet(IDS, id -> {
+                allID.add(id.getInt(Queries.ID));         
+        });   
+    }
+    
+    
+    private static List<Integer> getAllID() {
+        update(WebNotes::processAllID);
+        return allID;
     }
 }

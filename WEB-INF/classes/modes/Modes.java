@@ -9,6 +9,7 @@ public enum Modes {
     CREATE(Consts.CREATE),
     HIGHLIGHTALL(Consts.HIGHLIGHTALL),
     CANCEL_HIGHLIGHTALL(Consts.CANCEL_HIGHLIGHTALL),
+    RANDOM(Consts.RANDOM),
     BYDEFAULT(Consts.BYDEFAULT);
     
     public interface Consts {
@@ -19,6 +20,7 @@ public enum Modes {
         String CREATE = "Добавить заметку";
         String HIGHLIGHTALL = "Выделить все темы";
         String CANCEL_HIGHLIGHTALL = "Отменить выделения";
+        String RANDOM = "Случайная заметка";
         String BYDEFAULT = "";
     }
     

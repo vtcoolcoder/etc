@@ -84,4 +84,17 @@ public interface Queries {
     
     String ALL_NOTES_AMOUNT = TEMPLATE_ALL_AMOUNT
             .formatted("", NOTE, AMOUNT, JAVANOTES);
+            
+    String ALL_ID = 
+    """
+    SELECT DISTINCT %s
+    FROM %s
+    """.formatted(ID, JAVANOTES);
+    
+    String RANDOM =
+    """
+    SELECT %s, %s
+    FROM %s
+    WHERE %s = ?
+    """.formatted(SUBJECT, NOTE, JAVANOTES, ID);
 }
