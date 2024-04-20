@@ -142,6 +142,6 @@ public interface ServiceServletData {
     
     String AVAILABLE_SUBJECTS_LIST =
     """
-    <h2>Список доступных тем</h2>
+    <h2>Доступные темы</h2>
     """;    
 }
