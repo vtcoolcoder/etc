@@ -16,8 +16,8 @@
             <li><h2><a href="update.jsp">Обновить</a></h2></li>
         </ul>
     </div><hr>
-    <h1><b>Удаление заметок:</b></h1>
-    <h2><b>Выберите тему удаляемой заметки:</b></h2>
+    <h1><b>Удаление заметок</b></h1>
+    <h2><b>Выберите тему удаляемой заметки</b></h2>
     <form method="post" action="delete.jsp">
     <select name="subject" size="7">  
     <%= API.showDefault() %>

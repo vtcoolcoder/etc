@@ -16,14 +16,14 @@
             <li><h2><a href="delete.jsp">Удалить</a></h2></li>
         </ul>
     </div><hr>
-    <h1>Добавление заметок:</h1>
+    <h1>Добавление заметок</h1>
     <%= API.tryCreateNote() %>   
-    <h2>Выберите тему добавляемой заметки:</h2>
+    <h2>Выберите тему добавляемой заметки</h2>
     <form method="post" action="create.jsp">
     <select name="subject" size="7">
     <%= API.showDefault() %>
     </select>      
-    <b>Новая тема:</b><input type="text" name="subject">
+    <b>Новая тема</b><input type="text" name="subject">
     <textarea name="createdNote" cols="130" rows="35" wrap="hard"></textarea>
     <input type="submit" name="mode" value="Добавить заметку"></form>
 </body>
