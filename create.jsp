@@ -24,7 +24,7 @@
     <%= API.showDefault() %>
     </select>      
     <b>Новая тема</b><input type="text" name="subject">
-    <textarea name="createdNote" cols="130" rows="35" wrap="hard"></textarea>
+    <textarea name="createdNote" cols="92" rows="23" wrap="hard"></textarea>
     <input type="submit" name="mode" value="Добавить заметку"></form>
 </body>
 </html>
