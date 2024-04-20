@@ -2,12 +2,23 @@ package myjdbc;
 
 
 public interface Queries {
-    
-    String SUBJECT = "subject";
-    String JAVANOTES = "java";
-    String NOTE = "note";
-    String ID = "id";
+
     String AMOUNT = "amount";
+    String BSUFFIX = "_backup";
+    String BPREFIX = "source_";
+    
+    String JAVANOTES = "java";
+    String BACKUP_JAVANOTES = JAVANOTES + BSUFFIX;
+      
+    String ID = "id";
+    String SUBJECT = "subject";  
+    String NOTE = "note";
+    String TIMESTAMP = "timestamp";
+       
+    String S_ID = BPREFIX + ID;
+    String S_SUBJECT = BPREFIX + SUBJECT;
+    String S_NOTE = BPREFIX + NOTE;
+    String S_TIMESTAMP = BPREFIX + TIMESTAMP;
     
     
     String NOTE_BY_ID = 
@@ -97,4 +108,14 @@ public interface Queries {
     FROM %s
     WHERE %s = ?
     """.formatted(SUBJECT, NOTE, JAVANOTES, ID);
+    
+    String BACKUP =
+    """
+    INSERT INTO %s (%s, %s, %s, %s) 
+        SELECT * 
+        FROM %s 
+        WHERE %s = ?
+    """.formatted(BACKUP_JAVANOTES, 
+            S_ID, S_SUBJECT, S_NOTE, S_TIMESTAMP, 
+            JAVANOTES, ID);
 }

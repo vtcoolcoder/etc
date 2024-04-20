@@ -55,6 +55,8 @@ public class WebNotes implements WebNotesAPI {
     
     @Override   
     public void deleteNote(final int id) { 
+        backupNote(id);
+        
         templatedPrepare(prepare -> {
                 prepare.setInt(1, id);
                 prepare.executeUpdate();
@@ -64,6 +66,8 @@ public class WebNotes implements WebNotesAPI {
     
     @Override   
     public void updateNote(final String content, final int id) {
+        backupNote(id);
+        
         templatedPrepare(prepare -> {
                 prepare.setString(1, content);
                 prepare.setInt(2, id);
@@ -442,5 +446,13 @@ public class WebNotes implements WebNotesAPI {
     private static List<Integer> getAllID() {
         update(WebNotes::processAllID);
         return allID;
+    }
+    
+    
+    private static void backupNote(final int id) {
+        templatedPrepare(prepare -> {
+                prepare.setInt(1, id);  
+                prepare.executeUpdate();
+        }, Queries.BACKUP);
     }
 }
