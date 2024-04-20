@@ -61,15 +61,19 @@ public interface Queries {
     String ADD_NOTE = 
     """
     INSERT INTO %s (%s, %s) 
-    VALUES (TRIM(?), TRIM(?))
+    VALUES (
+        TRIM(?), 
+        TRIM(?))
     """.formatted(JAVANOTES, SUBJECT, NOTE);
             
     String UPDATE_NOTE = 
     """
     UPDATE %s 
-    SET %s = TRIM(?) 
+    SET 
+        %s = TRIM(?),
+        %s = NOW() 
     WHERE %s = ?
-    """.formatted(JAVANOTES, NOTE, ID);
+    """.formatted(JAVANOTES, NOTE, TIMESTAMP, ID);
             
     String DELETE_NOTE = 
     """
