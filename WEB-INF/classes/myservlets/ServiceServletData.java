@@ -1,6 +1,9 @@
 package myservlets;
 
 
+import modes.Modes;
+
+
 public interface ServiceServletData {
 
      int SUBSTRLIMIT = 69;
