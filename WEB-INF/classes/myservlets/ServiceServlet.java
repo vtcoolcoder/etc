@@ -6,11 +6,15 @@ import static myservlets.ServiceServletData.*;
 import myjdbc.WebNotesAPI;
 import myjdbc.WebNotes;
 import myjdbc.Note;
+
 import modes.Modes;
+
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.Map;
+
 import jakarta.servlet.http.HttpServletRequest;
+
 import java.util.function.BiConsumer;
 
 
@@ -39,11 +43,11 @@ public class ServiceServlet {
     ServiceServlet(HttpServletRequest request) {
         this.request = request;
         
-        MODE = request.getParameter("mode");
-        SUBJECT = request.getParameter("subject");
-        CREATED_NOTE = request.getParameter("createdNote");
-        SELECTED_NOTE = request.getParameter("selectedNote");
-        EDITED_NOTE = request.getParameter("editedNote");
+        MODE = request.getParameter(PARAM_MODE); 
+        SUBJECT = request.getParameter(PARAM_SUBJECT); 
+        CREATED_NOTE = request.getParameter(PARAM_CREATED_NOTE); 
+        SELECTED_NOTE = request.getParameter(PARAM_SELECTED_NOTE); 
+        EDITED_NOTE = request.getParameter(PARAM_EDITED_NOTE); 
         DELETED_NOTE = SELECTED_NOTE;
         
         initMode();
@@ -76,7 +80,7 @@ public class ServiceServlet {
     
     
     private void updateNote(int ID) {
-        webNotes.updateNote((EDITED_NOTE != null) ? EDITED_NOTE : "", ID);
+        webNotes.updateNote((EDITED_NOTE != null) ? EDITED_NOTE : NULL_CONTENT, ID);
     }
     
     
@@ -89,12 +93,12 @@ public class ServiceServlet {
     
     
     private void fillNotesBySelectedSubjectsError(StringBuilder sb) {
-        sb.append(UNSELECTEDSUBJFMT.formatted("тему", "тему"));
+        sb.append(UNSELECTEDSUBJFMT.formatted(UNSUBJECT, UNSUBJECT));
     }
     
     
     private void fillNotesBySelectedSubjects(StringBuilder sb) {
-        sb.append("<h2>Заметки по выбранным темам:</h2>");
+        sb.append(NOTES_BY_SELECTED_SUBJECTS_TITLE);
                 
         Map<String, Set<Note>> availableRecords = 
             webNotes.getNotes(getSelectedSubjects());
@@ -106,7 +110,7 @@ public class ServiceServlet {
                                         el.note()))              
                      .forEach(sb::append);
                      
-                sb.append("<hr>");
+                sb.append(HR); 
         });
     }
     
@@ -123,7 +127,7 @@ public class ServiceServlet {
     
     
     private void fillChangeSubjectError(StringBuilder sb) {
-        sb.append(UNSELECTEDSUBJFMT.formatted("тему", "тему"));
+        sb.append(UNSELECTEDSUBJFMT.formatted(UNSUBJECT, UNSUBJECT));
         isUnselectedSubject = true;
     }
     
@@ -147,19 +151,19 @@ public class ServiceServlet {
     
     
     private void fillChangeNoteError(StringBuilder sb) {
-        sb.append(FRAGMENTFMT.formatted("фрагмент", "фрагмент"));
+        sb.append(FRAGMENTFMT.formatted(UNFRAGMENT, UNFRAGMENT));
         isUnselectedNote = true;
     }
     
     
     private void fillChangeNoteDefault(StringBuilder sb) {
         Map<String, Set<Note>> availableRecords = 
-            webNotes.getNotes((SUBJECT != null) ? SUBJECT : "");
+            webNotes.getNotes((SUBJECT != null) ? SUBJECT : NULL_CONTENT);
                 
         sb.append(iterate(availableRecords, RADIOFMT));              
         
         if (isAddingSubmitButton()) {
-            sb.append("<input type=\"submit\" name=\"mode\" value=\"Выбрать заметку\">");
+            sb.append(SUBMIT_SELECT);
         }
     }
     
@@ -176,7 +180,7 @@ public class ServiceServlet {
             ID = Integer.parseInt(SELECTED_NOTE); 
         } catch (NumberFormatException ex) {}
         
-        final String CONTENT = (ID != -1) ? webNotes.getNoteContent(ID) : "";
+        final String CONTENT = (ID != -1) ? webNotes.getNoteContent(ID) : NULL_CONTENT; 
         
         return new IdAndContent(ID, CONTENT);
     }
@@ -191,18 +195,19 @@ public class ServiceServlet {
     
     
     private void fillUpdateContent(StringBuilder sb, String CONTENT) {
-        sb.append("<textarea name=\"editedNote\" cols=\"92\" rows=\"23\" wrap=\"hard\">");
+        sb.append(TEXTAREA_OPEN);
         sb.append(CONTENT); 
-        sb.append("</textarea><br><br>");
-        sb.append("<input type=\"submit\" name=\"mode\" value=\"Редактировать заметку\">");
+        sb.append(TEXTAREA_CLOSE);
+        sb.append(SUBMIT_UPDATE);
     }
     
     
     private void fillDeleteContent(StringBuilder sb, String CONTENT) {
-        sb.append("<div>");
+        sb.append(DIV_OPEN); 
         sb.append(CONTENT); 
-        sb.append("</div><br><br>");
-        sb.append("<input type=\"submit\" name=\"mode\" value=\"Удалить заметку\">");
+        sb.append(DIV_CLOSE); 
+        sb.append(DOUBLE_BR);   
+        sb.append(SUBMIT_DELETE);
     }
     
     
@@ -245,7 +250,7 @@ public class ServiceServlet {
                 })
                 .map(el -> RADIOFMT.formatted(
                                 el.note().id(), 
-                                (counter++ == 0) ? "checked" : "",
+                                (counter++ == 0) ? CHECKED_ON : CHECKED_OFF,
                                 el.fragment()))
                 .forEach(sb::append));
           
@@ -293,8 +298,8 @@ public class ServiceServlet {
 			                     String subject = key; 
                        String[] wrapper = value;
                     
-                       String checkboxStatus = (wrapper.length > 0) ? wrapper[0] : "";
-                       boolean isCheckboxOn = "on".equals(checkboxStatus);
+                       String checkboxStatus = (wrapper.length > 0) ? wrapper[0] : CHECKBOX_OFF;
+                       boolean isCheckboxOn = CHECKBOX_ON.equals(checkboxStatus); 
                        boolean isValidSubjectName = 
                                getAvailableSubjects().contains(subject);
                 
@@ -324,8 +329,8 @@ public class ServiceServlet {
                     if (isValidCreatedNote()) { 
                         createNote(); 
                     } else { 
-                        generateErrorMessages(sb, "тему", "содержимое"); 
-                    }
+                        generateErrorMessages(sb, UNSUBJECT, UNCONTENT); 
+                    } 
                 }
             }
             
@@ -396,19 +401,19 @@ public class ServiceServlet {
                     int allNotesAmount = webNotes.getAllNotesAmount();
                     
                     sb.append(STATISTICS); 
-                    sb.append("<h3>");
+                    sb.append(H3_OPEN); 
                     sb.append(SUBJECT_AMOUNTFMT.formatted(allSubjectsAmount));
-                    sb.append("\n");
+                    sb.append(NEW_LINE); 
                     sb.append(NOTES_AMOUNTFMT.formatted(allNotesAmount));
-                    sb.append("\n");
-                    sb.append("</h3>");
+                    sb.append(NEW_LINE);
+                    sb.append(H3_CLOSE);
                     sb.append(AVAILABLE_SUBJECTS_LIST);
                 }
                 
                 getAvailableSubjects().stream().forEach(subject -> { 
                     String checked = (! isCancelHighlightMode())
                         && (isHighlightAllMode() || getSelectedSubjects().contains(subject)) 
-                                ? "checked" : "";
+                                ? CHECKED_ON : CHECKED_OFF; 
                     int currentNotesAmount = notesBySubjectAmount.get(subject);
                     sb.append(getCheckboxFormattedLine(subject, checked, currentNotesAmount));
                     
@@ -425,7 +430,7 @@ public class ServiceServlet {
             case RANDOM -> {
                 if (isRandomNote()) {
                     Note randomNote = webNotes.getRandomNote();
-                    sb.append("<h2>Случайная заметка:</h2>");
+                    sb.append(RANDOM_TITLE); 
                     sb.append(RECORD_FORMAT.formatted(
                             randomNote.subject(), randomNote.note()));
                 }
