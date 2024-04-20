@@ -1,6 +1,8 @@
 package myservlets;
 
 
+import static myservlets.ServiceServletData.*;
+
 import myjdbc.WebNotesAPI;
 import myjdbc.WebNotes;
 import myjdbc.Note;
@@ -15,108 +17,6 @@ import java.util.function.BiConsumer;
 public class ServiceServlet {
     private record IdAndContent(int ID, String CONTENT) {}
     private record LmbHelper(Note note, String fragment) {}
-    
-
-    private static final int SUBSTRLIMIT = 69;
-  
-    private static final String TEMPLATEFMT = "\n<p>Вы не %%s %%%%s%s.<br>Пожалуйста, %%s %%%%s%s.</p>\n"; 
-    private static final String NOTEFMT = TEMPLATEFMT.formatted(" заметки", " заметки"); 
-    private static final String UNSELECTEDSUBJFMT = NOTEFMT.formatted("выбрали", "выберите");
-    private static final String ERRCREATEFMT = NOTEFMT.formatted("задали", "задайте");
-    private static final String FRAGMENTFMT = TEMPLATEFMT.formatted("", "").formatted("выбрали", "выберите");
-    
-    private static final String CHECKBOXFMT = 
-    """
-    \t\t\
-    <label>
-        <input type="checkbox" name="%s" %s> %s
-    </label> (<b><i>%d</i></b>)<br>
-    """;
-    
-    private static final String HIGHLIGHT_TEMPLATE =
-    """
-    \t\t\
-    <br><input type="submit" name="mode" value="%s"><br>
-    """; 
-    
-    private static final String RANDOM_NOTEFMT =
-    """
-    <br><input type="submit" name="mode" value="%s"><br>
-    """.formatted(Modes.Consts.RANDOM);
-    
-    private static final String HIGHLIGHTALLFMT = HIGHLIGHT_TEMPLATE.formatted(Modes.Consts.HIGHLIGHTALL);
-    private static final String CANCEL_HIGHLIGHTFMT = HIGHLIGHT_TEMPLATE.formatted(Modes.Consts.CANCEL_HIGHLIGHTALL);
-    
-    private static final String RECORD_FORMAT = 
-    """
-    
-    <h3>
-        <b>Тема:</b> <i><u>%s</u></i> <b>| Заметка:</b>
-    </h3>
-    <div>
-        %s
-    </div><hr>
-    """;
-
-    private static final String OPTFMT = 
-    """
-    \t\
-    <option value="%s">%s</option>
-    """;
-    
-    
-    private static final String RADIOFMT = 
-    """
-    <h3>
-        <label>
-            <input type="radio" name="selectedNote" value="%d" %s><br><b>Фрагмент:</b><br>
-            <i>%s</i>.......
-        </label><hr>
-    </h3>
-    """;
-    
-    private static final String HIDDENSUBJFMT = 
-    """
-    <input type="hidden" name="subject" value="%s">
-    """;
-    
-    private static final String SELECTEDSUBJFMT = 
-    """
-    <h2>
-        <b>Выбранная тема: </b><i><u>%s</u></i>
-    </h2>
-    """;
-    
-    private static final String HIDDENSELECTEDNOTEFMT = 
-    """
-    <input type="hidden" name="selectedNote" value="%s">
-    """;
-    
-    private static final String SELECTEDFRAGMENTFMT = 
-    """
-    <h2>
-        <b>Выбранный фрагмент:</b><br><i><u>%s</u></i> .......
-    </h2>
-    """;
-    
-    private static final String TEMPLATE_AMOUNTFMT = 
-    """
-    <b>Всего %s:</b> <i>%%d</i><br>
-    """;
-    
-    private static final String SUBJECT_AMOUNTFMT = TEMPLATE_AMOUNTFMT.formatted("тем");
-    
-    private static final String NOTES_AMOUNTFMT = TEMPLATE_AMOUNTFMT.formatted("заметок");
-    
-    private static final String STATISTICS =
-    """
-    <h2>Статистика</h2>
-    """;
-    
-    private static final String AVAILABLE_SUBJECTS_LIST =
-    """
-    <h2>Список доступных тем</h2>
-    """;
     
 
     private HttpServletRequest request;
