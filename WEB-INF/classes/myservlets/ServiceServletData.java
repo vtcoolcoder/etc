@@ -38,7 +38,7 @@ public interface ServiceServletData {
     String CHECKBOX_ON = "on";  
     String CHECKBOX_OFF = "";
     
-    String RANDOM_TITLE = "<h2>Случайная заметка:</h2>";
+    String RANDOM_TITLE = "<h2>Случайная заметка</h2>";
     String NOTES_BY_SELECTED_SUBJECTS_TITLE = "<h2>Заметки по выбранным темам:</h2>"; 
     
     String NEW_LINE = "\n";  
