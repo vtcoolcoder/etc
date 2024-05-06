@@ -18,9 +18,9 @@ context.registerBean(
 
 @Component        
 class Helper {
-    public static APIServlet API = context.getBean(APIServlet.class); 
+    public APIServlet API = context.getBean(APIServlet.class); 
 }
 
-APIServlet API = Helper.API;
+APIServlet API = context.getBean(Helper.class).API;
 
 %>
