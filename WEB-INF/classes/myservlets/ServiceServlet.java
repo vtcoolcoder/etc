@@ -4,6 +4,7 @@ package myservlets;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import lombok.Cleanup;
 
@@ -50,7 +51,7 @@ public class ServiceServlet {
     
     
     @Autowired
-    public ServiceServlet(HttpServletRequest request, WebNotesAPI webNotes) {
+    public ServiceServlet(@Qualifier("httpServletRequest") HttpServletRequest request, WebNotesAPI webNotes) {
         this.request = request;
         this.webNotes = webNotes;
         
