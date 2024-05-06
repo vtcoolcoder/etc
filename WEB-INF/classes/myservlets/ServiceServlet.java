@@ -3,9 +3,9 @@ package myservlets;
 
 import static myservlets.ServiceServletData.*;
 
-import myjdbc.WebNotesAPI;
-import myjdbc.WebNotes;
-import myjdbc.Note;
+import using_spring.WebNotesAPI;
+import using_spring.WebNotes;
+import using_spring.Note;
 
 import modes.Modes;
 
