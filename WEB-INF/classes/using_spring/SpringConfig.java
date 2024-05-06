@@ -31,7 +31,7 @@ import java.util.function.Consumer;
 
 @Configuration
 @ComponentScan("using_spring")
-@ComponentScan("myservlets")
+//@ComponentScan("myservlets")
 @PropertySource("using_spring/config.properties")
 @PropertySource("using_spring/queries.properties")
 public class SpringConfig {

@@ -27,7 +27,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.util.function.BiConsumer;
 
 
-@Component
 public class ServiceServlet {
     private record IdAndContent(int ID, String CONTENT) {}
     private record LmbHelper(Note note, String fragment) {}
@@ -50,8 +49,7 @@ public class ServiceServlet {
     private final WebNotesAPI webNotes;
     
     
-    @Autowired
-    public ServiceServlet(@Qualifier("httpServletRequest") HttpServletRequest request, WebNotesAPI webNotes) {
+    public ServiceServlet(HttpServletRequest request, WebNotesAPI webNotes) {
         this.request = request;
         this.webNotes = webNotes;
         
