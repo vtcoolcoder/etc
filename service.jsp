@@ -15,6 +15,6 @@ context.registerBean(
         HttpServletRequest.class, 
         () -> request);
 
-APIServlet API = context.getBean("api", APIServlet.class); 
+APIServlet API = context.getBean(APIServlet.class); 
 
 %>

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 import jakarta.servlet.http.HttpServletRequest;
 
-@Component("api")
+@Component
 public class APIServlet {
     
     private final ServiceServlet service;
