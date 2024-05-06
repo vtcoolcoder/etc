@@ -1,6 +1,13 @@
 package myservlets;
 
 
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import lombok.Cleanup;
+
+
 import static myservlets.ServiceServletData.*;
 
 import using_spring.WebNotesAPI;
@@ -52,7 +59,9 @@ public class ServiceServlet {
         
         initMode();
         
-        webNotes = new WebNotes();
+        @Cleanup
+        var context = new AnnotationConfigApplicationContext(SpringConfig.class);
+        webNotes = context.getBean(WebNotes.class);      
     }
     
     
