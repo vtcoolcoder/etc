@@ -2,6 +2,8 @@
 <%@ page import="myservlets.APIServlet" %>
 <%@ page import="using_spring.SpringConfig" %>
 <%@ page import="org.springframework.context.annotation.AnnotationConfigApplicationContext" %>
+<%@ page import="org.springframework.beans.factory.annotation.Autowired" %>
+<%@ page import="org.springframework.stereotype.Component" %>
 <%@ page import="jakarta.servlet.http.HttpServletRequest" %>
 <% 
 
@@ -13,6 +15,6 @@ context.registerBean(
         HttpServletRequest.class, 
         () -> request);
 
-APIServlet API = context.getBean(APIServlet.class); 
+APIServlet API = context.getBean("aPIServlet", APIServlet.class); 
 
 %>
