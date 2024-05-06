@@ -14,7 +14,13 @@ context.registerBean(
         "httpServletRequest", 
         HttpServletRequest.class, 
         () -> request);
+ 
 
-APIServlet API = context.getBean(APIServlet.class); 
+@Component        
+class Helper {
+    public static APIServlet API = context.getBean(APIServlet.class); 
+}
+
+APIServlet API = Helper.API;
 
 %>
