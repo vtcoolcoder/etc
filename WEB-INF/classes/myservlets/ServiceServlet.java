@@ -26,12 +26,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.util.function.BiConsumer;
 
 
+@Component
 public class ServiceServlet {
     private record IdAndContent(int ID, String CONTENT) {}
     private record LmbHelper(Note note, String fragment) {}
     
 
-    private HttpServletRequest request;
+    private final HttpServletRequest request;
           
     private String MODE;
     private String SUBJECT;
@@ -45,11 +46,13 @@ public class ServiceServlet {
     private boolean isUnselectedNote = false;
     private int counter = 0;
     
-    private WebNotesAPI webNotes;
+    private final WebNotesAPI webNotes;
     
     
-    ServiceServlet(HttpServletRequest request) {
+    @Autowired
+    public ServiceServlet(HttpServletRequest request, WebNotesAPI webNotes) {
         this.request = request;
+        this.webNotes = webNotes;
         
         MODE = request.getParameter(PARAM_MODE); 
         SUBJECT = request.getParameter(PARAM_SUBJECT); 
@@ -60,9 +63,9 @@ public class ServiceServlet {
         
         initMode();
         
-        @Cleanup
-        var context = new AnnotationConfigApplicationContext(SpringConfig.class);
-        webNotes = context.getBean(WebNotes.class);      
+        
+        //var context = new AnnotationConfigApplicationContext(SpringConfig.class);
+        //webNotes = context.getBean(WebNotes.class);      
     }
     
     

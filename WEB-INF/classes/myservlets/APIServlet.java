@@ -1,16 +1,21 @@
 package myservlets;
 
 
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+
 import jakarta.servlet.http.HttpServletRequest;
 
-
+@Component
 public class APIServlet {
     
-    private ServiceServlet service;
+    private final ServiceServlet service;
     
-    
-    public APIServlet(HttpServletRequest request) {
-        service = new ServiceServlet(request);
+    @Autowired
+    public APIServlet(ServiceServlet service) {
+        this.service = service;
     }
     
     
