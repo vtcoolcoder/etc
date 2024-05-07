@@ -9,6 +9,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.Primary;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -54,6 +55,7 @@ public class SpringConfig {
     
     
     @Bean
+    @Primary
     //@Scope("prototype")
     @SneakyThrows
     public Statement statement(Connection connection) {
@@ -139,9 +141,7 @@ public class SpringConfig {
     
     
     @Bean
-    public Runnable transactionRollBack(
-            @Qualifier("statement") Statement statement, QueriesData queriesData)
-    {
+    public Runnable transactionRollBack(Statement statement, QueriesData queriesData) {
         return () -> {
             try {
                 statement.executeUpdate(queriesData.getTransactionRollBack());
@@ -153,9 +153,7 @@ public class SpringConfig {
     
     
     @Bean
-    public Supplier<ResultSet> allNotesResultSet(
-            @Qualifier("statement") Statement statement, QueriesData queriesData) 
-    {
+    public Supplier<ResultSet> allNotesResultSet(Statement statement, QueriesData queriesData) {
         return () -> {
             try {
                 return statement.executeQuery(queriesData.getAllNotes());
@@ -167,9 +165,7 @@ public class SpringConfig {
     
     
     @Bean
-    public Supplier<ResultSet> allNotesWithoutIdResultSet(
-            @Qualifier("statement") Statement statement, QueriesData queriesData) 
-    {
+    public Supplier<ResultSet> allNotesWithoutIdResultSet(Statement statement, QueriesData queriesData) {
         return () -> {
             try {
                 return statement.executeQuery(queriesData.getAllNotesWithoutId());
@@ -181,9 +177,7 @@ public class SpringConfig {
     
     
     @Bean
-    public Supplier<ResultSet> distinctSubjectsResultSet(
-            @Qualifier("statement") Statement statement, QueriesData queriesData) 
-    {
+    public Supplier<ResultSet> distinctSubjectsResultSet(Statement statement, QueriesData queriesData) {
         return () -> {
             try {
                 return statement.executeQuery(queriesData.getDistinctSubjects());
@@ -195,9 +189,7 @@ public class SpringConfig {
     
     
     @Bean
-    public Supplier<ResultSet> allIdResultSet(
-            @Qualifier("statement") Statement statement, QueriesData queriesData) 
-    {
+    public Supplier<ResultSet> allIdResultSet(Statement statement, QueriesData queriesData) {
         return () -> {
             try {
                 return statement.executeQuery(queriesData.getAllId());
@@ -209,9 +201,7 @@ public class SpringConfig {
     
     
     @Bean
-    public Supplier<ResultSet> notesBySubjectAmountResultSet(
-            @Qualifier("statement") Statement statement, QueriesData queriesData) 
-    {
+    public Supplier<ResultSet> notesBySubjectAmountResultSet(Statement statement, QueriesData queriesData) {
         return () -> {
             try {
                 return statement.executeQuery(queriesData.getNotesBySubjectAmount());
@@ -223,9 +213,7 @@ public class SpringConfig {
     
     
     @Bean
-    public Supplier<ResultSet> allSubjectsAmountResultSet(
-            @Qualifier("statement") Statement statement, QueriesData queriesData) 
-    {
+    public Supplier<ResultSet> allSubjectsAmountResultSet(Statement statement, QueriesData queriesData) {
         return () -> {
             try {
                 return statement.executeQuery(queriesData.getAllSubjectsAmount());
@@ -237,9 +225,7 @@ public class SpringConfig {
     
     
     @Bean
-    public Supplier<ResultSet> allNotesAmountResultSet(
-            @Qualifier("statement") Statement statement, QueriesData queriesData) 
-    {
+    public Supplier<ResultSet> allNotesAmountResultSet(Statement statement, QueriesData queriesData) {
         return () -> {
             try {
                 return statement.executeQuery(queriesData.getAllNotesAmount());
@@ -251,9 +237,7 @@ public class SpringConfig {
     
     
     @Bean
-    public Runnable trimUpdate(
-            @Qualifier("statement") Statement statement, QueriesData queriesData) 
-    {
+    public Runnable trimUpdate(Statement statement, QueriesData queriesData) {
         return () -> {
             try {
                 statement.executeUpdate(queriesData.getTrimUpdate());
