@@ -16,6 +16,8 @@ public interface WebNotesAPI {
     
     String getNoteContent(final int id); 
     
+    String getNoteFragment(final int id);
+    
     Map<String, Integer> getNotesBySubjectAmount();
     
     Set<String> getAllSubjects();   

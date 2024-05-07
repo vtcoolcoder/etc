@@ -31,7 +31,8 @@ public final class NoteShower {
     private final Supplier<Integer> allSubjectsAmount; 
     private final Supplier<Integer> allNotesAmount;
     private final Runnable trimUpdate;  
-    private final Function<Integer, String> noteById;    
+    private final Function<Integer, String> noteById;   
+    private final Function<Integer, String> noteFragment; 
     private final Function<String, Set<Note>> specificNote;  
     private final Function<String, Set<Note>> fullSpecific;  
     private final Supplier<Note> random;   
@@ -54,6 +55,7 @@ public final class NoteShower {
             @Qualifier("allNotesAmount") Supplier<Integer> allNotesAmount,
             @Qualifier("trimUpdate") Runnable trimUpdate,
             @Qualifier("noteById") Function<Integer, String> noteById,
+            @Qualifier("noteFragment") Function<Integer, String> noteFragment,
             @Qualifier("specificNote") Function<String, Set<Note>> specificNote,
             @Qualifier("fullSpecific") Function<String, Set<Note>> fullSpecific,
             @Qualifier("random") Supplier<Note> random,
@@ -73,6 +75,7 @@ public final class NoteShower {
         this.allNotesAmount = allNotesAmount;
         this.trimUpdate = trimUpdate;
         this.noteById = noteById;
+        this.noteFragment = noteFragment;
         this.specificNote = specificNote;
         this.fullSpecific = fullSpecific;
         this.random = random;

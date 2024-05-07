@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 public final class QueriesData {
 
     private final String noteById;
+    private final String noteFragment;
     private final String distinctSubjects;
     private final String specificNote;
     private final String fullSpecific;
@@ -39,6 +40,7 @@ public final class QueriesData {
 
     public QueriesData(
             @Value("${query.noteById}") String noteById,
+            @Value("${query.noteFragment}") String noteFragment,
             @Value("${query.distinctSubjects}") String distinctSubjects,
             @Value("${query.specificNote}") String specificNote,
             @Value("${query.fullSpecific}") String fullSpecific,
@@ -59,6 +61,7 @@ public final class QueriesData {
             @Value("${query.transactionRollBack}") String transactionRollBack) 
     {
         this.noteById = noteById;
+        this.noteFragment = noteFragment;
         this.distinctSubjects = distinctSubjects;
         this.specificNote = specificNote;
         this.fullSpecific = fullSpecific;

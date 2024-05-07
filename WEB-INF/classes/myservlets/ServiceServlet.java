@@ -192,7 +192,7 @@ public class ServiceServlet {
             ID = Integer.parseInt(SELECTED_NOTE); 
         } catch (NumberFormatException ex) {}
         
-        final String CONTENT = (ID != -1) ? webNotes.getNoteContent(ID) : NULL_CONTENT; 
+        final String CONTENT = (ID != -1) ? webNotes.getNoteFragment(ID) : NULL_CONTENT; 
         
         return new IdAndContent(ID, CONTENT);
     }
@@ -253,10 +253,9 @@ public class ServiceServlet {
                         int length = fullNote.length();
                 
                         String beginNoteFragment = 
-                                fullNote; //.substring(0,
-                                        //(length >= SUBSTRLIMIT) 
-                                          //      ? SUBSTRLIMIT 
-                                           //     : length);
+                                fullNote.substring(0, (length >= SUBSTRLIMIT) 
+                                        ? SUBSTRLIMIT 
+                                        : length);
                                                 
                         return new LmbHelper(el, beginNoteFragment);
                 })
@@ -452,7 +451,7 @@ public class ServiceServlet {
             case DEFAULT -> {
                 getAvailableSubjects()
                         .stream()
-                        .map(el -> getOptionFormattedLine(el))
+                        .map(this::getOptionFormattedLine)
                         .forEach(sb::append);
             }
         }

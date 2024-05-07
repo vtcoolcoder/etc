@@ -92,6 +92,12 @@ public final class WebNotes implements WebNotesAPI {
     
     
     @Override
+    public String getNoteFragment(final int id) {
+        return noteShower.getNoteFragment().apply(id);
+    }
+    
+    
+    @Override
     public Map<String, Integer> getNotesBySubjectAmount() {
         return noteShower.getNotesBySubjectAmount().get();
     }

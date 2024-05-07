@@ -70,6 +70,13 @@ public class SpringConfig {
     
     @Bean
     @SneakyThrows
+    public PreparedStatement noteFragmentPreparedStatement(Connection connection, QueriesData queriesData) {
+        return connection.prepareStatement(queriesData.getNoteFragment());
+    }
+    
+    
+    @Bean
+    @SneakyThrows
     public PreparedStatement specificNotePreparedStatement(Connection connection, QueriesData queriesData) {
         return connection.prepareStatement(queriesData.getSpecificNote());
     }
@@ -434,6 +441,29 @@ public class SpringConfig {
             }
         };
     }
+    
+    
+    @Bean
+    public Function<Integer, String> noteFragment(
+            @Qualifier("noteFragmentPreparedStatement") PreparedStatement statement)
+    {
+        return id -> {
+            try {
+                String result = null;
+                
+                statement.setInt(1, id);
+                ResultSet resultSet = statement.executeQuery();
+                
+                while (resultSet.next()) {
+                    result = resultSet.getString("fragment");
+                }
+                
+                return result;
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+        };
+    }    
     
     
     @Bean
