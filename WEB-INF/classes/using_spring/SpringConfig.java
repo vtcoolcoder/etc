@@ -1013,7 +1013,7 @@ public class SpringConfig {
     }
     */
     
-    
+    /*
     private static void something(Consumer<Statement> action, String query) {
         try {
             action.accept(query);
@@ -1021,11 +1021,21 @@ public class SpringConfig {
             throw new RuntimeException(e);
         }
     }
+    */
     
     
-    private static <T> T something(Function<T, Statement> action, String query) {
+    private static ResultSet something(Function<Statement, ResultSet> action, String query) {
         try {
             return action.apply(query);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    
+    private static void something(Function<Statement, Integer> action, String query) {
+        try {
+            action.apply(query);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
