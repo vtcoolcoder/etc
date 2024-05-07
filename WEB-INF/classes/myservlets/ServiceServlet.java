@@ -154,9 +154,9 @@ public class ServiceServlet {
                 
         IdAndContent idAndContent = getIdAndContent();
         
-        int length = idAndContent.CONTENT().length(); 
-        String FRAGMENT = idAndContent.CONTENT()
-                                      .substring(0, (length >= SUBSTRLIMIT) ? SUBSTRLIMIT : length); 
+        //int length = idAndContent.CONTENT().length(); 
+        String FRAGMENT = idAndContent.CONTENT();
+                                      //.substring(0, (length >= SUBSTRLIMIT) ? SUBSTRLIMIT : length); 
                       
         sb.append(SELECTEDFRAGMENTFMT.formatted(FRAGMENT));
     }
