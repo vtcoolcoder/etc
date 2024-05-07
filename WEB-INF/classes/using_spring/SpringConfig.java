@@ -153,9 +153,8 @@ public class SpringConfig {
     
     
     @Bean
-    @SneakyThrows
     public Runnable transactionRollBack(Statement statement, QueriesData queriesData) {
-        return () -> statement.executeUpdate(queriesData.getTransactionRollBack());
+        return @SneakyThrows () -> statement.executeUpdate(queriesData.getTransactionRollBack());
         //return () -> tryCatchWrapping(() -> statement.executeUpdate(queriesData.getTransactionRollBack()));
         
         /*
