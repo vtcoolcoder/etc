@@ -154,7 +154,7 @@ public class SpringConfig {
     
     @Bean
     public Runnable transactionRollBack(Statement statement, QueriesData queriesData) {
-        return () -> something(statement::executeUpdate, queriesData.getTransactionRollBack()); 
+        return () -> executeUpdate(statement::executeUpdate, queriesData.getTransactionRollBack()); 
         //statement.executeUpdate(queriesData.getTransactionRollBack());
         //return () -> tryCatchWrapping(() -> statement.executeUpdate(queriesData.getTransactionRollBack()));
         
@@ -173,7 +173,7 @@ public class SpringConfig {
     @Bean
     @SneakyThrows
     public Supplier<ResultSet> allNotesResultSet(Statement statement, QueriesData queriesData) {
-        return () -> something(statement::executeQuery, queriesData.getAllNotes());
+        return () -> executeQuery(statement::executeQuery, queriesData.getAllNotes());
         
         //statement.executeQuery(queriesData.getAllNotes());
         
@@ -194,7 +194,7 @@ public class SpringConfig {
     @Bean
     @SneakyThrows
     public Supplier<ResultSet> allNotesWithoutIdResultSet(Statement statement, QueriesData queriesData) {
-        return () -> something(statement::executeQuery, queriesData.getAllNotesWithoutId());
+        return () -> executeQuery(statement::executeQuery, queriesData.getAllNotesWithoutId());
         
         //statement.executeQuery(queriesData.getAllNotesWithoutId());
         
@@ -215,7 +215,7 @@ public class SpringConfig {
     @Bean
     @SneakyThrows
     public Supplier<ResultSet> distinctSubjectsResultSet(Statement statement, QueriesData queriesData) {
-        return () -> something(statement::executeQuery, queriesData.getDistinctSubjects());
+        return () -> executeQuery(statement::executeQuery, queriesData.getDistinctSubjects());
         
         //statement.executeQuery(queriesData.getDistinctSubjects());
         
@@ -236,7 +236,7 @@ public class SpringConfig {
     @Bean
     @SneakyThrows
     public Supplier<ResultSet> allIdResultSet(Statement statement, QueriesData queriesData) {
-        return () -> something(statement::executeQuery, queriesData.getAllId());
+        return () -> executeQuery(statement::executeQuery, queriesData.getAllId());
         
         //statement.executeQuery(queriesData.getAllId());
         
@@ -258,7 +258,7 @@ public class SpringConfig {
     @Bean
     @SneakyThrows
     public Supplier<ResultSet> notesBySubjectAmountResultSet(Statement statement, QueriesData queriesData) {
-        return () -> something(statement::executeQuery, queriesData.getNotesBySubjectAmount());
+        return () -> executeQuery(statement::executeQuery, queriesData.getNotesBySubjectAmount());
         
         //statement.executeQuery(queriesData.getNotesBySubjectAmount());
         
@@ -279,7 +279,7 @@ public class SpringConfig {
     @Bean
     @SneakyThrows
     public Supplier<ResultSet> allSubjectsAmountResultSet(Statement statement, QueriesData queriesData) {
-        return () -> something(statement::executeQuery, queriesData.getAllSubjectsAmount());
+        return () -> executeQuery(statement::executeQuery, queriesData.getAllSubjectsAmount());
         
         //statement.executeQuery(queriesData.getAllSubjectsAmount());
         
@@ -300,7 +300,7 @@ public class SpringConfig {
     @Bean
     @SneakyThrows
     public Supplier<ResultSet> allNotesAmountResultSet(Statement statement, QueriesData queriesData) {
-        return () -> something(statement::executeQuery, queriesData.getAllNotesAmount());
+        return () -> executeQuery(statement::executeQuery, queriesData.getAllNotesAmount());
         
         //statement.executeQuery(queriesData.getAllNotesAmount());
         
@@ -321,7 +321,7 @@ public class SpringConfig {
     @Bean
     @SneakyThrows
     public Runnable trimUpdate(Statement statement, QueriesData queriesData) {
-        return () -> something(statement::executeUpdate, queriesData.getTrimUpdate());
+        return () -> executeUpdate(statement::executeUpdate, queriesData.getTrimUpdate());
         
         //statement.executeUpdate(queriesData.getTrimUpdate());
         
@@ -1024,7 +1024,7 @@ public class SpringConfig {
     */
     
     
-    private static ResultSet something(Function<Statement, ResultSet> action, String query) {
+    private static ResultSet executeQuery(Function<Statement, ResultSet> action, String query) {
         try {
             return action.apply(query);
         } catch (Exception e) {
@@ -1033,7 +1033,7 @@ public class SpringConfig {
     }
     
     
-    private static void something(Function<Statement, Integer> action, String query) {
+    private static void executeUpdate(Function<Statement, Integer> action, String query) {
         try {
             action.apply(query);
         } catch (Exception e) {
