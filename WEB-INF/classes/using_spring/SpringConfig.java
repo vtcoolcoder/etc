@@ -935,7 +935,7 @@ public class SpringConfig {
     
     private static <T> T tryCatchWrapping(Supplier<T> action) {
         try {
-            return action.run();
+            return action.get();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
