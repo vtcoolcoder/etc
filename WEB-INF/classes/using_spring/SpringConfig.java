@@ -36,17 +36,19 @@ import java.util.function.Consumer;
 @PropertySource("using_spring/config.properties")
 @PropertySource("using_spring/queries.properties")
 public class SpringConfig {
+
     @Bean
+    @SneakyThrows
     public Connection connection(DBConfig dbConfig) {
         //Connection result = null;
         
-        return tryCatchWrapping(() -> {
+        //return tryCatchWrapping(() -> {
             Class.forName(dbConfig.getDriverName());
             return DriverManager.getConnection(
                     dbConfig.getURL(), 
                     dbConfig.getUser(), 
                     dbConfig.getPassword());
-        });
+       // });
         
         /*
         try {
@@ -151,8 +153,10 @@ public class SpringConfig {
     
     
     @Bean
+    @SneakyThrows
     public Runnable transactionRollBack(Statement statement, QueriesData queriesData) {
-        return () -> tryCatchWrapping(() -> statement.executeUpdate(queriesData.getTransactionRollBack()));
+        return () -> statement.executeUpdate(queriesData.getTransactionRollBack());
+        //return () -> tryCatchWrapping(() -> statement.executeUpdate(queriesData.getTransactionRollBack()));
         
         /*
         {
@@ -167,8 +171,11 @@ public class SpringConfig {
     
     
     @Bean
+    @SneakyThrows
     public Supplier<ResultSet> allNotesResultSet(Statement statement, QueriesData queriesData) {
-        return () -> tryCatchWrapping(() -> statement.executeQuery(queriesData.getAllNotes())); 
+        return () -> statement.executeQuery(queriesData.getAllNotes());
+        
+        //return () -> tryCatchWrapping(() -> statement.executeQuery(queriesData.getAllNotes())); 
         
         /*
         {
@@ -183,8 +190,11 @@ public class SpringConfig {
     
     
     @Bean
+    @SneakyThrows
     public Supplier<ResultSet> allNotesWithoutIdResultSet(Statement statement, QueriesData queriesData) {
-        return () -> tryCatchWrapping(() -> statement.executeQuery(queriesData.getAllNotesWithoutId()));
+        return () -> statement.executeQuery(queriesData.getAllNotesWithoutId());
+        
+        //return () -> tryCatchWrapping(() -> statement.executeQuery(queriesData.getAllNotesWithoutId()));
         
         /*
         {
@@ -199,8 +209,11 @@ public class SpringConfig {
     
     
     @Bean
+    @SneakyThrows
     public Supplier<ResultSet> distinctSubjectsResultSet(Statement statement, QueriesData queriesData) {
-        return () -> tryCatchWrapping(() -> statement.executeQuery(queriesData.getDistinctSubjects()));
+        return () -> statement.executeQuery(queriesData.getDistinctSubjects());
+        
+        //return () -> tryCatchWrapping(() -> statement.executeQuery(queriesData.getDistinctSubjects()));
         
         /*
         {
@@ -215,8 +228,11 @@ public class SpringConfig {
     
     
     @Bean
+    @SneakyThrows
     public Supplier<ResultSet> allIdResultSet(Statement statement, QueriesData queriesData) {
-        return () -> tryCatchWrapping(() -> statement.executeQuery(queriesData.getAllId())); 
+        return () -> statement.executeQuery(queriesData.getAllId());
+        
+        //return () -> tryCatchWrapping(() -> statement.executeQuery(queriesData.getAllId())); 
         
         
         /*
@@ -232,8 +248,11 @@ public class SpringConfig {
     
     
     @Bean
+    @SneakyThrows
     public Supplier<ResultSet> notesBySubjectAmountResultSet(Statement statement, QueriesData queriesData) {
-        return () -> tryCatchWrapping(() -> statement.executeQuery(queriesData.getNotesBySubjectAmount())); 
+        return () -> statement.executeQuery(queriesData.getNotesBySubjectAmount());
+        
+        //return () -> tryCatchWrapping(() -> statement.executeQuery(queriesData.getNotesBySubjectAmount())); 
         
         /*
         {
@@ -248,8 +267,11 @@ public class SpringConfig {
     
     
     @Bean
+    @SneakyThrows
     public Supplier<ResultSet> allSubjectsAmountResultSet(Statement statement, QueriesData queriesData) {
-        return () -> tryCatchWrapping(() -> statement.executeQuery(queriesData.getAllSubjectsAmount()));
+        return () -> statement.executeQuery(queriesData.getAllSubjectsAmount());
+        
+        //return () -> tryCatchWrapping(() -> statement.executeQuery(queriesData.getAllSubjectsAmount()));
         
         /*
         {
@@ -264,8 +286,11 @@ public class SpringConfig {
     
     
     @Bean
+    @SneakyThrows
     public Supplier<ResultSet> allNotesAmountResultSet(Statement statement, QueriesData queriesData) {
-        return () -> tryCatchWrapping(() -> statement.executeQuery(queriesData.getAllNotesAmount()));
+        return () -> statement.executeQuery(queriesData.getAllNotesAmount());
+        
+        //return () -> tryCatchWrapping(() -> statement.executeQuery(queriesData.getAllNotesAmount()));
         
         /*
         {
@@ -280,8 +305,11 @@ public class SpringConfig {
     
     
     @Bean
+    @SneakyThrows
     public Runnable trimUpdate(Statement statement, QueriesData queriesData) {
-        return () -> tryCatchWrapping(() -> statement.executeUpdate(queriesData.getTrimUpdate()));
+        return () -> statement.executeUpdate(queriesData.getTrimUpdate());
+        
+        //return () -> tryCatchWrapping(() -> statement.executeUpdate(queriesData.getTrimUpdate()));
         
         /*
         {
@@ -296,10 +324,11 @@ public class SpringConfig {
     
     
     @Bean
+    @SneakyThrows
     public Supplier<Set<Note>> allNotes(
             @Qualifier("allNotesResultSet") Supplier<ResultSet> supplier) 
     {
-        return () -> tryCatchWrapping(() -> {
+        return () -> {
                 ResultSet resultSet = supplier.get();
                 Set<Note> result = new LinkedHashSet<>();  
             
@@ -311,7 +340,7 @@ public class SpringConfig {
                 }    
                 
                 return result;
-        }); 
+        }; 
         
         /*
         {
@@ -336,10 +365,11 @@ public class SpringConfig {
     
     
     @Bean
+    @SneakyThrows
     public Supplier<Set<Note>> allNotesWithoutId(
             @Qualifier("allNotesWithoutIdResultSet") Supplier<ResultSet> supplier) 
     {
-        return () -> tryCatchWrapping(() -> {
+        return () -> {
                 ResultSet resultSet = supplier.get();
                 Set<Note> result = new LinkedHashSet<>();    
             
@@ -350,7 +380,7 @@ public class SpringConfig {
                 }    
                 
                 return result;
-        }); 
+        }; 
         
         /*
         {
@@ -374,10 +404,11 @@ public class SpringConfig {
     
     
     @Bean
+    @SneakyThrows
     public Supplier<Set<String>> distinctSubjects(
             @Qualifier("distinctSubjectsResultSet") Supplier<ResultSet> supplier) 
     {
-        return () -> tryCatchWrapping(() -> {
+        return () -> {
                 ResultSet resultSet = supplier.get();
                 Set<String> result = new LinkedHashSet<>();
                    
@@ -387,7 +418,7 @@ public class SpringConfig {
                 }    
                 
                 return result;
-        }); 
+        }; 
         
         /*
         {
@@ -410,10 +441,11 @@ public class SpringConfig {
     
     
     @Bean
+    @SneakyThrows
     public Supplier<Set<Integer>> allId(
             @Qualifier("allIdResultSet") Supplier<ResultSet> supplier) 
     {
-        return () -> tryCatchWrapping(() -> {
+        return () -> {
                 ResultSet resultSet = supplier.get();
                 Set<Integer> result = new LinkedHashSet<>();
             
@@ -423,7 +455,7 @@ public class SpringConfig {
                 }    
                 
                 return result;
-        }); 
+        }; 
         
         /*
         {
@@ -446,10 +478,11 @@ public class SpringConfig {
     
     
     @Bean
+    @SneakyThrows
     public Supplier<Map<String, Integer>> notesBySubjectAmount(
             @Qualifier("notesBySubjectAmountResultSet") Supplier<ResultSet> supplier) 
     {
-        return () -> tryCatchWrapping(() -> {
+        return () -> {
                 ResultSet resultSet = supplier.get();
                 Map<String, Integer> result = new LinkedHashMap<>(); 
             
@@ -484,10 +517,11 @@ public class SpringConfig {
     
     
     @Bean
+    @SneakyThrows
     public Supplier<Integer> allSubjectsAmount(
             @Qualifier("allSubjectsAmountResultSet") Supplier<ResultSet> supplier) 
     {
-        return () -> tryCatchWrapping(() -> {
+        return () -> {
                 ResultSet resultSet = supplier.get();
                 int result = -1;
                 
@@ -496,7 +530,7 @@ public class SpringConfig {
                 }  
                 
                 return result;
-        });
+        };
         
         /*
         {
@@ -518,10 +552,11 @@ public class SpringConfig {
     
     
     @Bean
+    @SneakyThrows
     public Supplier<Integer> allNotesAmount(
             @Qualifier("allNotesAmountResultSet") Supplier<ResultSet> supplier) 
     {
-        return () -> tryCatchWrapping(() -> {
+        return () -> {
                 ResultSet resultSet = supplier.get();
                 int result = -1;
                 
@@ -530,7 +565,7 @@ public class SpringConfig {
                 }  
                 
                 return result;
-        });
+        };
         
         /*
         {
@@ -552,10 +587,11 @@ public class SpringConfig {
     
     
     @Bean
+    @SneakyThrows
     public Function<Integer, String> noteById(
             @Qualifier("noteByIdPreparedStatement") PreparedStatement statement) 
     {
-        return id -> tryCatchWrapping(() -> {
+        return id -> {
                 String result = null;
                 
                 statement.setInt(1, id);
@@ -566,7 +602,7 @@ public class SpringConfig {
                 }
                 
                 return result;
-        });
+        };
         
         /*
         {
@@ -590,10 +626,11 @@ public class SpringConfig {
     
     
     @Bean
+    @SneakyThrows
     public Function<Integer, String> noteFragment(
             @Qualifier("noteFragmentPreparedStatement") PreparedStatement statement)
     {
-        return id -> tryCatchWrapping(() -> {
+        return id -> {
                 String result = null;
                 
                 statement.setInt(1, id);
@@ -604,7 +641,7 @@ public class SpringConfig {
                 }
                 
                 return result;
-        });
+        };
         
         /*
         {
@@ -628,10 +665,11 @@ public class SpringConfig {
     
     
     @Bean
+    @SneakyThrows
     public Function<String, Set<Note>> specificNote(
             @Qualifier("specificNotePreparedStatement") PreparedStatement statement)
     {
-        return subject -> tryCatchWrapping(() -> {
+        return subject -> {
                 Set<Note> result = new LinkedHashSet<>();
                 
                 statement.setString(1, subject);
@@ -644,7 +682,7 @@ public class SpringConfig {
                 }
                 
                 return result;
-        });
+        };
         
         /*
         {
@@ -670,10 +708,11 @@ public class SpringConfig {
     
     
     @Bean
+    @SneakyThrows
     public Function<String, Set<Note>> fullSpecific(
             @Qualifier("fullSpecificPreparedStatement") PreparedStatement statement)
     {
-        return subject -> tryCatchWrapping(() -> {
+        return subject -> {
                 Set<Note> result = new LinkedHashSet<>();
                 
                 statement.setString(1, subject);
@@ -687,7 +726,7 @@ public class SpringConfig {
                 }
                 
                 return result;
-        });
+        };
         
         /*
          {
@@ -714,11 +753,12 @@ public class SpringConfig {
     
     
     @Bean
+    @SneakyThrows
     public Supplier<Note> random(
             @Qualifier("randomPreparedStatement") PreparedStatement statement,
             @Qualifier("allId") Supplier<Set<Integer>> supplier)
     {
-        return () -> tryCatchWrapping(() -> {
+        return () -> {
                 Note result = null;
                 
                 Set<Integer> allID = supplier.get();
@@ -735,7 +775,7 @@ public class SpringConfig {
                 }
                 
                 return result;
-        });
+        };
         
         /*
         {
@@ -764,7 +804,7 @@ public class SpringConfig {
     }
     
     
-    @Bean
+    @Bean    
     public BiConsumer<String, String> addNote(
             @Qualifier("addNotePreparedStatement") PreparedStatement statement)
     {
@@ -810,14 +850,15 @@ public class SpringConfig {
     
     
     @Bean
+    @SneakyThrows
     public BiConsumer<String, Integer> updateNote(
             @Qualifier("updateNotePreparedStatement") PreparedStatement statement)
     {
-        return (trimmedNote, id) -> tryCatchWrapping(() -> {
+        return (trimmedNote, id) -> {
             statement.setString(1, trimmedNote);
             statement.setInt(2, id);
             statement.executeUpdate();
-        });
+        };
         
         /*
         {
@@ -869,13 +910,14 @@ public class SpringConfig {
     
     
     @Bean
+    @SneakyThrows
     public Consumer<Integer> deleteNote(
             @Qualifier("deleteNotePreparedStatement") PreparedStatement statement)
     {
-        return id -> tryCatchWrapping(() -> {
+        return id -> {
             statement.setInt(1, id);
             statement.executeUpdate();
-        });
+        };
        
         /*
         {
@@ -924,6 +966,7 @@ public class SpringConfig {
     }
     
     
+    /*
     private static void tryCatchWrapping(Runnable action) {
         try {
             action.run();
@@ -940,7 +983,7 @@ public class SpringConfig {
             throw new RuntimeException(e);
         }
     }
-    
+    */
     
     /*
     private static void tryCatchWrapping(Runnable action, Runnable anotherAction) {
