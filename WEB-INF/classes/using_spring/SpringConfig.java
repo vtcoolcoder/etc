@@ -1023,7 +1023,7 @@ public class SpringConfig {
     }
     
     
-    private static ResultSet something(Function<ResultSet, Statement> action, String query) {
+    private static <T> T something(Function<T, Statement> action, String query) {
         try {
             return action.apply(query);
         } catch (Exception e) {
