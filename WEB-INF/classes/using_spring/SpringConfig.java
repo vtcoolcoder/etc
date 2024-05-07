@@ -38,8 +38,17 @@ import java.util.function.Consumer;
 public class SpringConfig {
     @Bean
     public Connection connection(DBConfig dbConfig) {
-        Connection result = null;
+        //Connection result = null;
         
+        return tryCatchWrapping(() -> {
+            Class.forName(dbConfig.getDriverName());
+            return DriverManager.getConnection(
+                    dbConfig.getURL(), 
+                    dbConfig.getUser(), 
+                    dbConfig.getPassword());
+        });
+        
+        /*
         try {
             Class.forName(dbConfig.getDriverName());
             result = DriverManager.getConnection(
@@ -51,6 +60,7 @@ public class SpringConfig {
         }
         
         return result;
+        */
     }
     
     
@@ -142,109 +152,146 @@ public class SpringConfig {
     
     @Bean
     public Runnable transactionRollBack(Statement statement, QueriesData queriesData) {
-        return () -> {
+        return () -> tryCatchWrapping(() -> statement.executeUpdate(queriesData.getTransactionRollBack()));
+        
+        /*
+        {
             try {
                 statement.executeUpdate(queriesData.getTransactionRollBack());
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
         };
+        */
     }
     
     
     @Bean
     public Supplier<ResultSet> allNotesResultSet(Statement statement, QueriesData queriesData) {
-        return () -> {
+        return () -> tryCatchWrapping(() -> statement.executeQuery(queriesData.getAllNotes())); 
+        
+        /*
+        {
             try {
                 return statement.executeQuery(queriesData.getAllNotes());
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
         };     
+        */
     }
     
     
     @Bean
     public Supplier<ResultSet> allNotesWithoutIdResultSet(Statement statement, QueriesData queriesData) {
-        return () -> {
+        return () -> tryCatchWrapping(() -> statement.executeQuery(queriesData.getAllNotesWithoutId()));
+        
+        /*
+        {
             try {
                 return statement.executeQuery(queriesData.getAllNotesWithoutId());
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
         };
+        */
     }
     
     
     @Bean
     public Supplier<ResultSet> distinctSubjectsResultSet(Statement statement, QueriesData queriesData) {
-        return () -> {
+        return () -> tryCatchWrapping(() -> statement.executeQuery(queriesData.getDistinctSubjects()));
+        
+        /*
+        {
             try {
                 return statement.executeQuery(queriesData.getDistinctSubjects());
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
         };     
+        */
     }
     
     
     @Bean
     public Supplier<ResultSet> allIdResultSet(Statement statement, QueriesData queriesData) {
-        return () -> {
+        return () -> tryCatchWrapping(() -> statement.executeQuery(queriesData.getAllId())); 
+        
+        
+        /*
+        {
             try {
                 return statement.executeQuery(queriesData.getAllId());
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
         };      
+        */
     }
     
     
     @Bean
     public Supplier<ResultSet> notesBySubjectAmountResultSet(Statement statement, QueriesData queriesData) {
-        return () -> {
+        return () -> tryCatchWrapping(() -> statement.executeQuery(queriesData.getNotesBySubjectAmount())); 
+        
+        /*
+        {
             try {
                 return statement.executeQuery(queriesData.getNotesBySubjectAmount());
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
         }; 
+        */
     }
     
     
     @Bean
     public Supplier<ResultSet> allSubjectsAmountResultSet(Statement statement, QueriesData queriesData) {
-        return () -> {
+        return () -> tryCatchWrapping(() -> statement.executeQuery(queriesData.getAllSubjectsAmount()));
+        
+        /*
+        {
             try {
                 return statement.executeQuery(queriesData.getAllSubjectsAmount());
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
         };      
+        */
     }
     
     
     @Bean
     public Supplier<ResultSet> allNotesAmountResultSet(Statement statement, QueriesData queriesData) {
-        return () -> {
+        return () -> tryCatchWrapping(() -> statement.executeQuery(queriesData.getAllNotesAmount()));
+        
+        /*
+        {
             try {
                 return statement.executeQuery(queriesData.getAllNotesAmount());
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
         };     
+        */
     }
     
     
     @Bean
     public Runnable trimUpdate(Statement statement, QueriesData queriesData) {
-        return () -> {
+        return () -> tryCatchWrapping(() -> statement.executeUpdate(queriesData.getTrimUpdate()));
+        
+        /*
+        {
             try {
                 statement.executeUpdate(queriesData.getTrimUpdate());
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
         };
+        */
     }
     
     
@@ -252,7 +299,22 @@ public class SpringConfig {
     public Supplier<Set<Note>> allNotes(
             @Qualifier("allNotesResultSet") Supplier<ResultSet> supplier) 
     {
-        return () -> {
+        return () -> tryCatchWrapping(() -> {
+                ResultSet resultSet = supplier.get();
+                Set<Note> result = new LinkedHashSet<>();  
+            
+                while (resultSet.next()) {
+                    int id = resultSet.getInt("id");
+                    String subject = resultSet.getString("subject");
+                    String note = resultSet.getString("note");
+                    result.add(new Note(id, subject, note));
+                }    
+                
+                return result;
+        }); 
+        
+        /*
+        {
             try {
                 ResultSet resultSet = supplier.get();
                 Set<Note> result = new LinkedHashSet<>();  
@@ -269,6 +331,7 @@ public class SpringConfig {
                 throw new RuntimeException(ex);
             }
         };
+        */
     }
     
     
@@ -276,7 +339,21 @@ public class SpringConfig {
     public Supplier<Set<Note>> allNotesWithoutId(
             @Qualifier("allNotesWithoutIdResultSet") Supplier<ResultSet> supplier) 
     {
-        return () -> {
+        return () -> tryCatchWrapping(() -> {
+                ResultSet resultSet = supplier.get();
+                Set<Note> result = new LinkedHashSet<>();    
+            
+                while (resultSet.next()) {
+                    String subject = resultSet.getString("subject");
+                    String note = resultSet.getString("note");
+                    result.add(new Note(subject, note));
+                }    
+                
+                return result;
+        }); 
+        
+        /*
+        {
             try {
                 ResultSet resultSet = supplier.get();
                 Set<Note> result = new LinkedHashSet<>();    
@@ -292,6 +369,7 @@ public class SpringConfig {
                 throw new RuntimeException(ex);
             }
         };
+        */
     }
     
     
@@ -299,7 +377,20 @@ public class SpringConfig {
     public Supplier<Set<String>> distinctSubjects(
             @Qualifier("distinctSubjectsResultSet") Supplier<ResultSet> supplier) 
     {
-        return () -> {
+        return () -> tryCatchWrapping(() -> {
+                ResultSet resultSet = supplier.get();
+                Set<String> result = new LinkedHashSet<>();
+                   
+                while (resultSet.next()) {     
+                    String subject = resultSet.getString("subject"); 
+                    result.add(subject);
+                }    
+                
+                return result;
+        }); 
+        
+        /*
+        {
             try {
                 ResultSet resultSet = supplier.get();
                 Set<String> result = new LinkedHashSet<>();
@@ -314,6 +405,7 @@ public class SpringConfig {
                 throw new RuntimeException(ex);
             }
         };        
+        */
     }
     
     
@@ -321,7 +413,20 @@ public class SpringConfig {
     public Supplier<Set<Integer>> allId(
             @Qualifier("allIdResultSet") Supplier<ResultSet> supplier) 
     {
-        return () -> {
+        return () -> tryCatchWrapping(() -> {
+                ResultSet resultSet = supplier.get();
+                Set<Integer> result = new LinkedHashSet<>();
+            
+                while (resultSet.next()) {     
+                    int id = resultSet.getInt("id"); 
+                    result.add(id);
+                }    
+                
+                return result;
+        }); 
+        
+        /*
+        {
             try {
                 ResultSet resultSet = supplier.get();
                 Set<Integer> result = new LinkedHashSet<>();
@@ -336,6 +441,7 @@ public class SpringConfig {
                 throw new RuntimeException(ex);
             }
         };
+        */
     }
     
     
@@ -343,7 +449,21 @@ public class SpringConfig {
     public Supplier<Map<String, Integer>> notesBySubjectAmount(
             @Qualifier("notesBySubjectAmountResultSet") Supplier<ResultSet> supplier) 
     {
-        return () -> {
+        return () -> tryCatchWrapping(() -> {
+                ResultSet resultSet = supplier.get();
+                Map<String, Integer> result = new LinkedHashMap<>(); 
+            
+                while (resultSet.next()) {    
+                    String subject = resultSet.getString("subject"); 
+                    int amount = resultSet.getInt("amount"); 
+                    result.put(subject, amount);
+                }    
+                
+                return result; 
+        });
+        
+        /*
+        {
             try {
                 ResultSet resultSet = supplier.get();
                 Map<String, Integer> result = new LinkedHashMap<>(); 
@@ -359,6 +479,7 @@ public class SpringConfig {
                 throw new RuntimeException(ex);
             }
         };
+        */
     }
     
     
@@ -366,7 +487,19 @@ public class SpringConfig {
     public Supplier<Integer> allSubjectsAmount(
             @Qualifier("allSubjectsAmountResultSet") Supplier<ResultSet> supplier) 
     {
-        return () -> {
+        return () -> tryCatchWrapping(() -> {
+                ResultSet resultSet = supplier.get();
+                int result = -1;
+                
+                while (resultSet.next()) {              
+                    result = resultSet.getInt("amount");    
+                }  
+                
+                return result;
+        });
+        
+        /*
+        {
             try {
                 ResultSet resultSet = supplier.get();
                 int result = -1;
@@ -380,6 +513,7 @@ public class SpringConfig {
                 throw new RuntimeException(ex);
             }
         };
+        */
     }
     
     
@@ -387,7 +521,19 @@ public class SpringConfig {
     public Supplier<Integer> allNotesAmount(
             @Qualifier("allNotesAmountResultSet") Supplier<ResultSet> supplier) 
     {
-        return () -> {
+        return () -> tryCatchWrapping(() -> {
+                ResultSet resultSet = supplier.get();
+                int result = -1;
+                
+                while (resultSet.next()) {              
+                    result = resultSet.getInt("amount");    
+                }  
+                
+                return result;
+        });
+        
+        /*
+        {
             try {
                 ResultSet resultSet = supplier.get();
                 int result = -1;
@@ -401,6 +547,7 @@ public class SpringConfig {
                 throw new RuntimeException(ex);
             }
         };
+        */
     }
     
     
@@ -408,7 +555,21 @@ public class SpringConfig {
     public Function<Integer, String> noteById(
             @Qualifier("noteByIdPreparedStatement") PreparedStatement statement) 
     {
-        return id -> {
+        return id -> tryCatchWrapping(() -> {
+                String result = null;
+                
+                statement.setInt(1, id);
+                ResultSet resultSet = statement.executeQuery();
+                
+                while (resultSet.next()) {
+                    result = resultSet.getString("note");
+                }
+                
+                return result;
+        });
+        
+        /*
+        {
             try {
                 String result = null;
                 
@@ -424,6 +585,7 @@ public class SpringConfig {
                 throw new RuntimeException(ex);
             }
         };
+        */
     }
     
     
@@ -431,7 +593,21 @@ public class SpringConfig {
     public Function<Integer, String> noteFragment(
             @Qualifier("noteFragmentPreparedStatement") PreparedStatement statement)
     {
-        return id -> {
+        return id -> tryCatchWrapping(() -> {
+                String result = null;
+                
+                statement.setInt(1, id);
+                ResultSet resultSet = statement.executeQuery();
+                
+                while (resultSet.next()) {
+                    result = resultSet.getString("fragment");
+                }
+                
+                return result;
+        });
+        
+        /*
+        {
             try {
                 String result = null;
                 
@@ -447,6 +623,7 @@ public class SpringConfig {
                 throw new RuntimeException(ex);
             }
         };
+        */
     }    
     
     
@@ -454,7 +631,23 @@ public class SpringConfig {
     public Function<String, Set<Note>> specificNote(
             @Qualifier("specificNotePreparedStatement") PreparedStatement statement)
     {
-        return subject -> {
+        return subject -> tryCatchWrapping(() -> {
+                Set<Note> result = new LinkedHashSet<>();
+                
+                statement.setString(1, subject);
+                ResultSet resultSet = statement.executeQuery();
+                
+                while (resultSet.next()) {
+                    result.add(new Note(
+                            resultSet.getString("subject"), 
+                            resultSet.getString("note")));   
+                }
+                
+                return result;
+        });
+        
+        /*
+        {
             try {
                 Set<Note> result = new LinkedHashSet<>();
                 
@@ -472,6 +665,7 @@ public class SpringConfig {
                 throw new RuntimeException(ex);
             }
         };
+        */
     }
     
     
@@ -479,7 +673,24 @@ public class SpringConfig {
     public Function<String, Set<Note>> fullSpecific(
             @Qualifier("fullSpecificPreparedStatement") PreparedStatement statement)
     {
-        return subject -> {
+        return subject -> tryCatchWrapping(() -> {
+                Set<Note> result = new LinkedHashSet<>();
+                
+                statement.setString(1, subject);
+                ResultSet resultSet = statement.executeQuery();
+                
+                while (resultSet.next()) {
+                    result.add(new Note(
+                            resultSet.getInt("id"),
+                            resultSet.getString("subject"), 
+                            resultSet.getString("note")));   
+                }
+                
+                return result;
+        });
+        
+        /*
+         {
             try {
                 Set<Note> result = new LinkedHashSet<>();
                 
@@ -498,6 +709,7 @@ public class SpringConfig {
                 throw new RuntimeException(ex);
             }
         };
+        */
     }
     
     
@@ -506,7 +718,27 @@ public class SpringConfig {
             @Qualifier("randomPreparedStatement") PreparedStatement statement,
             @Qualifier("allId") Supplier<Set<Integer>> supplier)
     {
-        return () -> {
+        return () -> tryCatchWrapping(() -> {
+                Note result = null;
+                
+                Set<Integer> allID = supplier.get();
+                int randomId = (new java.util.LinkedList<Integer>(allID)).get(
+                        new java.util.Random().nextInt(allID.size()));
+            
+                statement.setInt(1, randomId);
+                ResultSet resultSet = statement.executeQuery();
+                
+                while (resultSet.next()) {
+                    result = new Note(
+                            resultSet.getString("subject"), 
+                            resultSet.getString("note"));
+                }
+                
+                return result;
+        });
+        
+        /*
+        {
             try {
                 Note result = null;
                 
@@ -528,6 +760,7 @@ public class SpringConfig {
                 throw new RuntimeException(ex);
             }
         };
+        */
     }
     
     
@@ -580,7 +813,14 @@ public class SpringConfig {
     public BiConsumer<String, Integer> updateNote(
             @Qualifier("updateNotePreparedStatement") PreparedStatement statement)
     {
-        return (trimmedNote, id) -> {
+        return (trimmedNote, id) -> tryCatchWrapping(() -> {
+            statement.setString(1, trimmedNote);
+            statement.setInt(2, id);
+            statement.executeUpdate();
+        });
+        
+        /*
+        {
             try {
                 statement.setString(1, trimmedNote);
                 statement.setInt(2, id);
@@ -589,6 +829,7 @@ public class SpringConfig {
                 throw new RuntimeException(ex);
             }
         };
+        */
     }
     
     
@@ -631,7 +872,13 @@ public class SpringConfig {
     public Consumer<Integer> deleteNote(
             @Qualifier("deleteNotePreparedStatement") PreparedStatement statement)
     {
-        return id -> {
+        return id -> tryCatchWrapping(() -> {
+            statement.setInt(1, id);
+            statement.executeUpdate();
+        });
+       
+        /*
+        {
             try {
                 statement.setInt(1, id);
                 statement.executeUpdate();
@@ -639,6 +886,7 @@ public class SpringConfig {
                 throw new RuntimeException(ex);
             }
         };
+        */
     }
     
     
@@ -673,5 +921,34 @@ public class SpringConfig {
                 }
             }
         };
+    }
+    
+    
+    private static void tryCatchWrapping(Runnable action) {
+        try {
+            action.run();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    
+    private static <T> T tryCatchWrapping(Supplier<T> action) {
+        try {
+            return action.run();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    
+    private static void tryCatchWrapping(Runnable action, Runnable anotherAction) {
+        try {
+            action.run();
+        } catch(PSQLException e) {
+            anotherAction.run();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
  }
