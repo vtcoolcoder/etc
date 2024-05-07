@@ -493,7 +493,7 @@ public class SpringConfig {
                 }    
                 
                 return result; 
-        });
+        };
         
         /*
         {
