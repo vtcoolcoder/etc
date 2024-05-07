@@ -1024,7 +1024,7 @@ public class SpringConfig {
     */
     
     
-    private static ResultSet executeQuery(Function<Statement, ResultSet> action, String query) {
+    private static ResultSet executeQuery(Function<String, ResultSet> action, String query) {
         try {
             return action.apply(query);
         } catch (Exception e) {
@@ -1033,7 +1033,7 @@ public class SpringConfig {
     }
     
     
-    private static void executeUpdate(Function<Statement, Integer> action, String query) {
+    private static void executeUpdate(Function<String, Integer> action, String query) {
         try {
             action.apply(query);
         } catch (Exception e) {
