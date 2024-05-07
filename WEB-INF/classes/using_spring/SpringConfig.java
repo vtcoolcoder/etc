@@ -16,6 +16,7 @@ import java.sql.DriverManager;
 import java.sql.Statement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import org.postgresql.util.PSQLException;
 
 
@@ -36,6 +37,11 @@ import java.util.function.Consumer;
 @PropertySource("using_spring/config.properties")
 @PropertySource("using_spring/queries.properties")
 public class SpringConfig {
+    @FunctionalInterface
+    private interface SQLFunction<T, R> {
+        R apply(T t) throws SQLException;
+    }
+
 
     @Bean
     @SneakyThrows
@@ -1024,7 +1030,7 @@ public class SpringConfig {
     */
     
     
-    private static ResultSet executeQuery(Function<String, ResultSet> action, String query) {
+    private static ResultSet executeQuery(SQLFunction<String, ResultSet> action, String query) {
         try {
             return action.apply(query);
         } catch (Exception e) {
@@ -1033,7 +1039,7 @@ public class SpringConfig {
     }
     
     
-    private static void executeUpdate(Function<String, Integer> action, String query) {
+    private static void executeUpdate(SQLFunction<String, Integer> action, String query) {
         try {
             action.apply(query);
         } catch (Exception e) {
