@@ -942,6 +942,7 @@ public class SpringConfig {
     }
     
     
+    /*
     private static void tryCatchWrapping(Runnable action, Runnable anotherAction) {
         try {
             action.run();
@@ -951,4 +952,5 @@ public class SpringConfig {
             throw new RuntimeException(e);
         }
     }
+    */
  }
