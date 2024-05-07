@@ -249,10 +249,10 @@ public class ServiceServlet {
         
         availableRecords.forEach((key, value) -> value.stream()  
                 .map(el -> {
-                        String fullNote = el.note();
-                        int length = fullNote.length();
+                        //String fullNote = el.note();
+                        //int length = fullNote.length();
                 
-                        String beginNoteFragment = getIdAndContent().CONTENT();
+                        String beginNoteFragment = webNotes.getNoteFragment(el.id());
                                 //fullNote.substring(0, (length >= SUBSTRLIMIT) 
                                 //        ? SUBSTRLIMIT 
                                 //        : length);
