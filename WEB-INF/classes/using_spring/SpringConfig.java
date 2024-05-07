@@ -41,6 +41,26 @@ public class SpringConfig {
     private interface SQLFunction<T, R> {
         R apply(T t) throws SQLException;
     }
+    
+    @FunctionalInterface
+    private interface SQLSupplier<R> {
+        R get() throws SQLException;
+    }
+    
+    @FunctionalInterface
+    private interface SQLConsumer<T> {
+        void accept(T t) throws SQLException;
+    }
+    
+    @FunctionalInterface
+    private interface SQLBiConsumer<T, E> {
+        void accept(T t, E e) throws SQLException;
+    }
+    
+    @FunctionalInterface
+    private interface SQLRunnable {
+        void run() throws SQLException;
+    }
 
 
     @Bean
@@ -347,7 +367,7 @@ public class SpringConfig {
     
     @Bean
     @SneakyThrows
-    public Supplier<Set<Note>> allNotes(
+    public SQLSupplier<Set<Note>> allNotes(
             @Qualifier("allNotesResultSet") Supplier<ResultSet> supplier) 
     {
         return () -> {
@@ -388,7 +408,7 @@ public class SpringConfig {
     
     @Bean
     @SneakyThrows
-    public Supplier<Set<Note>> allNotesWithoutId(
+    public SQLSupplier<Set<Note>> allNotesWithoutId(
             @Qualifier("allNotesWithoutIdResultSet") Supplier<ResultSet> supplier) 
     {
         return () -> {
@@ -427,7 +447,7 @@ public class SpringConfig {
     
     @Bean
     @SneakyThrows
-    public Supplier<Set<String>> distinctSubjects(
+    public SQLSupplier<Set<String>> distinctSubjects(
             @Qualifier("distinctSubjectsResultSet") Supplier<ResultSet> supplier) 
     {
         return () -> {
@@ -464,7 +484,7 @@ public class SpringConfig {
     
     @Bean
     @SneakyThrows
-    public Supplier<Set<Integer>> allId(
+    public SQLSupplier<Set<Integer>> allId(
             @Qualifier("allIdResultSet") Supplier<ResultSet> supplier) 
     {
         return () -> {
@@ -501,7 +521,7 @@ public class SpringConfig {
     
     @Bean
     @SneakyThrows
-    public Supplier<Map<String, Integer>> notesBySubjectAmount(
+    public SQLSupplier<Map<String, Integer>> notesBySubjectAmount(
             @Qualifier("notesBySubjectAmountResultSet") Supplier<ResultSet> supplier) 
     {
         return () -> {
@@ -540,7 +560,7 @@ public class SpringConfig {
     
     @Bean
     @SneakyThrows
-    public Supplier<Integer> allSubjectsAmount(
+    public SQLSupplier<Integer> allSubjectsAmount(
             @Qualifier("allSubjectsAmountResultSet") Supplier<ResultSet> supplier) 
     {
         return () -> {
@@ -575,7 +595,7 @@ public class SpringConfig {
     
     @Bean
     @SneakyThrows
-    public Supplier<Integer> allNotesAmount(
+    public SQLSupplier<Integer> allNotesAmount(
             @Qualifier("allNotesAmountResultSet") Supplier<ResultSet> supplier) 
     {
         return () -> {
@@ -610,7 +630,7 @@ public class SpringConfig {
     
     @Bean
     @SneakyThrows
-    public Function<Integer, String> noteById(
+    public SQLFunction<Integer, String> noteById(
             @Qualifier("noteByIdPreparedStatement") PreparedStatement statement) 
     {
         return id -> {
@@ -649,7 +669,7 @@ public class SpringConfig {
     
     @Bean
     @SneakyThrows
-    public Function<Integer, String> noteFragment(
+    public SQLFunction<Integer, String> noteFragment(
             @Qualifier("noteFragmentPreparedStatement") PreparedStatement statement)
     {
         return id -> {
@@ -688,7 +708,7 @@ public class SpringConfig {
     
     @Bean
     @SneakyThrows
-    public Function<String, Set<Note>> specificNote(
+    public SQLFunction<String, Set<Note>> specificNote(
             @Qualifier("specificNotePreparedStatement") PreparedStatement statement)
     {
         return subject -> {
@@ -731,7 +751,7 @@ public class SpringConfig {
     
     @Bean
     @SneakyThrows
-    public Function<String, Set<Note>> fullSpecific(
+    public SQLFunction<String, Set<Note>> fullSpecific(
             @Qualifier("fullSpecificPreparedStatement") PreparedStatement statement)
     {
         return subject -> {
@@ -776,7 +796,7 @@ public class SpringConfig {
     
     @Bean
     @SneakyThrows
-    public Supplier<Note> random(
+    public SQLSupplier<Note> random(
             @Qualifier("randomPreparedStatement") PreparedStatement statement,
             @Qualifier("allId") Supplier<Set<Integer>> supplier)
     {
@@ -873,7 +893,7 @@ public class SpringConfig {
     
     @Bean
     @SneakyThrows
-    public BiConsumer<String, Integer> updateNote(
+    public SQLBiConsumer<String, Integer> updateNote(
             @Qualifier("updateNotePreparedStatement") PreparedStatement statement)
     {
         return (trimmedNote, id) -> {
@@ -933,7 +953,7 @@ public class SpringConfig {
     
     @Bean
     @SneakyThrows
-    public Consumer<Integer> deleteNote(
+    public SQLConsumer<Integer> deleteNote(
             @Qualifier("deleteNotePreparedStatement") PreparedStatement statement)
     {
         return id -> {
