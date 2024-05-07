@@ -154,7 +154,8 @@ public class SpringConfig {
     
     @Bean
     public Runnable transactionRollBack(Statement statement, QueriesData queriesData) {
-        @SneakyThrows return () -> statement.executeUpdate(queriesData.getTransactionRollBack());
+        return () -> something(statement::executeUpdate, queriesData.getTransactionRollBack()); 
+        //statement.executeUpdate(queriesData.getTransactionRollBack());
         //return () -> tryCatchWrapping(() -> statement.executeUpdate(queriesData.getTransactionRollBack()));
         
         /*
@@ -172,7 +173,9 @@ public class SpringConfig {
     @Bean
     @SneakyThrows
     public Supplier<ResultSet> allNotesResultSet(Statement statement, QueriesData queriesData) {
-        return () -> statement.executeQuery(queriesData.getAllNotes());
+        return () -> something(statement::executeQuery, queriesData.getAllNotes());
+        
+        //statement.executeQuery(queriesData.getAllNotes());
         
         //return () -> tryCatchWrapping(() -> statement.executeQuery(queriesData.getAllNotes())); 
         
@@ -191,7 +194,9 @@ public class SpringConfig {
     @Bean
     @SneakyThrows
     public Supplier<ResultSet> allNotesWithoutIdResultSet(Statement statement, QueriesData queriesData) {
-        return () -> statement.executeQuery(queriesData.getAllNotesWithoutId());
+        return () -> something(statement::executeQuery, queriesData.getAllNotesWithoutId());
+        
+        //statement.executeQuery(queriesData.getAllNotesWithoutId());
         
         //return () -> tryCatchWrapping(() -> statement.executeQuery(queriesData.getAllNotesWithoutId()));
         
@@ -210,7 +215,9 @@ public class SpringConfig {
     @Bean
     @SneakyThrows
     public Supplier<ResultSet> distinctSubjectsResultSet(Statement statement, QueriesData queriesData) {
-        return () -> statement.executeQuery(queriesData.getDistinctSubjects());
+        return () -> something(statement::executeQuery, queriesData.getDistinctSubjects());
+        
+        //statement.executeQuery(queriesData.getDistinctSubjects());
         
         //return () -> tryCatchWrapping(() -> statement.executeQuery(queriesData.getDistinctSubjects()));
         
@@ -229,7 +236,9 @@ public class SpringConfig {
     @Bean
     @SneakyThrows
     public Supplier<ResultSet> allIdResultSet(Statement statement, QueriesData queriesData) {
-        return () -> statement.executeQuery(queriesData.getAllId());
+        return () -> something(statement::executeQuery, queriesData.getAllId());
+        
+        //statement.executeQuery(queriesData.getAllId());
         
         //return () -> tryCatchWrapping(() -> statement.executeQuery(queriesData.getAllId())); 
         
@@ -249,7 +258,9 @@ public class SpringConfig {
     @Bean
     @SneakyThrows
     public Supplier<ResultSet> notesBySubjectAmountResultSet(Statement statement, QueriesData queriesData) {
-        return () -> statement.executeQuery(queriesData.getNotesBySubjectAmount());
+        return () -> something(statement::executeQuery, queriesData.getNotesBySubjectAmount());
+        
+        //statement.executeQuery(queriesData.getNotesBySubjectAmount());
         
         //return () -> tryCatchWrapping(() -> statement.executeQuery(queriesData.getNotesBySubjectAmount())); 
         
@@ -268,7 +279,9 @@ public class SpringConfig {
     @Bean
     @SneakyThrows
     public Supplier<ResultSet> allSubjectsAmountResultSet(Statement statement, QueriesData queriesData) {
-        return () -> statement.executeQuery(queriesData.getAllSubjectsAmount());
+        return () -> something(statement::executeQuery, queriesData.getAllSubjectsAmount());
+        
+        //statement.executeQuery(queriesData.getAllSubjectsAmount());
         
         //return () -> tryCatchWrapping(() -> statement.executeQuery(queriesData.getAllSubjectsAmount()));
         
@@ -287,7 +300,9 @@ public class SpringConfig {
     @Bean
     @SneakyThrows
     public Supplier<ResultSet> allNotesAmountResultSet(Statement statement, QueriesData queriesData) {
-        return () -> statement.executeQuery(queriesData.getAllNotesAmount());
+        return () -> something(statement::executeQuery, queriesData.getAllNotesAmount());
+        
+        //statement.executeQuery(queriesData.getAllNotesAmount());
         
         //return () -> tryCatchWrapping(() -> statement.executeQuery(queriesData.getAllNotesAmount()));
         
@@ -306,7 +321,9 @@ public class SpringConfig {
     @Bean
     @SneakyThrows
     public Runnable trimUpdate(Statement statement, QueriesData queriesData) {
-        return () -> statement.executeUpdate(queriesData.getTrimUpdate());
+        return () -> something(statement::executeUpdate, queriesData.getTrimUpdate());
+        
+        //statement.executeUpdate(queriesData.getTrimUpdate());
         
         //return () -> tryCatchWrapping(() -> statement.executeUpdate(queriesData.getTrimUpdate()));
         
@@ -995,4 +1012,22 @@ public class SpringConfig {
         }
     }
     */
+    
+    
+    private static void something(Consumer<Statement> action, String query) {
+        try {
+            action.accept(query);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    
+    private static ResultSet something(Function<ResultSet, Statement> action, String query) {
+        try {
+            return action.apply(query);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
  }
