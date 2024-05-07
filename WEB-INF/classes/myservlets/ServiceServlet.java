@@ -253,10 +253,10 @@ public class ServiceServlet {
                         int length = fullNote.length();
                 
                         String beginNoteFragment = 
-                                fullNote.substring(0,
-                                        (length >= SUBSTRLIMIT) 
-                                                ? SUBSTRLIMIT 
-                                                : length);
+                                fullNote; //.substring(0,
+                                        //(length >= SUBSTRLIMIT) 
+                                          //      ? SUBSTRLIMIT 
+                                           //     : length);
                                                 
                         return new LmbHelper(el, beginNoteFragment);
                 })
