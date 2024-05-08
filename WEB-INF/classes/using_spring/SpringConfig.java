@@ -2,7 +2,7 @@ package using_spring;
 
 
 import lombok.SneakyThrows;
-//import lombok.Setter;
+import lombok.Setter;
 import lombok.Getter;
 //import lombok.Builder;
 
@@ -67,7 +67,7 @@ public class SpringConfig {
     }
     
     
-    //@Setter
+    @Setter
     @Getter
     //@Builder
     private static class Flag {
