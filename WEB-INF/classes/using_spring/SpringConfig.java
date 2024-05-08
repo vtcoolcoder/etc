@@ -79,6 +79,7 @@ public class SpringConfig {
     
     private static final Random RANDOM = new Random();
     private static final Flag FLAG = new Flag();
+    private static final String ERROR_MESSAGE = "[ОШИБКА]: Такой контент уже существует!%n[CONTENT]:%n%s%n";
 
 
     @Bean
@@ -346,7 +347,7 @@ public class SpringConfig {
             @Qualifier("fullSpecificPreparedStatement") PreparedStatement statement)
     {
         return subject -> preparedExecuteQuery(() -> getContent(statement, subject,
-                (resultSetLmb) -> new Note(resultSetLmb.getInt("id"),
+                resultSetLmb -> new Note(resultSetLmb.getInt("id"),
                             resultSetLmb.getString("subject"), 
                             resultSetLmb.getString("note"))));
     }
@@ -391,11 +392,9 @@ public class SpringConfig {
                     statement.setString(2, note);
                     statement.executeUpdate();
                 },
-                (exception) -> {
+                exception -> {
                     System.err.println(exception.getMessage());
-                    System.err.printf(
-                        "[ОШИБКА]: Такой контент уже существует!%n[CONTENT]:%n%s%n", 
-                        note);
+                    System.err.printf(ERROR_MESSAGE, note);
                 });
     }
     
@@ -409,7 +408,7 @@ public class SpringConfig {
                     statement.setInt(1, id);
                     statement.executeUpdate();
                 },
-                (exception) -> {
+                exception -> {
                     System.err.println(exception.getMessage());
                 });
     }
@@ -439,7 +438,7 @@ public class SpringConfig {
                     statement.setInt(3, id);
                     statement.executeUpdate();
                 },
-                (exception) -> {
+                exception -> {
                     System.err.println(exception.getMessage());
                     rollback.run();
                 });
@@ -468,7 +467,7 @@ public class SpringConfig {
                     statement.setInt(2, id);
                     statement.executeUpdate();
                 }, 
-                (exception) -> {
+                exception -> {
                     System.err.println(exception.getMessage());
                     rollback.run();
                 });
@@ -564,7 +563,11 @@ public class SpringConfig {
     
     
     @SneakyThrows
-    private static Set<Note> getContent(PreparedStatement statement, String subject, SQLFunction<ResultSet, Note> item) {
+    private static Set<Note> getContent(
+            PreparedStatement statement, 
+            String subject, 
+            SQLFunction<ResultSet, Note> item) 
+    {
         final Set<Note> RESULT = new LinkedHashSet<>();
         statement.setString(1, subject);        
         iterateByResultSet(statement, resultSetLmb -> RESULT.add(item.apply(resultSetLmb)));                      
