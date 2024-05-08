@@ -269,11 +269,11 @@ public class SpringConfig {
     
     
     @Bean
-    public Supplier<Set<Integer>> allId(
+    public Supplier<List<Integer>> allId(
             @Qualifier("allIdResultSet") Supplier<ResultSet> supplier) 
     {
         return () -> preparedExecuteQuery(() -> {
-                final Set<Integer> RESULT = new LinkedHashSet<>();
+                final List<Integer> RESULT = new LinkedList<>();
                 
                 iterateByResultSet(supplier, resultSetLmb -> 
                         RESULT.add(resultSetLmb.getInt("id")));
@@ -355,7 +355,7 @@ public class SpringConfig {
     @Bean
     public Supplier<Note> random(
             @Qualifier("randomPreparedStatement") PreparedStatement statement,
-            @Qualifier("allId") Supplier<Set<Integer>> supplier)
+            @Qualifier("allId") Supplier<List<Integer>> supplier)
     {
         return () -> preparedExecuteQuery(() -> {
                 @Getter
@@ -366,9 +366,8 @@ public class SpringConfig {
                 
                 final Helper HELPER = new Helper();
                 
-                Set<Integer> allID = supplier.get();
-                int randomId = (new LinkedList<Integer>(allID)).get(
-                        RANDOM.nextInt(allID.size()));
+                List<Integer> allID = supplier.get();
+                int randomId = allID.get(RANDOM.nextInt(allID.size()));
             
                 statement.setInt(1, randomId);
                 

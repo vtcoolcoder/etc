@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.util.Set;
 import java.util.Map;
+import java.util.List;
 
 import java.util.function.Supplier;
 import java.util.function.Function;
@@ -26,7 +27,7 @@ public final class NoteShower {
     private final Supplier<Set<Note>> allNotes;  
     private final Supplier<Set<Note>> allNotesWithoutId; 
     private final Supplier<Set<String>> distinctSubjects;  
-    private final Supplier<Set<Integer>> allId;  
+    private final Supplier<List<Integer>> allId;  
     private final Supplier<Map<String, Integer>> notesBySubjectAmount; 
     private final Supplier<Integer> allSubjectsAmount; 
     private final Supplier<Integer> allNotesAmount;
@@ -49,7 +50,7 @@ public final class NoteShower {
             @Qualifier("allNotes") Supplier<Set<Note>> allNotes,
             @Qualifier("allNotesWithoutId") Supplier<Set<Note>> allNotesWithoutId,
             @Qualifier("distinctSubjects") Supplier<Set<String>> distinctSubjects,
-            @Qualifier("allId") Supplier<Set<Integer>> allId,
+            @Qualifier("allId") Supplier<List<Integer>> allId,
             @Qualifier("notesBySubjectAmount") Supplier<Map<String, Integer>> notesBySubjectAmount,
             @Qualifier("allSubjectsAmount") Supplier<Integer> allSubjectsAmount,
             @Qualifier("allNotesAmount") Supplier<Integer> allNotesAmount,
