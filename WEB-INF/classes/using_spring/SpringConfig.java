@@ -1132,7 +1132,7 @@ public class SpringConfig {
             if (action instanceof SQLRunnable runnable) {
                 runnable.run();
                 return null;
-            } else if (action instanceof SQLSupplier<R> supplier) {
+            } else if (action instanceof SQLSupplier supplier) {
                 return supplier.get();
             }
         } catch (Exception e) {
