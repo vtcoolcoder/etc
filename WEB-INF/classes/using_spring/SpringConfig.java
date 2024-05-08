@@ -741,7 +741,7 @@ public class SpringConfig {
     }
     
     
-    private static Set<Note> getContent(PreparedStatement statement, String subject, Function<ResultSet, Note> item) {
+    private static Set<Note> getContent(PreparedStatement statement, String subject, SQLFunction<ResultSet, Note> item) {
         final Set<Note> RESULT = new LinkedHashSet<>();
         statement.setString(1, subject);        
         iterateByResultSet(statement, resultSetLmb -> RESULT.add(item.apply(resultSetLmb)));                      
@@ -749,7 +749,7 @@ public class SpringConfig {
     }
     
     
-    private static int getContent(Supplier<ResultSet> supplier) {
+    private static int getContent(SQLSupplier<ResultSet> supplier) {
         @Getter
         @Setter
         class Helper {
