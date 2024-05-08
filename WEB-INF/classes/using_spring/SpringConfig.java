@@ -4,7 +4,6 @@ package using_spring;
 import lombok.SneakyThrows;
 import lombok.Setter;
 import lombok.Getter;
-//import lombok.Builder;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -69,7 +68,6 @@ public class SpringConfig {
     
     @Setter
     @Getter
-    //@Builder
     private static class Flag {
         private boolean repeatLoop;
     }
@@ -95,89 +93,67 @@ public class SpringConfig {
     
     
     @Bean
-    //@SneakyThrows
     public PreparedStatement noteByIdPreparedStatement(Connection connection, QueriesData queriesData) {
-        //return connection.prepareStatement(queriesData.getNoteById());
         return getPreparedStatement(connection, queriesData.getNoteById());
     }
     
     
     @Bean
-    //@SneakyThrows
     public PreparedStatement noteFragmentPreparedStatement(Connection connection, QueriesData queriesData) {
-        //return connection.prepareStatement(queriesData.getNoteFragment());
         return getPreparedStatement(connection, queriesData.getNoteFragment());
     }
     
     
     @Bean
-    //@SneakyThrows
     public PreparedStatement specificNotePreparedStatement(Connection connection, QueriesData queriesData) {
-        //return connection.prepareStatement(queriesData.getSpecificNote());
         return getPreparedStatement(connection, queriesData.getSpecificNote());
     }
     
     
     @Bean
-    //@SneakyThrows
     public PreparedStatement fullSpecificPreparedStatement(Connection connection, QueriesData queriesData) {
-        //return connection.prepareStatement(queriesData.getFullSpecific());
         return getPreparedStatement(connection, queriesData.getFullSpecific());
     }
     
     
     @Bean
-    //@SneakyThrows
     public PreparedStatement randomPreparedStatement(Connection connection, QueriesData queriesData) {
-        //return connection.prepareStatement(queriesData.getRandom());
         return getPreparedStatement(connection, queriesData.getRandom());
     }
     
     
     @Bean
-    //@SneakyThrows
     public PreparedStatement addNotePreparedStatement(Connection connection, QueriesData queriesData) {
-        //return connection.prepareStatement(queriesData.getAddNote());
         return getPreparedStatement(connection, queriesData.getAddNote());
     }
     
     
     @Bean
-    //@SneakyThrows
     public PreparedStatement backupPreparedStatement(Connection connection, QueriesData queriesData) {
-        //return connection.prepareStatement(queriesData.getBackup());
         return getPreparedStatement(connection, queriesData.getBackup());
     }
     
     
     @Bean
-    //@SneakyThrows
     public PreparedStatement updateNotePreparedStatement(Connection connection, QueriesData queriesData) {
-        //return connection.prepareStatement(queriesData.getUpdateNote());
         return getPreparedStatement(connection, queriesData.getUpdateNote());
     }
     
     
     @Bean
-    //@SneakyThrows
     public PreparedStatement transactionUpdatePreparedStatement(Connection connection, QueriesData queriesData) {
-        //return connection.prepareStatement(queriesData.getTransactionUpdate());
         return getPreparedStatement(connection, queriesData.getTransactionUpdate());
     }
     
     
     @Bean
-    //@SneakyThrows
     public PreparedStatement deleteNotePreparedStatement(Connection connection, QueriesData queriesData) {
-        //return connection.prepareStatement(queriesData.getDeleteNote());
         return getPreparedStatement(connection, queriesData.getDeleteNote());
     }
     
     
     @Bean
-    //@SneakyThrows
     public PreparedStatement transactionDeletePreparedStatement(Connection connection, QueriesData queriesData) {
-        //return connection.prepareStatement(queriesData.getTransactionDelete());
         return getPreparedStatement(connection, queriesData.getTransactionDelete());
     }
     
@@ -482,25 +458,11 @@ public class SpringConfig {
                     statement.executeUpdate();
                 },
                 (exception) -> {
+                    System.err.println(exception.getMessage());
                     System.err.printf(
                         "[ОШИБКА]: Такой контент уже существует!%n[CONTENT]:%n%s%n", 
                         note);
                 });
-        
-        /*
-        {
-            try {
-                statement.setString(1, subject);
-                statement.setString(2, note);
-                statement.executeUpdate();
-            } catch (PSQLException ex) {
-                System.err.printf(
-                        "[ОШИБКА]: Такой контент уже существует!%n[CONTENT]:%n%s%n", note);
-            } catch (Exception ex) {
-                throw new RuntimeException(ex);
-            }
-        };
-        */
     }
     
     
@@ -516,23 +478,6 @@ public class SpringConfig {
                 (exception) -> {
                     System.err.println(exception.getMessage());
                 });
-        
-        /*
-        {
-            while (true) {
-                try {
-                    statement.setInt(1, id);
-                    statement.executeUpdate();
-                    break;
-                } catch (PSQLException ex) {
-                    System.err.println(ex.getMessage());
-                    continue;
-                } catch (Exception ex) {
-                    throw new RuntimeException(ex);
-                }
-            }
-        };
-        */
     }
     
     
@@ -564,26 +509,6 @@ public class SpringConfig {
                     System.err.println(exception.getMessage());
                     rollback.run();
                 });
-        
-        /*
-        {
-            while (true) {
-                try {
-                    statement.setInt(1, id);
-                    statement.setString(2, trimmedNote);
-                    statement.setInt(3, id);
-                    statement.executeUpdate();
-                    break;
-                } catch (PSQLException ex) {
-                    System.err.println(ex.getMessage());
-                    rollback.run();
-                    continue;
-                } catch (Exception ex) {
-                    throw new RuntimeException(ex);
-                }
-            }
-        };
-        */
     }
     
     
@@ -613,26 +538,6 @@ public class SpringConfig {
                     System.err.println(exception.getMessage());
                     rollback.run();
                 });
-        
-        
-        /*
-        {
-            while (true) {
-                try {
-                    statement.setInt(1, id);
-                    statement.setInt(2, id);
-                    statement.executeUpdate();
-                    break;
-                } catch (PSQLException ex) {
-                    System.err.println(ex.getMessage());
-                    rollback.run();
-                    continue;    
-                } catch (Exception ex) {
-                    throw new RuntimeException(ex);
-                }
-            }
-        };
-        */
     }
     
     
@@ -642,22 +547,6 @@ public class SpringConfig {
         do {
             tryCatchWrapping(ok, fail, flag);
         } while (flag.isRepeatLoop());
-        
-        
-        
-        /*
-        {
-            try {
-                ok.run();
-                break;
-            } catch (PSQLException e) {
-                fail.accept(e);
-                continue;
-            } catch(Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
-        */
     }
     
     
