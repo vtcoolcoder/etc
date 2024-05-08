@@ -230,19 +230,6 @@ public class SpringConfig {
                         resultSetLmb.getInt("id"), 
                         resultSetLmb.getString("subject"), 
                         resultSetLmb.getString("note"))));
-        
-        /*
-        {
-                final Set<Note> RESULT = new LinkedHashSet<>();  
-                
-                iterateByResultSet(supplier, resultSetLmb -> 
-                        RESULT.add(new Note(resultSetLmb.getInt("id"), 
-                                resultSetLmb.getString("subject"), 
-                                resultSetLmb.getString("note"))));
-                  
-                return RESULT;
-        }); 
-        */
     }
     
     
@@ -254,18 +241,6 @@ public class SpringConfig {
                 resultSetLmb -> new Note(
                         resultSetLmb.getString("subject"), 
                         resultSetLmb.getString("note"))));
-        
-        /*
-        {
-                final Set<Note> RESULT = new LinkedHashSet<>();   
-                
-                iterateByResultSet(supplier, resultSetLmb -> 
-                        RESULT.add(new Note(resultSetLmb.getString("subject"), 
-                                resultSetLmb.getString("note")))); 
-                
-                return RESULT;
-        }); 
-        */
     }
     
     
