@@ -612,17 +612,7 @@ public class SpringConfig {
     
     
     private static void retryingExecuteUpdate(SQLRunnable ok, Consumer<Exception> fail) {
-        LABEL: while (true) {
-            tryCatchWrapping(
-                    () -> {
-                        ok.run();
-                        break LABEL;
-                    },
-                    (exception) -> {
-                        fail.accept(exception);
-                        continue LABEL;
-                    });
-        }
+        while (tryCatchWrapping(ok::run, fail::accept)) {}
         
         /*
         {
@@ -640,11 +630,13 @@ public class SpringConfig {
     }
     
     
-    private static void tryCatchWrapping(SQLRunnable ok, Consumer<Exception> fail) {
+    private static boolean tryCatchWrapping(SQLRunnable ok, Consumer<Exception> fail) {
         try {
             ok.run();
+            return false;
         } catch (PSQLException e) {
             fail.accept(e);
+            return true;
         } catch(Exception e) {
             throw new RuntimeException(e);
         }
