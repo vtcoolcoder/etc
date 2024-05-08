@@ -225,7 +225,14 @@ public class SpringConfig {
     public Supplier<Set<Note>> allNotes(
             @Qualifier("allNotesResultSet") Supplier<ResultSet> supplier) 
     {
-        return () -> preparedExecuteQuery(() -> {
+        return () -> preparedExecuteQuery(() -> getContent(supplier, 
+                resultSetLmb -> new Note(
+                        resultSetLmb.getInt("id"), 
+                        resultSetLmb.getString("subject"), 
+                        resultSetLmb.getString("note"))));
+        
+        /*
+        {
                 final Set<Note> RESULT = new LinkedHashSet<>();  
                 
                 iterateByResultSet(supplier, resultSetLmb -> 
@@ -235,6 +242,7 @@ public class SpringConfig {
                   
                 return RESULT;
         }); 
+        */
     }
     
     
@@ -242,7 +250,13 @@ public class SpringConfig {
     public Supplier<Set<Note>> allNotesWithoutId(
             @Qualifier("allNotesWithoutIdResultSet") Supplier<ResultSet> supplier) 
     {
-        return () -> preparedExecuteQuery(() -> {
+        return () -> preparedExecuteQuery(() -> getContent(supplier, 
+                resultSetLmb -> new Note(
+                        resultSetLmb.getString("subject"), 
+                        resultSetLmb.getString("note"))));
+        
+        /*
+        {
                 final Set<Note> RESULT = new LinkedHashSet<>();   
                 
                 iterateByResultSet(supplier, resultSetLmb -> 
@@ -251,6 +265,7 @@ public class SpringConfig {
                 
                 return RESULT;
         }); 
+        */
     }
     
     
@@ -553,7 +568,11 @@ public class SpringConfig {
     
     
     @SneakyThrows
-    private static String getContent(PreparedStatement statement, int id, String request) {
+    private static String getContent(
+            PreparedStatement statement, 
+            int id, 
+            String request) 
+    {
         final StringBuilder RESULT = new StringBuilder();
         statement.setInt(1, id);
         iterateByResultSet(statement, 
@@ -572,6 +591,17 @@ public class SpringConfig {
         statement.setString(1, subject);        
         iterateByResultSet(statement, resultSetLmb -> RESULT.add(item.apply(resultSetLmb)));                      
         return RESULT;              
+    }
+    
+    
+    @SneakyThrows
+    private static Set<Note> getContent(
+            Supplier<ResultSet> supplier, 
+            SQLFunction<ResultSet, Note> item) 
+    {
+        final Set<Note> RESULT = new LinkedHashSet<>();       
+        iterateByResultSet(supplier, resultSetLmb -> RESULT.add(item.apply(resultSetLmb)));     
+        return RESULT;
     }
     
     
