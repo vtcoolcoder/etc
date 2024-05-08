@@ -732,6 +732,7 @@ public class SpringConfig {
     }
     
     
+    @SneakyThrows
     private static String getContent(PreparedStatement statement, int id, String request) {
         final StringBuilder RESULT = new StringBuilder();
         statement.setInt(1, id);
@@ -741,6 +742,7 @@ public class SpringConfig {
     }
     
     
+    @SneakyThrows
     private static Set<Note> getContent(PreparedStatement statement, String subject, SQLFunction<ResultSet, Note> item) {
         final Set<Note> RESULT = new LinkedHashSet<>();
         statement.setString(1, subject);        
