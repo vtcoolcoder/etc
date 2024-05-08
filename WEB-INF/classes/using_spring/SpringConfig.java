@@ -37,7 +37,7 @@ import java.util.function.Consumer;
 @PropertySource("using_spring/config.properties")
 @PropertySource("using_spring/queries.properties")
 public class SpringConfig {
-    @FunctionalInterface
+    //@FunctionalInterface
     private interface SQLFunctionalInterface {}
     
     @FunctionalInterface
