@@ -553,7 +553,20 @@ public class SpringConfig {
             @Qualifier("transactionDeletePreparedStatement") PreparedStatement statement,
             @Qualifier("transactionRollBack") Runnable rollback)
     {
-        return id -> {
+        return id -> transactionalExecuteUpdate(
+                () -> {
+                    statement.setInt(1, id);
+                    statement.setInt(2, id);
+                    statement.executeUpdate();
+                }, 
+                (exception) -> {
+                    System.err.println(exception.getMessage());
+                    rollback.run();
+                });
+        
+        
+        /*
+        {
             while (true) {
                 try {
                     statement.setInt(1, id);
@@ -569,6 +582,22 @@ public class SpringConfig {
                 }
             }
         };
+        */
+    }
+    
+    
+    private static void transactionalExecuteUpdate(SQLRunnable ok, SQLConsumer<Exception> fail) {
+        while (true) {
+            try {
+                ok.run();
+                break;
+            } catch (PSQLException e) {
+                fail.accept(e);
+                continue;
+            } catch(Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
     
        
