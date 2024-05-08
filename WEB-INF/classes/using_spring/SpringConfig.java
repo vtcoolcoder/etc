@@ -84,79 +84,90 @@ public class SpringConfig {
     
     
     @Bean
-    @SneakyThrows
+    //@SneakyThrows
     public PreparedStatement noteByIdPreparedStatement(Connection connection, QueriesData queriesData) {
-        return connection.prepareStatement(queriesData.getNoteById());
+        //return connection.prepareStatement(queriesData.getNoteById());
+        return getPreparedStatement(connection, queriesData.getNoteById());
     }
     
     
     @Bean
-    @SneakyThrows
+    //@SneakyThrows
     public PreparedStatement noteFragmentPreparedStatement(Connection connection, QueriesData queriesData) {
-        return connection.prepareStatement(queriesData.getNoteFragment());
+        //return connection.prepareStatement(queriesData.getNoteFragment());
+        return getPreparedStatement(connection, queriesData.getNoteFragment());
     }
     
     
     @Bean
-    @SneakyThrows
+    //@SneakyThrows
     public PreparedStatement specificNotePreparedStatement(Connection connection, QueriesData queriesData) {
-        return connection.prepareStatement(queriesData.getSpecificNote());
+        //return connection.prepareStatement(queriesData.getSpecificNote());
+        return getPreparedStatement(connection, queriesData.getSpecificNote());
     }
     
     
     @Bean
-    @SneakyThrows
+    //@SneakyThrows
     public PreparedStatement fullSpecificPreparedStatement(Connection connection, QueriesData queriesData) {
-        return connection.prepareStatement(queriesData.getFullSpecific());
+        //return connection.prepareStatement(queriesData.getFullSpecific());
+        return getPreparedStatement(connection, queriesData.getFullSpecific());
     }
     
     
     @Bean
-    @SneakyThrows
+    //@SneakyThrows
     public PreparedStatement randomPreparedStatement(Connection connection, QueriesData queriesData) {
-        return connection.prepareStatement(queriesData.getRandom());
+        //return connection.prepareStatement(queriesData.getRandom());
+        return getPreparedStatement(connection, queriesData.getRandom());
     }
     
     
     @Bean
-    @SneakyThrows
+    //@SneakyThrows
     public PreparedStatement addNotePreparedStatement(Connection connection, QueriesData queriesData) {
-        return connection.prepareStatement(queriesData.getAddNote());
+        //return connection.prepareStatement(queriesData.getAddNote());
+        return getPreparedStatement(connection, queriesData.getAddNote());
     }
     
     
     @Bean
-    @SneakyThrows
+    //@SneakyThrows
     public PreparedStatement backupPreparedStatement(Connection connection, QueriesData queriesData) {
-        return connection.prepareStatement(queriesData.getBackup());
+        //return connection.prepareStatement(queriesData.getBackup());
+        return getPreparedStatement(connection, queriesData.getBackup());
     }
     
     
     @Bean
-    @SneakyThrows
+    //@SneakyThrows
     public PreparedStatement updateNotePreparedStatement(Connection connection, QueriesData queriesData) {
-        return connection.prepareStatement(queriesData.getUpdateNote());
+        //return connection.prepareStatement(queriesData.getUpdateNote());
+        return getPreparedStatement(connection, queriesData.getUpdateNote());
     }
     
     
     @Bean
-    @SneakyThrows
+    //@SneakyThrows
     public PreparedStatement transactionUpdatePreparedStatement(Connection connection, QueriesData queriesData) {
-        return connection.prepareStatement(queriesData.getTransactionUpdate());
+        //return connection.prepareStatement(queriesData.getTransactionUpdate());
+        return getPreparedStatement(connection, queriesData.getTransactionUpdate());
     }
     
     
     @Bean
-    @SneakyThrows
+    //@SneakyThrows
     public PreparedStatement deleteNotePreparedStatement(Connection connection, QueriesData queriesData) {
-        return connection.prepareStatement(queriesData.getDeleteNote());
+        //return connection.prepareStatement(queriesData.getDeleteNote());
+        return getPreparedStatement(connection, queriesData.getDeleteNote());
     }
     
     
     @Bean
-    @SneakyThrows
+    //@SneakyThrows
     public PreparedStatement transactionDeletePreparedStatement(Connection connection, QueriesData queriesData) {
-        return connection.prepareStatement(queriesData.getTransactionDelete());
+        //return connection.prepareStatement(queriesData.getTransactionDelete());
+        return getPreparedStatement(connection, queriesData.getTransactionDelete());
     }
     
     
@@ -588,5 +599,11 @@ public class SpringConfig {
     @SneakyThrows
     private static <R> R preparedExecuteQuery(SQLSupplier<R> action) {
         return action.get(); 
+    }
+    
+    
+    @SneakyThrows
+    private static PreparedStatement getPreparedStatement(Connection connection, String query) {
+        return connection.prepareStatement(query);
     }
  }
