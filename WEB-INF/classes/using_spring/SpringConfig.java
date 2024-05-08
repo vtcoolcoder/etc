@@ -224,17 +224,24 @@ public class SpringConfig {
             @Qualifier("allNotesResultSet") Supplier<ResultSet> supplier) 
     {
         return () -> preparedExecuteQuery(() -> {
-                ResultSet resultSet = supplier.get();
-                Set<Note> result = new LinkedHashSet<>();  
-            
+                //ResultSet resultSet = supplier.get();
+                final Set<Note> RESULT = new LinkedHashSet<>();  
+                
+                iterateByResultSet(supplier, resultSetLmb -> 
+                        RESULT.add(new Note(resultSetLmb.getInt("id"), 
+                                resultSetLmb.getString("subject"), 
+                                resultSetLmb.getString("note"))));
+                
+                /*
                 while (resultSet.next()) {
                     int id = resultSet.getInt("id");
                     String subject = resultSet.getString("subject");
                     String note = resultSet.getString("note");
                     result.add(new Note(id, subject, note));
                 }    
+                */
                 
-                return result;
+                return RESULT;
         }); 
     }
     
@@ -244,16 +251,22 @@ public class SpringConfig {
             @Qualifier("allNotesWithoutIdResultSet") Supplier<ResultSet> supplier) 
     {
         return () -> preparedExecuteQuery(() -> {
-                ResultSet resultSet = supplier.get();
-                Set<Note> result = new LinkedHashSet<>();    
-            
+                //ResultSet resultSet = supplier.get();
+                final Set<Note> RESULT = new LinkedHashSet<>();   
+                
+                iterateByResultSet(supplier, resultSetLmb -> 
+                        RESULT.add(new Note(resultSetLmb.getString("subject"), 
+                                resultSetLmb.getString("note")))); 
+                
+                /*
                 while (resultSet.next()) {
                     String subject = resultSet.getString("subject");
                     String note = resultSet.getString("note");
                     result.add(new Note(subject, note));
                 }    
+                */
                 
-                return result;
+                return RESULT;
         }); 
     }
     
@@ -263,15 +276,20 @@ public class SpringConfig {
             @Qualifier("distinctSubjectsResultSet") Supplier<ResultSet> supplier) 
     {
         return () -> preparedExecuteQuery(() -> {
-                ResultSet resultSet = supplier.get();
-                Set<String> result = new LinkedHashSet<>();
+                //ResultSet resultSet = supplier.get();
+                final Set<String> RESULT = new LinkedHashSet<>();
+                
+                iterateByResultSet(supplier, resultSetLmb -> 
+                        RESULT.add(resultSetLmb.getString("subject")));
                    
+                /*   
                 while (resultSet.next()) {     
                     String subject = resultSet.getString("subject"); 
                     result.add(subject);
                 }    
+                */
                 
-                return result;
+                return RESULT;
         }); 
     }
     
@@ -281,15 +299,20 @@ public class SpringConfig {
             @Qualifier("allIdResultSet") Supplier<ResultSet> supplier) 
     {
         return () -> preparedExecuteQuery(() -> {
-                ResultSet resultSet = supplier.get();
-                Set<Integer> result = new LinkedHashSet<>();
-            
+                //ResultSet resultSet = supplier.get();
+                final Set<Integer> RESULT = new LinkedHashSet<>();
+                
+                iterateByResultSet(supplier, resultSetLmb -> 
+                        RESULT.add(resultSetLmb.getInt("id")));
+                
+                /*
                 while (resultSet.next()) {     
                     int id = resultSet.getInt("id"); 
                     result.add(id);
                 }    
+                */
                 
-                return result;
+                return RESULT;
         }); 
     }
     
@@ -299,16 +322,22 @@ public class SpringConfig {
             @Qualifier("notesBySubjectAmountResultSet") Supplier<ResultSet> supplier) 
     {
         return () -> preparedExecuteQuery(() -> {
-                ResultSet resultSet = supplier.get();
-                Map<String, Integer> result = new LinkedHashMap<>(); 
+                //ResultSet resultSet = supplier.get();
+                final Map<String, Integer> RESULT = new LinkedHashMap<>(); 
+                
+                iterateByResultSet(supplier, resultSetLmb -> 
+                        RESULT.put(resultSetLmb.getString("subject"), 
+                                resultSetLmb.getInt("amount")));
             
+                /*
                 while (resultSet.next()) {    
                     String subject = resultSet.getString("subject"); 
                     int amount = resultSet.getInt("amount"); 
                     result.put(subject, amount);
                 }    
+                */
                 
-                return result; 
+                return RESULT; 
         });
     }
     
@@ -317,7 +346,10 @@ public class SpringConfig {
     public Supplier<Integer> allSubjectsAmount(
             @Qualifier("allSubjectsAmountResultSet") Supplier<ResultSet> supplier) 
     {
-        return () -> preparedExecuteQuery(() -> {
+        return () -> preparedExecuteQuery(() -> getContent(supplier));
+        
+        /*
+         {
                 ResultSet resultSet = supplier.get();
                 int result = -1;
                 
@@ -327,6 +359,7 @@ public class SpringConfig {
                 
                 return result;
         });
+        */
     }
     
     
@@ -334,16 +367,33 @@ public class SpringConfig {
     public Supplier<Integer> allNotesAmount(
             @Qualifier("allNotesAmountResultSet") Supplier<ResultSet> supplier) 
     {
-        return () -> preparedExecuteQuery(() -> {
-                ResultSet resultSet = supplier.get();
-                int result = -1;
+        return () -> preparedExecuteQuery(() -> getContent(supplier));
+        
+        /*
+        {
+                //ResultSet resultSet = supplier.get();
+                //int result = -1;
+                
+                @Getter
+                @Setter
+                class Helper {
+                    private int result = -1;
+                }
+                
+                final Helper HELPER = new Helper();
+                
+                iterateByResultSet(supplier.get(), resultSetLmb -> 
+                        HELPER.setResult(resultSetLmb.getInt("amount")));
+                
                 
                 while (resultSet.next()) {              
                     result = resultSet.getInt("amount");    
                 }  
                 
-                return result;
+                
+                return HELPER.getResult();
         });
+        */
     }
     
     
@@ -351,11 +401,18 @@ public class SpringConfig {
     public Function<Integer, String> noteById(
             @Qualifier("noteByIdPreparedStatement") PreparedStatement statement) 
     {
-        return id -> preparedExecuteQuery(() -> {
+        return id -> preparedExecuteQuery(() -> getContent(statement, id, "note"));
+        
+        /*
+        {
                 String result = null;
                 
                 statement.setInt(1, id);
-                ResultSet resultSet = statement.executeQuery();
+                //ResultSet resultSet = statement.executeQuery();
+                
+                iterateByResultSet(statement, resultSetLmb -> {
+                
+                });
                 
                 while (resultSet.next()) {
                     result = resultSet.getString("note");
@@ -363,6 +420,7 @@ public class SpringConfig {
                 
                 return result;
         });
+        */
     }
     
     
@@ -370,18 +428,27 @@ public class SpringConfig {
     public Function<Integer, String> noteFragment(
             @Qualifier("noteFragmentPreparedStatement") PreparedStatement statement)
     {
-        return id -> preparedExecuteQuery(() -> {
-                String result = null;
+        return id -> preparedExecuteQuery(() -> getContent(statement, id, "fragment"));
+        
+        /*
+        {
+                final StringBuilder RESULT = new StringBuilder();
                 
-                statement.setInt(1, id);
-                ResultSet resultSet = statement.executeQuery();
+                statement.setInt(1, id); */
+                //ResultSet resultSet = statement.executeQuery();
                 
+                /*
+                iterateByResultSet(statement, resultSetLmb -> 
+                    RESULT.append(resultSetLmb.getString("fragment")));*/
+                
+                /*
                 while (resultSet.next()) {
                     result = resultSet.getString("fragment");
                 }
-                
-                return result;
-        });
+                */
+                /*
+                return RESULT.toString();
+        });*/
     }    
     
     
@@ -389,20 +456,33 @@ public class SpringConfig {
     public Function<String, Set<Note>> specificNote(
             @Qualifier("specificNotePreparedStatement") PreparedStatement statement)
     {
-        return subject -> preparedExecuteQuery(() -> {
-                Set<Note> result = new LinkedHashSet<>();
+        return subject -> preparedExecuteQuery(() -> getContent(statement, subject,
+                resultSetLmb -> new Note(resultSetLmb.getString("subject"), 
+                        resultSetLmb.getString("note"))));      
+        
+        /*
+        {
+                final Set<Note> RESULT = new LinkedHashSet<>();
                 
                 statement.setString(1, subject);
-                ResultSet resultSet = statement.executeQuery();
+                //ResultSet resultSet = statement.executeQuery();
                 
+                iterateByResultSet(statement, resultSetLmb -> 
+                    RESULT.add(new Note(
+                            resultSetLmb.getString("subject"), 
+                            resultSetLmb.getString("note"))));
+                
+                /*
                 while (resultSet.next()) {
                     result.add(new Note(
                             resultSet.getString("subject"), 
                             resultSet.getString("note")));   
                 }
                 
-                return result;
+                
+                return RESULT;
         });
+        */
     }
     
     
@@ -410,12 +490,25 @@ public class SpringConfig {
     public Function<String, Set<Note>> fullSpecific(
             @Qualifier("fullSpecificPreparedStatement") PreparedStatement statement)
     {
-        return subject -> preparedExecuteQuery(() -> {
-                Set<Note> result = new LinkedHashSet<>();
+        return subject -> preparedExecuteQuery(() -> getContent(statement, subject,
+                (resultSetLmb) -> new Note(resultSetLmb.getInt("id"),
+                            resultSetLmb.getString("subject"), 
+                            resultSetLmb.getString("note"))));
+        
+        /*
+        {
+                final Set<Note> RESULT = new LinkedHashSet<>();
                 
                 statement.setString(1, subject);
-                ResultSet resultSet = statement.executeQuery();
+                //ResultSet resultSet = statement.executeQuery();
                 
+                iterateByResultSet(statement, resultSetLmb -> 
+                    RESULT.add(new Note(
+                            resultSetLmb.getInt("id"),
+                            resultSetLmb.getString("subject"), 
+                            resultSetLmb.getString("note"))));
+                
+                /*
                 while (resultSet.next()) {
                     result.add(new Note(
                             resultSet.getInt("id"),
@@ -423,8 +516,10 @@ public class SpringConfig {
                             resultSet.getString("note")));   
                 }
                 
-                return result;
+                
+                return RESULT;
         });
+        */
     }
     
     
@@ -434,8 +529,6 @@ public class SpringConfig {
             @Qualifier("allId") Supplier<Set<Integer>> supplier)
     {
         return () -> preparedExecuteQuery(() -> {
-                //Note result = null;
-                
                 @Getter
                 @Setter
                 class Helper {
@@ -449,20 +542,11 @@ public class SpringConfig {
                         RANDOM.nextInt(allID.size()));
             
                 statement.setInt(1, randomId);
-                ResultSet resultSet = statement.executeQuery();
                 
-                iterateByResultSet(resultSet, resultSetLmb -> 
-                    HELPER.setResult(new Note(
-                            resultSetLmb.getString("subject"), 
-                            resultSetLmb.getString("note"))));
-                
-                /*
-                while (resultSet.next()) {
-                    result = new Note(
-                            resultSet.getString("subject"), 
-                            resultSet.getString("note"));
-                }
-                */
+                iterateByResultSet(statement, resultSetLmb -> 
+                        HELPER.setResult(new Note(
+                                resultSetLmb.getString("subject"), 
+                                resultSetLmb.getString("note"))));
                 
                 return HELPER.getResult();
         });
@@ -627,9 +711,56 @@ public class SpringConfig {
     
     
     @SneakyThrows
-    private static void iterateByResultSet(ResultSet resultSet, SQLConsumer<ResultSet> action) {    
+    private static void iterateByResultSet(PreparedStatement statement, SQLConsumer<ResultSet> action) {  
+        ResultSet resultSet = statement.executeQuery();
+        iterateByResultSet(resultSet, action);     
+    }
+    
+    
+    @SneakyThrows
+    private static void iterateByResultSet(Supplier<ResultSet> supplier, SQLConsumer<ResultSet> action) {
+        ResultSet resultSet = supplier.get();
+        iterateByResultSet(resultSet, action);   
+    }
+    
+    
+    @SneakyThrows
+    private static void iterateByResultSet(ResultSet resultSet, SQLConsumer<ResultSet> action) {
         while (resultSet.next()) {
             action.accept(resultSet);
         }
     }
- }
+    
+    
+    private static String getContent(PreparedStatement statement, int id, String request) {
+        final StringBuilder RESULT = new StringBuilder();
+        statement.setInt(1, id);
+        iterateByResultSet(statement, 
+                resultSetLmb -> RESULT.append(resultSetLmb.getString(request)));        
+        return RESULT.toString();              
+    }
+    
+    
+    private static Set<Note> getContent(PreparedStatement statement, String subject, Function<ResultSet, Note> item) {
+        final Set<Note> RESULT = new LinkedHashSet<>();
+        statement.setString(1, subject);        
+        iterateByResultSet(statement, resultSetLmb -> RESULT.add(item.apply(resultSetLmb)));                      
+        return RESULT;              
+    }
+    
+    
+    private static int getContent(Supplier<ResultSet> supplier) {
+        @Getter
+        @Setter
+        class Helper {
+            private int result = -1;
+        }
+        
+        final Helper HELPER = new Helper();
+        
+        iterateByResultSet(supplier.get(), resultSetLmb -> 
+                HELPER.setResult(resultSetLmb.getInt("amount")));
+        
+        return HELPER.getResult();
+    }
+}
