@@ -1127,7 +1127,7 @@ public class SpringConfig {
     }
     
     
-    private static <R> R useTemplate(SQLFunctionalInterface action) {
+    private static <T implements SQLFunctionalInterface, R> R useTemplate(T action) {
         try {
             if (action instanceof SQLRunnable runnable) {
                 runnable.run();
