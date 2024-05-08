@@ -76,10 +76,29 @@ public class SpringConfig {
         private boolean repeatLoop;
     }
     
+    private record Fields(
+            String id,
+            String subject,
+            String note,
+            String amount,
+            String fragment) {}
+    
     
     private static final Random RANDOM = new Random();
     private static final Flag FLAG = new Flag();
     private static final String ERROR_MESSAGE = "[ОШИБКА]: Такой контент уже существует!%n[CONTENT]:%n%s%n";
+    
+
+    @Bean
+    public Fields fields() {
+        @Value("${column.id}") String id;
+        @Value("${column.subject}") String subject;
+        @Value("${column.note}") String note;
+        @Value("${extra.amount}") String amount;
+        @Value("${fragment.pseudo}") String fragment;
+    
+        return new Fields(id, subject, note, amount, fragment);
+    }
 
 
     @Bean
