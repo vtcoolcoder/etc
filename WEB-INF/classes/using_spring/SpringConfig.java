@@ -586,7 +586,7 @@ public class SpringConfig {
     }
     
     
-    private static void transactionalExecuteUpdate(SQLRunnable ok, SQLConsumer<Exception> fail) {
+    private static void transactionalExecuteUpdate(SQLRunnable ok, Consumer<Exception> fail) {
         while (true) {
             try {
                 ok.run();
