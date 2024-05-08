@@ -602,4 +602,12 @@ public class SpringConfig {
     private static PreparedStatement getPreparedStatement(Connection connection, String query) {
         return connection.prepareStatement(query);
     }
+    
+    
+    @SneakyThrows
+    private static void iterateByResultSet(ResultSet resultSet, SQLRunnable action) {
+        while (resultSet.next()) {
+            action.run();
+        }
+    }
  }
