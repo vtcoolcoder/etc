@@ -749,7 +749,7 @@ public class SpringConfig {
     }
     
     
-    private static int getContent(SQLSupplier<ResultSet> supplier) {
+    private static int getContent(Supplier<ResultSet> supplier) {
         @Getter
         @Setter
         class Helper {
