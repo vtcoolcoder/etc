@@ -1074,48 +1074,69 @@ public class SpringConfig {
     */
     
     
+    @SneakyThrows
     private static ResultSet executeQuery(SQLFunction<String, ResultSet> action, String query) {
+        return action.apply(query);
+        
+        /*
         try {
             return action.apply(query);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+        */
     }
     
     
+    @SneakyThrows
     private static void executeUpdate(SQLFunction<String, Integer> action, String query) {
+        action.apply(query);
+        
+        /*
         try {
             action.apply(query);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+        */
     }
     
     
+    @SneakyThrows
     private static void preparedExecuteUpdate(SQLConsumer<Integer> action, int id) {
+        action.accept(id);
+        
+        /*
         try {
             action.accept(id);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+        */
     }
     
     
+    @SneakyThrows
     private static void preparedExecuteUpdate(
             SQLBiConsumer<String, Integer> action, 
             String trimmedNote, 
             int id)
     {
+        action.accept(trimmedNote, id);
+        
+        /*
         try {
             action.accept(trimmedNote, id);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+        */
     }
     
     
+    @SneakyThrows
     private static <R> R preparedExecuteQuery(SQLSupplier<R> action) {
-        return useTemplate(action);
+        return action.get();
         
         /*
         try {
@@ -1124,19 +1145,6 @@ public class SpringConfig {
             throw new RuntimeException(e);
         }
         */
-    }
-    
-    
-    private static <T extends SQLRunnable & SQLSupplier<R>, R> R useTemplate(T action) {
-        try {
-            if (action instanceof SQLRunnable runnable) {
-                runnable.run();
-                return null;
-            } else if (action instanceof SQLSupplier<R> supplier) {
-                return supplier.get();
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        
     }
  }
