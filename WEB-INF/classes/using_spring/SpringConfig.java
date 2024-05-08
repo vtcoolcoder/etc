@@ -2,6 +2,9 @@ package using_spring;
 
 
 import lombok.SneakyThrows;
+//import lombok.Setter;
+import lombok.Getter;
+//import lombok.Builder;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -61,6 +64,14 @@ public class SpringConfig {
     @FunctionalInterface
     private interface SQLRunnable {
         void run() throws SQLException;
+    }
+    
+    
+    //@Setter
+    @Getter
+    //@Builder
+    private static class Flag {
+        private boolean repeatLoop;
     }
 
 
@@ -464,7 +475,20 @@ public class SpringConfig {
     public BiConsumer<String, String> addNote(
             @Qualifier("addNotePreparedStatement") PreparedStatement statement)
     {
-        return (subject, note) -> {
+        return (subject, note) -> tryCatchWrapping(
+                () -> {
+                    statement.setString(1, subject);
+                    statement.setString(2, note);
+                    statement.executeUpdate();
+                },
+                (exception) -> {
+                    System.err.printf(
+                        "[ОШИБКА]: Такой контент уже существует!%n[CONTENT]:%n%s%n", 
+                        note);
+                });
+        
+        /*
+        {
             try {
                 statement.setString(1, subject);
                 statement.setString(2, note);
@@ -476,6 +500,7 @@ public class SpringConfig {
                 throw new RuntimeException(ex);
             }
         };
+        */
     }
     
     
@@ -612,7 +637,13 @@ public class SpringConfig {
     
     
     private static void retryingExecuteUpdate(SQLRunnable ok, Consumer<Exception> fail) {
-        while (tryCatchWrapping(ok, fail)) {}
+        final Flag flag = new Flag();
+        
+        do {
+            tryCatchWrapping(ok, fail, flag);
+        } while (flag.isRepeatLoop());
+        
+        
         
         /*
         {
@@ -630,13 +661,18 @@ public class SpringConfig {
     }
     
     
-    private static boolean tryCatchWrapping(SQLRunnable ok, Consumer<Exception> fail) {
+    private static void tryCatchWrapping(SQLRunnable ok, Consumer<Exception> fail) {
+        tryCatchWrapping(ok, fail, new Flag());
+    }
+    
+    
+    private static void tryCatchWrapping(SQLRunnable ok, Consumer<Exception> fail, Flag flag) {
         try {
             ok.run();
-            return false;
+            flag.setRepeatLoop(false);
         } catch (PSQLException e) {
             fail.accept(e);
-            return true;
+            flag.setRepeatLoop(true);
         } catch(Exception e) {
             throw new RuntimeException(e);
         }
