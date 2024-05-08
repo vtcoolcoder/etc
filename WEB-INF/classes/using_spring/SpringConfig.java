@@ -483,7 +483,17 @@ public class SpringConfig {
     public Consumer<Integer> backup(
             @Qualifier("backupPreparedStatement") PreparedStatement statement)
     {
-        return id -> {
+        return id -> retryingExecuteUpdate(
+                () -> {
+                    statement.setInt(1, id);
+                    statement.executeUpdate();
+                },
+                (exception) -> {
+                    System.err.println(exception.getMessage());
+                });
+        
+        /*
+        {
             while (true) {
                 try {
                     statement.setInt(1, id);
@@ -497,6 +507,7 @@ public class SpringConfig {
                 }
             }
         };
+        */
     }
     
     
@@ -517,7 +528,20 @@ public class SpringConfig {
             @Qualifier("transactionUpdatePreparedStatement") PreparedStatement statement,
             @Qualifier("transactionRollBack") Runnable rollback)
     {
-        return (trimmedNote, id) -> {
+        return (trimmedNote, id) -> retryingExecuteUpdate(
+                () -> {
+                    statement.setInt(1, id);
+                    statement.setString(2, trimmedNote);
+                    statement.setInt(3, id);
+                    statement.executeUpdate();
+                },
+                (exception) -> {
+                    System.err.println(exception.getMessage());
+                    rollback.run();
+                });
+        
+        /*
+        {
             while (true) {
                 try {
                     statement.setInt(1, id);
@@ -534,6 +558,7 @@ public class SpringConfig {
                 }
             }
         };
+        */
     }
     
     
@@ -553,7 +578,7 @@ public class SpringConfig {
             @Qualifier("transactionDeletePreparedStatement") PreparedStatement statement,
             @Qualifier("transactionRollBack") Runnable rollback)
     {
-        return id -> transactionalExecuteUpdate(
+        return id -> retryingExecuteUpdate(
                 () -> {
                     statement.setInt(1, id);
                     statement.setInt(2, id);
@@ -586,8 +611,21 @@ public class SpringConfig {
     }
     
     
-    private static void transactionalExecuteUpdate(SQLRunnable ok, Consumer<Exception> fail) {
+    private static void retryingExecuteUpdate(SQLRunnable ok, Consumer<Exception> fail) {
         while (true) {
+            tryCatchWrapping(
+                    () -> {
+                        ok.run();
+                        break;
+                    },
+                    (exception) -> {
+                        fail.accept(exception);
+                        continue;
+                    });
+        }
+        
+        /*
+        {
             try {
                 ok.run();
                 break;
@@ -597,6 +635,18 @@ public class SpringConfig {
             } catch(Exception e) {
                 throw new RuntimeException(e);
             }
+        }
+        */
+    }
+    
+    
+    private static void tryCatchWrapping(SQLRunnable ok, Consumer<Exception> fail) {
+        try {
+            ok.run();
+        } catch (PSQLException e) {
+            fail.accept(e);
+        } catch(Exception e) {
+            throw new RuntimeException(e);
         }
     }
     
