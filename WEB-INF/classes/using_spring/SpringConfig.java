@@ -367,10 +367,10 @@ public class SpringConfig {
     
     @Bean
     @SneakyThrows
-    public SQLSupplier<Set<Note>> allNotes(
+    public Supplier<Set<Note>> allNotes(
             @Qualifier("allNotesResultSet") Supplier<ResultSet> supplier) 
     {
-        return () -> {
+        return () -> preparedExecuteQuery(() -> {
                 ResultSet resultSet = supplier.get();
                 Set<Note> result = new LinkedHashSet<>();  
             
@@ -382,7 +382,7 @@ public class SpringConfig {
                 }    
                 
                 return result;
-        }; 
+        }); 
         
         /*
         {
@@ -408,10 +408,10 @@ public class SpringConfig {
     
     @Bean
     @SneakyThrows
-    public SQLSupplier<Set<Note>> allNotesWithoutId(
+    public Supplier<Set<Note>> allNotesWithoutId(
             @Qualifier("allNotesWithoutIdResultSet") Supplier<ResultSet> supplier) 
     {
-        return () -> {
+        return () -> preparedExecuteQuery(() -> {
                 ResultSet resultSet = supplier.get();
                 Set<Note> result = new LinkedHashSet<>();    
             
@@ -422,7 +422,7 @@ public class SpringConfig {
                 }    
                 
                 return result;
-        }; 
+        }); 
         
         /*
         {
@@ -447,10 +447,10 @@ public class SpringConfig {
     
     @Bean
     @SneakyThrows
-    public SQLSupplier<Set<String>> distinctSubjects(
+    public Supplier<Set<String>> distinctSubjects(
             @Qualifier("distinctSubjectsResultSet") Supplier<ResultSet> supplier) 
     {
-        return () -> {
+        return () -> preparedExecuteQuery(() -> {
                 ResultSet resultSet = supplier.get();
                 Set<String> result = new LinkedHashSet<>();
                    
@@ -460,7 +460,7 @@ public class SpringConfig {
                 }    
                 
                 return result;
-        }; 
+        }); 
         
         /*
         {
@@ -484,10 +484,10 @@ public class SpringConfig {
     
     @Bean
     @SneakyThrows
-    public SQLSupplier<Set<Integer>> allId(
+    public Supplier<Set<Integer>> allId(
             @Qualifier("allIdResultSet") Supplier<ResultSet> supplier) 
     {
-        return () -> {
+        return () -> preparedExecuteQuery(() -> {
                 ResultSet resultSet = supplier.get();
                 Set<Integer> result = new LinkedHashSet<>();
             
@@ -497,7 +497,7 @@ public class SpringConfig {
                 }    
                 
                 return result;
-        }; 
+        }); 
         
         /*
         {
@@ -521,10 +521,10 @@ public class SpringConfig {
     
     @Bean
     @SneakyThrows
-    public SQLSupplier<Map<String, Integer>> notesBySubjectAmount(
+    public Supplier<Map<String, Integer>> notesBySubjectAmount(
             @Qualifier("notesBySubjectAmountResultSet") Supplier<ResultSet> supplier) 
     {
-        return () -> {
+        return () -> preparedExecuteQuery(() -> {
                 ResultSet resultSet = supplier.get();
                 Map<String, Integer> result = new LinkedHashMap<>(); 
             
@@ -535,7 +535,7 @@ public class SpringConfig {
                 }    
                 
                 return result; 
-        };
+        });
         
         /*
         {
@@ -560,10 +560,10 @@ public class SpringConfig {
     
     @Bean
     @SneakyThrows
-    public SQLSupplier<Integer> allSubjectsAmount(
+    public Supplier<Integer> allSubjectsAmount(
             @Qualifier("allSubjectsAmountResultSet") Supplier<ResultSet> supplier) 
     {
-        return () -> {
+        return () -> preparedExecuteQuery(() -> {
                 ResultSet resultSet = supplier.get();
                 int result = -1;
                 
@@ -572,7 +572,7 @@ public class SpringConfig {
                 }  
                 
                 return result;
-        };
+        });
         
         /*
         {
@@ -595,10 +595,10 @@ public class SpringConfig {
     
     @Bean
     @SneakyThrows
-    public SQLSupplier<Integer> allNotesAmount(
+    public Supplier<Integer> allNotesAmount(
             @Qualifier("allNotesAmountResultSet") Supplier<ResultSet> supplier) 
     {
-        return () -> {
+        return () -> preparedExecuteQuery(() -> {
                 ResultSet resultSet = supplier.get();
                 int result = -1;
                 
@@ -607,7 +607,7 @@ public class SpringConfig {
                 }  
                 
                 return result;
-        };
+        });
         
         /*
         {
@@ -630,10 +630,10 @@ public class SpringConfig {
     
     @Bean
     @SneakyThrows
-    public SQLFunction<Integer, String> noteById(
+    public Function<Integer, String> noteById(
             @Qualifier("noteByIdPreparedStatement") PreparedStatement statement) 
     {
-        return id -> {
+        return id -> preparedExecuteQuery(() -> {
                 String result = null;
                 
                 statement.setInt(1, id);
@@ -644,7 +644,7 @@ public class SpringConfig {
                 }
                 
                 return result;
-        };
+        });
         
         /*
         {
@@ -669,10 +669,10 @@ public class SpringConfig {
     
     @Bean
     @SneakyThrows
-    public SQLFunction<Integer, String> noteFragment(
+    public Function<Integer, String> noteFragment(
             @Qualifier("noteFragmentPreparedStatement") PreparedStatement statement)
     {
-        return id -> {
+        return id -> preparedExecuteQuery(() -> {
                 String result = null;
                 
                 statement.setInt(1, id);
@@ -683,7 +683,7 @@ public class SpringConfig {
                 }
                 
                 return result;
-        };
+        });
         
         /*
         {
@@ -708,10 +708,10 @@ public class SpringConfig {
     
     @Bean
     @SneakyThrows
-    public SQLFunction<String, Set<Note>> specificNote(
+    public Function<String, Set<Note>> specificNote(
             @Qualifier("specificNotePreparedStatement") PreparedStatement statement)
     {
-        return subject -> {
+        return subject -> preparedExecuteQuery(() -> {
                 Set<Note> result = new LinkedHashSet<>();
                 
                 statement.setString(1, subject);
@@ -724,7 +724,7 @@ public class SpringConfig {
                 }
                 
                 return result;
-        };
+        });
         
         /*
         {
@@ -751,10 +751,10 @@ public class SpringConfig {
     
     @Bean
     @SneakyThrows
-    public SQLFunction<String, Set<Note>> fullSpecific(
+    public Function<String, Set<Note>> fullSpecific(
             @Qualifier("fullSpecificPreparedStatement") PreparedStatement statement)
     {
-        return subject -> {
+        return subject -> preparedExecuteQuery(() -> {
                 Set<Note> result = new LinkedHashSet<>();
                 
                 statement.setString(1, subject);
@@ -768,7 +768,7 @@ public class SpringConfig {
                 }
                 
                 return result;
-        };
+        });
         
         /*
          {
@@ -796,11 +796,11 @@ public class SpringConfig {
     
     @Bean
     @SneakyThrows
-    public SQLSupplier<Note> random(
+    public Supplier<Note> random(
             @Qualifier("randomPreparedStatement") PreparedStatement statement,
             @Qualifier("allId") Supplier<Set<Integer>> supplier)
     {
-        return () -> {
+        return () -> preparedExecuteQuery(() -> {
                 Note result = null;
                 
                 Set<Integer> allID = supplier.get();
@@ -817,7 +817,9 @@ public class SpringConfig {
                 }
                 
                 return result;
-        };
+        });
+        
+        
         
         /*
         {
@@ -893,14 +895,24 @@ public class SpringConfig {
     
     @Bean
     @SneakyThrows
-    public SQLBiConsumer<String, Integer> updateNote(
+    public BiConsumer<String, Integer> updateNote(
             @Qualifier("updateNotePreparedStatement") PreparedStatement statement)
     {
-        return (trimmedNote, id) -> {
+        return (trimmedNote, id) -> preparedExecuteUpdate((trimmedNoteLmb, idLmb) -> {
+            statement.setString(1, trimmedNoteLmb);
+            statement.setInt(2, idLmb);
+            statement.executeUpdate();
+        }, trimmedNote, id);
+        
+        /*
+        {
             statement.setString(1, trimmedNote);
             statement.setInt(2, id);
             statement.executeUpdate();
         };
+        */
+        
+        
         
         /*
         {
@@ -953,13 +965,22 @@ public class SpringConfig {
     
     @Bean
     @SneakyThrows
-    public SQLConsumer<Integer> deleteNote(
+    public Consumer<Integer> deleteNote(
             @Qualifier("deleteNotePreparedStatement") PreparedStatement statement)
     {
-        return id -> {
+        return id -> preparedExecuteUpdate(idLmb -> {
+            statement.setInt(1, idLmb);
+            statement.executeUpdate();
+        }, id);
+        
+        /*
+        {
             statement.setInt(1, id);
             statement.executeUpdate();
         };
+        */
+        
+        
        
         /*
         {
@@ -1062,6 +1083,37 @@ public class SpringConfig {
     private static void executeUpdate(SQLFunction<String, Integer> action, String query) {
         try {
             action.apply(query);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    
+    private static void preparedExecuteUpdate(SQLConsumer<Integer> action, int id) {
+        try {
+            action.accept(id);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    
+    private static void preparedExecuteUpdate(
+            SQLBiConsumer<String, Integer> action, 
+            String trimmedNote, 
+            int id)
+    {
+        try {
+            action.accept(trimmedNote, id);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    
+    private static <R> R preparedExecuteQuery(SQLSupplier<R> action) {
+        try {
+            return action.get();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
