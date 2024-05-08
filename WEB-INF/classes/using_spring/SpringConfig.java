@@ -26,11 +26,15 @@ import java.util.Set;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.LinkedList;
 
 import java.util.function.Supplier;
 import java.util.function.Function;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+
+import java.util.Random;
 
 
 @Configuration
@@ -39,6 +43,9 @@ import java.util.function.Consumer;
 @PropertySource("using_spring/config.properties")
 @PropertySource("using_spring/queries.properties")
 public class SpringConfig {
+
+    private static final Random RANDOM = new Random();
+    
     
     @FunctionalInterface
     private interface SQLFunction<T, R> {
@@ -427,22 +434,37 @@ public class SpringConfig {
             @Qualifier("allId") Supplier<Set<Integer>> supplier)
     {
         return () -> preparedExecuteQuery(() -> {
-                Note result = null;
+                //Note result = null;
+                
+                @Getter
+                @Setter
+                class Helper {
+                    private Note result;
+                }
+                
+                final Helper HELPER = new Helper();
                 
                 Set<Integer> allID = supplier.get();
-                int randomId = (new java.util.LinkedList<Integer>(allID)).get(
-                        new java.util.Random().nextInt(allID.size()));
+                int randomId = (new LinkedList<Integer>(allID)).get(
+                        RANDOM.nextInt(allID.size()));
             
                 statement.setInt(1, randomId);
                 ResultSet resultSet = statement.executeQuery();
                 
+                iterateByResultSet(resultSet, resultSetLmb -> 
+                    HELPER.setResult(new Note(
+                            resultSetLmb.getString("subject"), 
+                            resultSetLmb.getString("note"))));
+                
+                /*
                 while (resultSet.next()) {
                     result = new Note(
                             resultSet.getString("subject"), 
                             resultSet.getString("note"));
                 }
+                */
                 
-                return result;
+                return HELPER.getResult();
         });
     }
     
@@ -605,9 +627,9 @@ public class SpringConfig {
     
     
     @SneakyThrows
-    private static void iterateByResultSet(ResultSet resultSet, SQLRunnable action) {
+    private static void iterateByResultSet(ResultSet resultSet, SQLConsumer<ResultSet> action) {    
         while (resultSet.next()) {
-            action.run();
+            action.accept(resultSet);
         }
     }
  }
