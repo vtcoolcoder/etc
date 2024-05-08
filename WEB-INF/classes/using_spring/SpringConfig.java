@@ -38,27 +38,30 @@ import java.util.function.Consumer;
 @PropertySource("using_spring/queries.properties")
 public class SpringConfig {
     @FunctionalInterface
-    private interface SQLFunction<T, R> {
+    private interface SQLFunctionalInterface {}
+    
+    @FunctionalInterface
+    private interface SQLFunction<T, R> extends SQLFunctionalInterface {
         R apply(T t) throws SQLException;
     }
     
     @FunctionalInterface
-    private interface SQLSupplier<R> {
+    private interface SQLSupplier<R> extends SQLFunctionalInterface {
         R get() throws SQLException;
     }
     
     @FunctionalInterface
-    private interface SQLConsumer<T> {
+    private interface SQLConsumer<T> extends SQLFunctionalInterface {
         void accept(T t) throws SQLException;
     }
     
     @FunctionalInterface
-    private interface SQLBiConsumer<T, E> {
+    private interface SQLBiConsumer<T, E> extends SQLFunctionalInterface {
         void accept(T t, E e) throws SQLException;
     }
     
     @FunctionalInterface
-    private interface SQLRunnable {
+    private interface SQLRunnable extends SQLFunctionalInterface {
         void run() throws SQLException;
     }
 
@@ -1124,10 +1127,11 @@ public class SpringConfig {
     }
     
     
-    private static <T, R> R useTemplate(T action) {
+    private static <R> R useTemplate(SQLFunctionalInterface action) {
         try {
-            if (action instanceof Runnable runnable) {
+            if (action instanceof SQLRunnable runnable) {
                 runnable.run();
+                return null;
             } else if (action instanceof SQLSupplier<R> supplier) {
                 return supplier.get();
             }
