@@ -1112,8 +1112,25 @@ public class SpringConfig {
     
     
     private static <R> R preparedExecuteQuery(SQLSupplier<R> action) {
+        return useTemplate(action);
+        
+        /*
         try {
             return action.get();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        */
+    }
+    
+    
+    private static <T, R> R useTemplate(T action) {
+        try {
+            if (action instanceof Runnable runnable) {
+                runnable.run();
+            } else if (action instanceof SQLSupplier<R> supplier) {
+                return supplier.get();
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
