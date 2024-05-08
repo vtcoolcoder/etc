@@ -612,7 +612,7 @@ public class SpringConfig {
     
     
     private static void retryingExecuteUpdate(SQLRunnable ok, Consumer<Exception> fail) {
-        while (tryCatchWrapping(ok::run, fail::accept)) {}
+        while (tryCatchWrapping(ok, fail)) {}
         
         /*
         {
