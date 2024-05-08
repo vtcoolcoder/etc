@@ -12,7 +12,6 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.Primary;
-import org.springframework.beans.factory.annotation.Value;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -77,30 +76,11 @@ public class SpringConfig {
         private boolean repeatLoop;
     }
     
-    private record Fields(
-            String id,
-            String subject,
-            String note,
-            String amount,
-            String fragment) {}
-    
     
     private static final Random RANDOM = new Random();
     private static final Flag FLAG = new Flag();
     private static final String ERROR_MESSAGE = "[ОШИБКА]: Такой контент уже существует!%n[CONTENT]:%n%s%n";
     
-
-    @Bean
-    public Fields fields() {
-        @Value("${column.id}") String id;
-        @Value("${column.subject}") String subject;
-        @Value("${column.note}") String note;
-        @Value("${extra.amount}") String amount;
-        @Value("${fragment.pseudo}") String fragment;
-    
-        return new Fields(id, subject, note, amount, fragment);
-    }
-
 
     @Bean
     @SneakyThrows
@@ -243,36 +223,39 @@ public class SpringConfig {
     
     @Bean
     public Supplier<Set<Note>> allNotes(
-            @Qualifier("allNotesResultSet") Supplier<ResultSet> supplier) 
+            @Qualifier("allNotesResultSet") Supplier<ResultSet> supplier,
+            Fields fields) 
     {
         return () -> preparedExecuteQuery(() -> getContent(supplier, 
                 resultSetLmb -> new Note(
-                        resultSetLmb.getInt("id"), 
-                        resultSetLmb.getString("subject"), 
-                        resultSetLmb.getString("note"))));
+                        resultSetLmb.getInt(fields.id()), 
+                        resultSetLmb.getString(fields.subject()), 
+                        resultSetLmb.getString(fields.note()))));
     }
     
     
     @Bean
     public Supplier<Set<Note>> allNotesWithoutId(
-            @Qualifier("allNotesWithoutIdResultSet") Supplier<ResultSet> supplier) 
+            @Qualifier("allNotesWithoutIdResultSet") Supplier<ResultSet> supplier,
+            Fields fields) 
     {
         return () -> preparedExecuteQuery(() -> getContent(supplier, 
                 resultSetLmb -> new Note(
-                        resultSetLmb.getString("subject"), 
-                        resultSetLmb.getString("note"))));
+                        resultSetLmb.getString(fields.subject()), 
+                        resultSetLmb.getString(fields.note()))));
     }
     
     
     @Bean
     public Supplier<Set<String>> distinctSubjects(
-            @Qualifier("distinctSubjectsResultSet") Supplier<ResultSet> supplier) 
+            @Qualifier("distinctSubjectsResultSet") Supplier<ResultSet> supplier,
+            Fields fields) 
     {
         return () -> preparedExecuteQuery(() -> {
                 final Set<String> RESULT = new LinkedHashSet<>();
                 
                 iterateByResultSet(supplier, resultSetLmb -> 
-                        RESULT.add(resultSetLmb.getString("subject")));
+                        RESULT.add(resultSetLmb.getString(fields.subject())));
                    
                 return RESULT;
         }); 
@@ -281,13 +264,14 @@ public class SpringConfig {
     
     @Bean
     public Supplier<List<Integer>> allId(
-            @Qualifier("allIdResultSet") Supplier<ResultSet> supplier) 
+            @Qualifier("allIdResultSet") Supplier<ResultSet> supplier,
+            Fields fields) 
     {
         return () -> preparedExecuteQuery(() -> {
                 final List<Integer> RESULT = new LinkedList<>();
                 
                 iterateByResultSet(supplier, resultSetLmb -> 
-                        RESULT.add(resultSetLmb.getInt("id")));
+                        RESULT.add(resultSetLmb.getInt(fields.id())));
                  
                 return RESULT;
         }); 
@@ -296,14 +280,15 @@ public class SpringConfig {
     
     @Bean
     public Supplier<Map<String, Integer>> notesBySubjectAmount(
-            @Qualifier("notesBySubjectAmountResultSet") Supplier<ResultSet> supplier) 
+            @Qualifier("notesBySubjectAmountResultSet") Supplier<ResultSet> supplier,
+            Fields fields) 
     {
         return () -> preparedExecuteQuery(() -> {
                 final Map<String, Integer> RESULT = new LinkedHashMap<>(); 
                 
                 iterateByResultSet(supplier, resultSetLmb -> 
-                        RESULT.put(resultSetLmb.getString("subject"), 
-                                resultSetLmb.getInt("amount")));
+                        RESULT.put(resultSetLmb.getString(fields.subject()), 
+                                resultSetLmb.getInt(fields.amount())));
             
                 return RESULT; 
         });
@@ -312,61 +297,68 @@ public class SpringConfig {
     
     @Bean
     public Supplier<Integer> allSubjectsAmount(
-            @Qualifier("allSubjectsAmountResultSet") Supplier<ResultSet> supplier) 
+            @Qualifier("allSubjectsAmountResultSet") Supplier<ResultSet> supplier,
+            Fields fields) 
     {
-        return () -> preparedExecuteQuery(() -> getContent(supplier));
+        return () -> preparedExecuteQuery(() -> getContent(supplier, fields.amount()));
     }
     
     
     @Bean
     public Supplier<Integer> allNotesAmount(
-            @Qualifier("allNotesAmountResultSet") Supplier<ResultSet> supplier) 
+            @Qualifier("allNotesAmountResultSet") Supplier<ResultSet> supplier,
+            Fields fields) 
     {
-        return () -> preparedExecuteQuery(() -> getContent(supplier));
+        return () -> preparedExecuteQuery(() -> getContent(supplier, fields.amount()));
     }
     
     
     @Bean
     public Function<Integer, String> noteById(
-            @Qualifier("noteByIdPreparedStatement") PreparedStatement statement) 
+            @Qualifier("noteByIdPreparedStatement") PreparedStatement statement,
+            Fields fields) 
     {
-        return id -> preparedExecuteQuery(() -> getContent(statement, id, "note"));
+        return id -> preparedExecuteQuery(() -> getContent(statement, id, fields.note()));
     }
     
     
     @Bean
     public Function<Integer, String> noteFragment(
-            @Qualifier("noteFragmentPreparedStatement") PreparedStatement statement)
+            @Qualifier("noteFragmentPreparedStatement") PreparedStatement statement,
+            Fields fields)
     {
-        return id -> preparedExecuteQuery(() -> getContent(statement, id, "fragment"));
+        return id -> preparedExecuteQuery(() -> getContent(statement, id, fields.fragment()));
     }    
     
     
     @Bean
     public Function<String, Set<Note>> specificNote(
-            @Qualifier("specificNotePreparedStatement") PreparedStatement statement)
+            @Qualifier("specificNotePreparedStatement") PreparedStatement statement,
+            Fields fields)
     {
         return subject -> preparedExecuteQuery(() -> getContent(statement, subject,
-                resultSetLmb -> new Note(resultSetLmb.getString("subject"), 
-                        resultSetLmb.getString("note"))));      
+                resultSetLmb -> new Note(resultSetLmb.getString(fields.subject()), 
+                        resultSetLmb.getString(fields.note()))));      
     }
     
     
     @Bean
     public Function<String, Set<Note>> fullSpecific(
-            @Qualifier("fullSpecificPreparedStatement") PreparedStatement statement)
+            @Qualifier("fullSpecificPreparedStatement") PreparedStatement statement,
+            Fields fields)
     {
         return subject -> preparedExecuteQuery(() -> getContent(statement, subject,
-                resultSetLmb -> new Note(resultSetLmb.getInt("id"),
-                            resultSetLmb.getString("subject"), 
-                            resultSetLmb.getString("note"))));
+                resultSetLmb -> new Note(resultSetLmb.getInt(fields.id()),
+                            resultSetLmb.getString(fields.subject()), 
+                            resultSetLmb.getString(fields.note()))));
     }
     
     
     @Bean
     public Supplier<Note> random(
             @Qualifier("randomPreparedStatement") PreparedStatement statement,
-            @Qualifier("allId") Supplier<List<Integer>> supplier)
+            @Qualifier("allId") Supplier<List<Integer>> supplier,
+            Fields fields)
     {
         return () -> preparedExecuteQuery(() -> {
                 @Getter
@@ -384,8 +376,8 @@ public class SpringConfig {
                 
                 iterateByResultSet(statement, resultSetLmb -> 
                         HELPER.setResult(new Note(
-                                resultSetLmb.getString("subject"), 
-                                resultSetLmb.getString("note"))));
+                                resultSetLmb.getString(fields.subject()), 
+                                resultSetLmb.getString(fields.note()))));
                 
                 return HELPER.getResult();
         });
@@ -600,7 +592,7 @@ public class SpringConfig {
     }
     
     
-    private static int getContent(Supplier<ResultSet> supplier) {
+    private static int getContent(Supplier<ResultSet> supplier, String request) {
         @Getter
         @Setter
         class Helper {
@@ -610,7 +602,7 @@ public class SpringConfig {
         final Helper HELPER = new Helper();
         
         iterateByResultSet(supplier.get(), resultSetLmb -> 
-                HELPER.setResult(resultSetLmb.getInt("amount")));
+                HELPER.setResult(resultSetLmb.getInt(request)));
         
         return HELPER.getResult();
     }
