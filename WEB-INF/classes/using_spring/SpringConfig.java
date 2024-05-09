@@ -82,7 +82,7 @@ public class SpringConfig {
     private static final Flag FLAG = new Flag();
     private static final String ERROR_MESSAGE = "[ОШИБКА]: Такой контент уже существует!%n[CONTENT]:%n%s%n";
     
-    
+    /*
     private static HttpServletRequest REQUEST;
     
     
@@ -93,6 +93,7 @@ public class SpringConfig {
     public HttpServletRequest httpServletRequest() {
         return REQUEST;
     }
+    */
 
 
     @Bean
