@@ -49,11 +49,9 @@ public class ServiceServlet {
     private boolean isUnselectedNote = false;
     private int counter = 0;
     
-    
-    
-    
+      
     @Autowired
-    public ServiceServlet(@Qualifier("httpServletRequest") HttpServletRequest request, WebNotesAPI webNotes) {
+    public ServiceServlet(HttpServletRequest request, WebNotesAPI webNotes) {
         this.request = request;
         this.webNotes = webNotes;
         

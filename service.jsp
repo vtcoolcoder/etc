@@ -4,18 +4,28 @@
 <%@ page import="using_spring.SpringConfig" %>
 <%@ page import="using_spring.WebNotes" %>
 <%@ page import="org.springframework.context.annotation.AnnotationConfigApplicationContext" %>
+<%@ page import="org.springframework.context.annotation.Bean" %>
+<%@ page import="org.springframework.context.annotation.Configuration" %>
 <%@ page import="org.springframework.beans.factory.annotation.Autowired" %>
 <%@ page import="org.springframework.stereotype.Component" %>
 <%@ page import="jakarta.servlet.http.HttpServletRequest" %>
 <% 
 
 AnnotationConfigApplicationContext context = 
-        new AnnotationConfigApplicationContext(SpringConfig.class);
-        
+        new AnnotationConfigApplicationContext(SpringConfig.class, 
+                @Configuration new Object() {
+                    @Bean
+                    public HttpServletRequest httpServletRequest() {
+                        return request;
+                    }
+                }.class);
+
+/*        
 context.registerBean(
         "httpServletRequest",
         HttpServletRequest.class,
         () -> request);
+*/
         
 /*        
 context.registerBean(
