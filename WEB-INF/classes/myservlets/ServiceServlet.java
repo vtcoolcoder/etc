@@ -34,6 +34,8 @@ public class ServiceServlet {
     
 
     private final HttpServletRequest request;
+    private final WebNotesAPI webNotes;
+          
           
     private String MODE;
     private String SUBJECT;
@@ -47,11 +49,11 @@ public class ServiceServlet {
     private boolean isUnselectedNote = false;
     private int counter = 0;
     
-    private final WebNotesAPI webNotes;
+    
     
     
     @Autowired
-    public ServiceServlet(HttpServletRequest request, WebNotesAPI webNotes) {
+    public ServiceServlet(@Qualifier("httpServletRequest") HttpServletRequest request, WebNotesAPI webNotes) {
         this.request = request;
         this.webNotes = webNotes;
         
