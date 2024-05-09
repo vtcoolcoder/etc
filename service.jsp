@@ -14,23 +14,17 @@
     @PropertySource("using_spring/config.properties")
     @PropertySource("using_spring/queries.properties")
     @Configuration
+    */
+    
     class Config extends SpringConfig {
         @Bean
         public HttpServletRequest httpServletRequest() {
             return request;
         }
     }
-    */
-    
-    Class<SpringConfig> myConfig = (new SpringConfig() {
-        @Bean
-        public HttpServletRequest httpServletRequest() {
-            return request;
-        }
-    }).getClass();
     
     AnnotationConfigApplicationContext context =
-            new AnnotationConfigApplicationContext(myConfig);
+            new AnnotationConfigApplicationContext(Config.class);
                               
     APIServlet API = context.getBean(APIServlet.class); 
 %>
