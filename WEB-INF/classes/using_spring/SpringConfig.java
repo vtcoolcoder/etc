@@ -84,7 +84,7 @@ public class SpringConfig {
     private static final String ERROR_MESSAGE = "[ОШИБКА]: Такой контент уже существует!%n[CONTENT]:%n%s%n";
     
     
-    private static final HttpServletRequest REQUEST;
+    private static HttpServletRequest REQUEST;
     
     
     public static void setBean(HttpServletRequest request) { REQUEST = request; }
