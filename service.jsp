@@ -4,10 +4,14 @@
 <%@ page import="org.springframework.context.annotation.AnnotationConfigApplicationContext" %>
 <%@ page import="org.springframework.context.annotation.Bean" %>
 <%@ page import="org.springframework.context.annotation.Configuration" %>
+<%@ page import="org.springframework.context.annotation.ComponentScan" %>
+<%@ page import="org.springframework.context.annotation.PropertySource" %>
 <%@ page import="jakarta.servlet.http.HttpServletRequest" %>
 <% 
     //SpringConfig.setBean(request);
-    
+    @ComponentScan(basePackages = { "using_spring", "myservlets" })
+    @PropertySource("using_spring/config.properties")
+    @PropertySource("using_spring/queries.properties")
     @Configuration
     class Config extends SpringConfig {
         @Bean
