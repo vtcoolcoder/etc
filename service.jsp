@@ -6,10 +6,10 @@
 <% 
     //SpringConfig.setBean(request);
     APIServlet API;
+    AnnotationConfigApplicationContext context;
     
     try {
-        AnnotationConfigApplicationContext context = 
-                new AnnotationConfigApplicationContext(SpringConfig.class);
+        context = new AnnotationConfigApplicationContext(SpringConfig.class);
                 
         context.registerBean(
                 "httpServletRequest",
