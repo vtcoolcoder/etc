@@ -6,16 +6,16 @@
 <% 
     //SpringConfig.setBean(request);
     APIServlet API;
-    AnnotationConfigApplicationContext context;
     
-    try {
-        context = new AnnotationConfigApplicationContext(SpringConfig.class);
-                
-        context.registerBean(
+    AnnotationConfigApplicationContext context =
+            new AnnotationConfigApplicationContext(SpringConfig.class);
+            
+    context.registerBean(
                 "httpServletRequest",
                 HttpServletRequest.class,
                 () -> request);
-         
+    
+    try {              
         API = context.getBean(APIServlet.class); 
     } catch (Exception e) {
         API = context.getBean(APIServlet.class); 
