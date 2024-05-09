@@ -38,7 +38,7 @@ import java.util.Random;
 
 
 @Configuration
-@ComponentScan("using_spring")
+@ComponentScan("using_spring", "myservlets")
 //@ComponentScan("myservlets")
 @PropertySource("using_spring/config.properties")
 @PropertySource("using_spring/queries.properties")

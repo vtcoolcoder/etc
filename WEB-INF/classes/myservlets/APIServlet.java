@@ -9,10 +9,12 @@ import org.springframework.stereotype.Component;
 import jakarta.servlet.http.HttpServletRequest;
 
 
+@Component
 public class APIServlet {
     
     private final ServiceServlet service;
     
+    @Autowired
     public APIServlet(ServiceServlet service) {
         this.service = service;
     }

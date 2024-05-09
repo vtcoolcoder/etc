@@ -13,6 +13,12 @@ AnnotationConfigApplicationContext context =
         new AnnotationConfigApplicationContext(SpringConfig.class);
         
 context.registerBean(
+        "httpServletRequest",
+        HttpServletRequest.class,
+        () -> request);
+        
+/*        
+context.registerBean(
         "serviceServlet",
         ServiceServlet.class,
         () -> new ServiceServlet(request, context.getBean(WebNotes.class)));
@@ -21,7 +27,8 @@ context.registerBean(
         "apiServlet",
         APIServlet.class,
         () -> new APIServlet(context.getBean("serviceServlet", ServiceServlet.class)));
+*/
  
-APIServlet API = context.getBean("apiServlet", APIServlet.class); 
+APIServlet API = context.getBean(APIServlet.class); 
 
 %>
