@@ -202,13 +202,7 @@ public final class WebNotes implements WebNotesAPI {
         webNotes.getAllNotes().stream()
                 .filter(note -> Set.of("тестовая1", "тестовая2", "тестовая3")
                                    .contains(note.note()))
-                .forEach(note -> webNotes.updateNote(note.note() + "_UPDATED", note.id()));                     
-                      
-                /*                    
-                .forEach(note -> System.out.printf(
-                        "Before: %s%nAfter:%nЗаметка: %s%nId: %d%n",
-                        note, note.note() + "_UPDATED", note.id())); */
-                    
+                .forEach(note -> webNotes.updateNote(note.note() + "_UPDATED", note.id()));                         
     }
     
     
@@ -216,9 +210,6 @@ public final class WebNotes implements WebNotesAPI {
         webNotes.getAllNotes().stream()
                 .filter(note -> Set.of("тестовая1", "тестовая2", "тестовая3")
                                    .contains(note.subject()))
-                .forEach(note -> webNotes.deleteNote(note.id()));
-                //.forEach(System.out::println);
-                      
-                
+                .forEach(note -> webNotes.deleteNote(note.id()));  
     }
 }

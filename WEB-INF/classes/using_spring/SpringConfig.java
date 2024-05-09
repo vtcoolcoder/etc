@@ -41,7 +41,6 @@ import java.util.Random;
 
 @Configuration
 @ComponentScan(basePackages = { "using_spring", "myservlets" })
-//@ComponentScan("myservlets")
 @PropertySource("using_spring/config.properties")
 @PropertySource("using_spring/queries.properties")
 public class SpringConfig {    

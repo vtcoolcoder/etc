@@ -9,8 +9,8 @@ public record Note(int id, String subject, String note) implements Comparable<No
     
     public Note(int id, String subject, String note) {
         this.id = id;
-        this.subject = subject; //subject.trim();
-        this.note = note; //note.trim();
+        this.subject = subject; 
+        this.note = note; 
     }
     
     

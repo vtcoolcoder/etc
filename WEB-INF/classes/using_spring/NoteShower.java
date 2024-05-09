@@ -121,19 +121,4 @@ public final class NoteShower {
         System.out.println("Все заметки:");
         noteShower.allNotes.get().stream().forEach(System.out::println);     
     }
-    
-    //queriesData.getNoteById()
-    //queriesData.getSpecificNote()
-    //queriesData.getFullSpecific() 
-    //queriesData.getRandom()
-    //queriesData.getDistinctSubjects()    +
-    //queriesData.getAllNotes()    +
-    //queriesData.getNotesBySubjectAmount()    +
-    //queriesData.getAllSubjectsAmount()    +
-    //queriesData.getAllNotesAmount()    +
-    //queriesData.getAllId()    +
-    //queriesData.getAddNote()
-    //queriesData.getUpdateNote()
-    //queriesData.getDeleteNote()
-    //queriesData.getBackup()
 }

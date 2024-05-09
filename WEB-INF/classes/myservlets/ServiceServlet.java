@@ -1,10 +1,8 @@
 package myservlets;
 
 
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 import lombok.Cleanup;
 
@@ -62,11 +60,7 @@ public class ServiceServlet {
         EDITED_NOTE = request.getParameter(PARAM_EDITED_NOTE); 
         DELETED_NOTE = SELECTED_NOTE;
         
-        initMode();
-        
-        
-        //var context = new AnnotationConfigApplicationContext(SpringConfig.class);
-        //webNotes = context.getBean(WebNotes.class);      
+        initMode();  
     }
     
     
@@ -152,14 +146,9 @@ public class ServiceServlet {
     
     
     private void fillChangeNote(StringBuilder sb) {
-        sb.append(HIDDENSELECTEDNOTEFMT.formatted(SELECTED_NOTE));
-                
+        sb.append(HIDDENSELECTEDNOTEFMT.formatted(SELECTED_NOTE));         
         IdAndContent idAndContent = getIdAndContent();
-        
-        //int length = idAndContent.CONTENT().length(); 
-        String FRAGMENT = idAndContent.CONTENT();
-                                      //.substring(0, (length >= SUBSTRLIMIT) ? SUBSTRLIMIT : length); 
-                      
+        String FRAGMENT = idAndContent.CONTENT();         
         sb.append(SELECTEDFRAGMENTFMT.formatted(FRAGMENT));
     }
     
@@ -250,17 +239,7 @@ public class ServiceServlet {
         StringBuilder sb = new StringBuilder();
         
         availableRecords.forEach((key, value) -> value.stream()  
-                .map(el -> {
-                        //String fullNote = el.note();
-                        //int length = fullNote.length();
-                
-                        String beginNoteFragment = webNotes.getNoteFragment(el.id());
-                                //fullNote.substring(0, (length >= SUBSTRLIMIT) 
-                                //        ? SUBSTRLIMIT 
-                                //        : length);
-                                                
-                        return new LmbHelper(el, beginNoteFragment);
-                })
+                .map(el -> new LmbHelper(el, webNotes.getNoteFragment(el.id())))
                 .map(el -> RADIOFMT.formatted(
                                 el.note().id(), 
                                 (counter++ == 0) ? CHECKED_ON : CHECKED_OFF,
