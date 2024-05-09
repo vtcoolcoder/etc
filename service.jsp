@@ -8,14 +8,14 @@
     //APIServlet API;
     
     AnnotationConfigApplicationContext context =
-            new AnnotationConfigApplicationContext(); 
+            new AnnotationConfigApplicationContext(SpringConfig.class, request.getClass()); 
             
     context.registerBean(
                 "httpServletRequest",
                 HttpServletRequest.class,
                 () -> request);
                 
-    context.register(SpringConfig.class);
+    //context.register(SpringConfig.class);
                 
     //AnnotationConfigApplicationContext primaryContext = 
     //        new AnnotationConfigApplicationContext(SpringConfig.class); 
