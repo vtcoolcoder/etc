@@ -15,7 +15,7 @@
                 HttpServletRequest.class,
                 () -> request);
                 
-    context = new AnnotationConfigApplicationContext(SpringConfig.class, context); 
+    primaryContext = new AnnotationConfigApplicationContext(SpringConfig.class); 
                               
-    API = context.getBean(APIServlet.class); 
+    API = primaryContext.getBean(APIServlet.class); 
 %>
