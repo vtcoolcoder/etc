@@ -27,7 +27,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.LinkedList;
+import java.util.ArrayList;
 
 import java.util.function.Supplier;
 import java.util.function.Function;
@@ -268,7 +268,7 @@ public class SpringConfig {
             Fields fields) 
     {
         return () -> preparedExecuteQuery(() -> {
-                final List<Integer> RESULT = new LinkedList<>();
+                final List<Integer> RESULT = new ArrayList<>();
                 
                 iterateByResultSet(supplier, resultSetLmb -> 
                         RESULT.add(resultSetLmb.getInt(fields.id())));
