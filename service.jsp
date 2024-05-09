@@ -7,26 +7,14 @@
 <%@ page import="jakarta.servlet.http.HttpServletRequest" %>
 <% 
     //SpringConfig.setBean(request);
-    //APIServlet API;
-    
-    
-    class Config {
-        @Bean public HttpServletRequest httpServletRequest() { return request; }
-    }
     
     AnnotationConfigApplicationContext context =
-            new AnnotationConfigApplicationContext(SpringConfig.class, Config.class); 
-      
-    /*        
-    context.registerBean(
-                "httpServletRequest",
-                HttpServletRequest.class,
-                () -> request);
-    */            
-    //context.register(SpringConfig.class);
-                
-    //AnnotationConfigApplicationContext primaryContext = 
-    //        new AnnotationConfigApplicationContext(SpringConfig.class); 
+            new AnnotationConfigApplicationContext(new SpringConfig() {
+                @Bean
+                public HttpServletRequest httpServletRequest() {
+                    return request;
+                }
+            }.getClass()); 
                               
     APIServlet API = context.getBean(APIServlet.class); 
 %>
