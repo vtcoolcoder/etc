@@ -16,6 +16,7 @@
     @Configuration
     */
     
+    @Configuration
     class Config extends SpringConfig {
         @Bean
         public HttpServletRequest httpServletRequest() {
