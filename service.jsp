@@ -11,14 +11,18 @@
 <%@ page import="jakarta.servlet.http.HttpServletRequest" %>
 <% 
 
+@Configuration
+class RequestBeanConfig {
+    @Bean
+    public HttpServletRequest httpServletRequest() {
+        return request;
+    }
+}
+
 AnnotationConfigApplicationContext context = 
-        new AnnotationConfigApplicationContext(SpringConfig.class, 
-                @Configuration new Object() {
-                    @Bean
-                    public HttpServletRequest httpServletRequest() {
-                        return request;
-                    }
-                }.class);
+        new AnnotationConfigApplicationContext(
+                SpringConfig.class, RequestBeanConfig.class);
+                 
 
 /*        
 context.registerBean(
