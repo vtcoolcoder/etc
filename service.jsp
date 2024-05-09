@@ -22,7 +22,7 @@
     }
     */
     
-    Class<SpringConfig> config = new SpringConfig() {
+    Class<SpringConfig> myConfig = new SpringConfig() {
         @Bean
         public HttpServletRequest httpServletRequest() {
             return request;
@@ -30,7 +30,7 @@
     }.getClass();
     
     AnnotationConfigApplicationContext context =
-            new AnnotationConfigApplicationContext(config);
+            new AnnotationConfigApplicationContext(myConfig);
                               
     APIServlet API = context.getBean(APIServlet.class); 
 %>
