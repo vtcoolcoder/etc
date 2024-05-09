@@ -8,13 +8,16 @@
 <% 
     //SpringConfig.setBean(request);
     
+    @Configuration
+    class Config extends SpringConfig {
+        @Bean
+        public HttpServletRequest httpServletRequest() {
+            return request;
+        }
+    }
+    
     AnnotationConfigApplicationContext context =
-            new AnnotationConfigApplicationContext(new SpringConfig() {
-                @Bean
-                public HttpServletRequest httpServletRequest() {
-                    return request;
-                }
-            }.getClass()); 
+            new AnnotationConfigApplicationContext(Config.class);
                               
     APIServlet API = context.getBean(APIServlet.class); 
 %>
