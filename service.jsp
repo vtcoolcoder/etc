@@ -5,19 +5,17 @@
 <%@ page import="jakarta.servlet.http.HttpServletRequest" %>
 <% 
     //SpringConfig.setBean(request);
-    APIServlet API;
+    //APIServlet API;
     
-    AnnotationConfigApplicationContext context; 
-                
-    try {      
-        context =
-            new AnnotationConfigApplicationContext(SpringConfig.class); 
-    } catch (Exception e) {
-        context.registerBean(
+    AnnotationConfigApplicationContext context =
+            new AnnotationConfigApplicationContext(); 
+            
+    context.registerBean(
                 "httpServletRequest",
                 HttpServletRequest.class,
                 () -> request);
                 
-        API = context.getBean(APIServlet.class); 
-    }
+    context = new AnnotationConfigApplicationContext(SpringConfig.class, context); 
+                              
+    API = context.getBean(APIServlet.class); 
 %>
