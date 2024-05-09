@@ -9,6 +9,7 @@
 <%@ page import="jakarta.servlet.http.HttpServletRequest" %>
 <% 
     //SpringConfig.setBean(request);
+    /*
     @ComponentScan(basePackages = { "using_spring", "myservlets" })
     @PropertySource("using_spring/config.properties")
     @PropertySource("using_spring/queries.properties")
@@ -19,9 +20,17 @@
             return request;
         }
     }
+    */
+    
+    Class<SpringConfig> config = new SpringConfig() {
+        @Bean
+        public HttpServletRequest httpServletRequest() {
+            return request;
+        }
+    }.getClass();
     
     AnnotationConfigApplicationContext context =
-            new AnnotationConfigApplicationContext(Config.class);
+            new AnnotationConfigApplicationContext(config);
                               
     APIServlet API = context.getBean(APIServlet.class); 
 %>
