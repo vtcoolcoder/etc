@@ -22,12 +22,12 @@
     }
     */
     
-    Class<SpringConfig> myConfig = new SpringConfig() {
+    Class<SpringConfig> myConfig = (new SpringConfig() {
         @Bean
         public HttpServletRequest httpServletRequest() {
             return request;
         }
-    }.getClass();
+    }).getClass();
     
     AnnotationConfigApplicationContext context =
             new AnnotationConfigApplicationContext(myConfig);
