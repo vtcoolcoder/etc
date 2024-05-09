@@ -11,6 +11,7 @@
 <%@ page import="jakarta.servlet.http.HttpServletRequest" %>
 <% 
 
+/*
 @Configuration
 class RequestBeanConfig {
     @Bean
@@ -18,10 +19,11 @@ class RequestBeanConfig {
         return request;
     }
 }
+*/
 
 AnnotationConfigApplicationContext context = 
         new AnnotationConfigApplicationContext(
-                SpringConfig.class, RequestBeanConfig.class);
+                SpringConfig.class, request.getClass());
                  
 
 /*        
