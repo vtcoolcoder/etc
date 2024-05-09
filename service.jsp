@@ -18,5 +18,5 @@
     AnnotationConfigApplicationContext primaryContext = 
             new AnnotationConfigApplicationContext(SpringConfig.class); 
                               
-    API = primaryContext.getBean(APIServlet.class); 
+    APIServlet API = primaryContext.getBean(APIServlet.class); 
 %>
