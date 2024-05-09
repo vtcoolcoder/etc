@@ -22,9 +22,14 @@ class RequestBeanConfig {
 */
 
 AnnotationConfigApplicationContext context = 
-        new AnnotationConfigApplicationContext(
-                SpringConfig.class, request.getClass());
-                 
+        new AnnotationConfigApplicationContext();
+
+context.registerBean(
+        "httpServletRequest",
+        HttpServletRequest.class,
+        () -> request);
+        
+context.register(SpringConfig.class);                       
 
 /*        
 context.registerBean(
