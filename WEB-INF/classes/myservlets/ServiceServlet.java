@@ -3,6 +3,7 @@ package myservlets;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Lazy;
 
 import lombok.Cleanup;
 
@@ -26,6 +27,7 @@ import java.util.function.BiConsumer;
 
 
 @Component
+@Lazy
 public class ServiceServlet {
     private record IdAndContent(int ID, String CONTENT) {}
     private record LmbHelper(Note note, String fragment) {}
