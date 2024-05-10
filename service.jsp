@@ -3,18 +3,14 @@
 <%@ page import="using_spring.SpringConfig" %>
 <%@ page import="org.springframework.context.annotation.AnnotationConfigApplicationContext" %>
 <%@ page import="jakarta.servlet.http.HttpServletRequest" %>
-<% 
-    //SpringConfig.setBean(request);
-    
+<%     
     AnnotationConfigApplicationContext context =
             new AnnotationConfigApplicationContext(SpringConfig.class);
-    
-            
+          
     context.registerBean(
             "request",
             HttpServletRequest.class,
             () -> request);
-
-                              
+                    
     APIServlet API = context.getBean(APIServlet.class); 
 %>

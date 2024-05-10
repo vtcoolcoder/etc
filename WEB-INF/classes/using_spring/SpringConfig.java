@@ -5,8 +5,6 @@ import lombok.SneakyThrows;
 import lombok.Setter;
 import lombok.Getter;
 
-import jakarta.servlet.http.HttpServletRequest;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ComponentScan;
@@ -22,7 +20,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import org.postgresql.util.PSQLException;
-
 
 import java.util.Set;
 import java.util.LinkedHashSet;
@@ -82,19 +79,6 @@ public class SpringConfig {
     private static final Flag FLAG = new Flag();
     private static final String ERROR_MESSAGE = "[ОШИБКА]: Такой контент уже существует!%n[CONTENT]:%n%s%n";
     
-    /*
-    private static HttpServletRequest REQUEST;
-    
-    
-    public static void setBean(HttpServletRequest request) { REQUEST = request; }
-    
-    
-    @Bean
-    public HttpServletRequest httpServletRequest() {
-        return REQUEST;
-    }
-    */
-
 
     @Bean
     @SneakyThrows

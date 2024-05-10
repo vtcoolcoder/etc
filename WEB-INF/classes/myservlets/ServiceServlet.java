@@ -341,23 +341,23 @@ public class ServiceServlet {
            
             
             case UPDATE -> {
-                IdAndContent idAndContent = getIdAndContent();
+                final int ID = getIdAndContent().ID();
             
                 if (isEditMode()) {   
-                    updateNote(idAndContent.ID());      
+                    updateNote(ID);      
                 } else if (isFillContent()) {
-                    fillUpdateContent(sb, idAndContent.CONTENT());
+                    fillUpdateContent(sb, webNotes.getNoteContent(ID));
                 } 
             }
             
             
             case DELETE -> {
-                IdAndContent idAndContent = getIdAndContent();
+                final int ID = getIdAndContent().ID();
             
                 if (isDeleteMode()) { 
-                    deleteNote(idAndContent.ID());
+                    deleteNote(ID);
                 } else if (isFillContent()) { 
-                    fillDeleteContent(sb, idAndContent.CONTENT()); 
+                    fillDeleteContent(sb, webNotes.getNoteContent(ID)); 
                 } 
             }
             
