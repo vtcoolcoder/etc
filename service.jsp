@@ -2,7 +2,6 @@
 <%@ page import="myservlets.APIServlet" %>
 <%@ page import="jdbc_template.Config" %>
 <%@ page import="org.springframework.context.annotation.AnnotationConfigApplicationContext" %>
-<%@ page import="org.springframework.context.annotation.ApplicationContext" %>
 <%@ page import="jakarta.servlet.http.HttpServletRequest" %>
 <%@ page import="lombok.Cleanup" %>
 <%     
