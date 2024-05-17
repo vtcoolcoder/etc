@@ -3,10 +3,12 @@
 <%@ page import="org.springframework.context.annotation.AnnotationConfigApplicationContext" %>
 <%@ page import="jakarta.servlet.http.HttpServletRequest" %>
 <%@ page import="lombok.Cleanup" %>
+<%@ page import="jdbc_template.Config" %>
 <%     
     @Cleanup
     AnnotationConfigApplicationContext context =
-            new AnnotationConfigApplicationContext(jdbc_template.Config.class);
+            new AnnotationConfigApplicationContext(Config.class);
+            
           
     context.registerBean(
             "request",
