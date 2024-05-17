@@ -7,6 +7,8 @@ import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
+import jdbc_template.DBConfig;
+
 
 @Configuration
 @ComponentScan("jdbc_template")
