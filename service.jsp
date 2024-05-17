@@ -1,6 +1,6 @@
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ page import="myservlets.APIServlet" %>
-<%@ page import="using_spring.SpringConfig" %>
+<%@ page import="jdbc_template.Config"%>
 <%@ page import="org.springframework.context.annotation.AnnotationConfigApplicationContext" %>
 <%@ page import="org.springframework.context.annotation.ApplicationContext" %>
 <%@ page import="jakarta.servlet.http.HttpServletRequest" %>
@@ -8,7 +8,7 @@
 <%     
     @Cleanup
     ApplicationContext context =
-            new AnnotationConfigApplicationContext(SpringConfig.class);
+            new AnnotationConfigApplicationContext(Config.class);
           
     context.registerBean(
             "request",
