@@ -119,15 +119,13 @@ public class ServiceServlet {
                     getSelectedSubjects().toArray(String[]::new));
              
             
-        availableRecords.forEach((key, value) -> {
-                value.stream()
+        availableRecords.stream()
                      .map(el -> RECORD_FORMAT.formatted(
                                         el.subject(),
                                         el.note()))              
                      .forEach(sb::append);
                      
-                sb.append(HR); 
-        });
+                //sb.append(HR); 
     }
     
     
