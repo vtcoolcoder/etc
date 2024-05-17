@@ -2,11 +2,12 @@
 <%@ page import="myservlets.APIServlet" %>
 <%@ page import="using_spring.SpringConfig" %>
 <%@ page import="org.springframework.context.annotation.AnnotationConfigApplicationContext" %>
+<%@ page import="org.springframework.context.annotation.ApplicationContext" %>
 <%@ page import="jakarta.servlet.http.HttpServletRequest" %>
 <%@ page import="lombok.Cleanup" %>
 <%     
     @Cleanup
-    AnnotationConfigApplicationContext context =
+    ApplicationContext context =
             new AnnotationConfigApplicationContext(SpringConfig.class);
           
     context.registerBean(
