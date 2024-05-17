@@ -252,7 +252,7 @@ public class ServiceServlet {
                                 el.note().id(), 
                                 (counter++ == 0) ? CHECKED_ON : CHECKED_OFF,
                                 el.fragment()))
-                .forEach(sb::append));
+                .forEach(sb::append);
           
         return sb.toString();
     }
