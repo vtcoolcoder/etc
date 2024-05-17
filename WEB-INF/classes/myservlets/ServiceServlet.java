@@ -10,16 +10,20 @@ import lombok.Cleanup;
 
 import static myservlets.ServiceServletData.*;
 
-import using_spring.SpringConfig;
-import using_spring.WebNotesAPI;
-import using_spring.WebNotes;
-import using_spring.Note;
+//import using_spring.SpringConfig;
+//import using_spring.WebNotesAPI;
+//import using_spring.WebNotes;
+//import using_spring.Note;
+
+import jdbc_template.DAO;
+import jdbc_template.Note;
 
 import modes.Modes;
 
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.Map;
+import java.util.List;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -34,7 +38,7 @@ public class ServiceServlet {
     
 
     private final HttpServletRequest request;
-    private final WebNotesAPI webNotes;
+    private final DAO webNotes;
           
           
     private String MODE;
@@ -51,7 +55,7 @@ public class ServiceServlet {
     
       
     @Autowired
-    public ServiceServlet(HttpServletRequest request, WebNotesAPI webNotes) {
+    public ServiceServlet(HttpServletRequest request, DAO webNotes) {
         this.request = request;
         this.webNotes = webNotes;
         
@@ -110,8 +114,10 @@ public class ServiceServlet {
     private void fillNotesBySelectedSubjects(StringBuilder sb) {
         sb.append(NOTES_BY_SELECTED_SUBJECTS_TITLE);
                 
-        Map<String, Set<Note>> availableRecords = 
-            webNotes.getNotes(getSelectedSubjects());
+        List<Note> availableRecords = 
+            webNotes.getNotesBySubjects(
+                    getSelectedSubjects().toArray(String[]::new));
+             
             
         availableRecords.forEach((key, value) -> {
                 value.stream()
@@ -162,8 +168,8 @@ public class ServiceServlet {
     
     
     private void fillChangeNoteDefault(StringBuilder sb) {
-        Map<String, Set<Note>> availableRecords = 
-            webNotes.getNotes((SUBJECT != null) ? SUBJECT : NULL_CONTENT);
+        List<Note> availableRecords = 
+            webNotes.getNotesBySubjects((SUBJECT != null) ? SUBJECT : NULL_CONTENT);
                 
         sb.append(iterate(availableRecords, RADIOFMT));              
         
@@ -231,16 +237,16 @@ public class ServiceServlet {
     }
     
     
-    private Set<String> getAvailableSubjects() { 
+    private List<String> getAvailableSubjects() { 
         return webNotes.getAllSubjects(); 
     }
     
     
-    private String iterate(Map<String, Set<Note>> availableRecords, String RADIOFMT) 
+    private String iterate(List<Note> availableRecords, String RADIOFMT) 
     {
         StringBuilder sb = new StringBuilder();
         
-        availableRecords.forEach((key, value) -> value.stream()  
+        availableRecords.stream()
                 .map(el -> new LmbHelper(el, webNotes.getNoteFragment(el.id())))
                 .map(el -> RADIOFMT.formatted(
                                 el.note().id(), 
