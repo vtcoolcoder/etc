@@ -196,14 +196,14 @@ public final class DAO {
     }
     
     
-    private static int getAmountTemplate(final String query) {
+    private int getAmountTemplate(final String query) {
         return jdbcTemplate.query(query,
                 NoteMapper.getIntLambda("amount"))
                         .stream().findAny().get(); 
     }
     
     
-    private static String getNoteTemplate(int id, String query, String qualifier) {
+    private String getNoteTemplate(int id, String query, String qualifier) {
         return jdbcTemplate.query(query, 
                 new Object[] { id },
                 NoteMapper.getStrLambda(qualifier))
