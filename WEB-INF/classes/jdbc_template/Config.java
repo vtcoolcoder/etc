@@ -12,7 +12,7 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 
 @Configuration
-@ComponentScan("jdbc_template")
+@ComponentScan({ "jdbc_template", "myservlets" })
 @PropertySource("jdbc_template/config.properties")
 @PropertySource("jdbc_template/queries.properties")
 public class Config {
