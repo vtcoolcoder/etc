@@ -49,7 +49,7 @@ public final class DAO {
         }
         
         
-        public static <R> BiFunction<ResultSet, Integer, R> getLambda(String qualifier) {
+        public static <R extends BiFunction<ResultSet, Integer, R>> BiFunction<ResultSet, Integer, R> getLambda(String qualifier) {
             return switch (qualifier) {
                 case "note", "fragment", "subject" -> (rs, i) -> rs.getString(qualifier);
                         //(BiFunction<ResultSet, Integer, String>) getStrLambda(qualifier);
