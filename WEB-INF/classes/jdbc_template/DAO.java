@@ -39,28 +39,13 @@ public final class DAO {
         } 
         
         
-        private static BiFunction<ResultSet, Integer, String> getStrLambda(String qualifier) {
+        public static BiFunction<ResultSet, Integer, String> getStrLambda(String qualifier) {
             return (rs, i) -> rs.getString(qualifier);
         }  
         
         
-        private static BiFunction<ResultSet, Integer, Integer> getIntLambda(String qualifier) {
+        public static BiFunction<ResultSet, Integer, Integer> getIntLambda(String qualifier) {
             return (rs, i) -> rs.getInt(qualifier);
-        }
-        
-        
-        public static <R extends BiFunction<ResultSet, Integer, R>> BiFunction<ResultSet, Integer, R> getLambda(String qualifier) {
-            return switch (qualifier) {
-                case "note", "fragment", "subject" -> (rs, i) -> rs.getString(qualifier);
-                        //(BiFunction<ResultSet, Integer, String>) getStrLambda(qualifier);
-                        
-                case "amount", "id" -> (rs, i) -> rs.getInt(qualifier);
-                        //(BiFunction<ResultSet, Integer, Integer>) getIntLambda(qualifier);
-                        
-                default -> throw new IllegalArgumentException(
-                        "Переданный аргумент %s не входит в допустимое множество значений!"
-                                .formatted(qualifier));
-            };
         }
     }
 
@@ -101,7 +86,7 @@ public final class DAO {
     
     public List<String> getAllSubjects() {
         return jdbcTemplate.query(queries.getDistinctSubjects(),
-                NoteMapper.getLambda("subject"));
+                NoteMapper.getStrLambda("subject"));
     }
     
     
@@ -202,7 +187,7 @@ public final class DAO {
     
     private List<Integer> getAllId() {
         return jdbcTemplate.query(queries.getAllId(), 
-                NoteMapper.getLambda("id"));
+                NoteMapper.getIntLambda("id"));
     }
     
     
@@ -213,7 +198,7 @@ public final class DAO {
     
     private static int getAmountTemplate(final String query) {
         return jdbcTemplate.query(query,
-                NoteMapper.getLambda("amount"))
+                NoteMapper.getIntLambda("amount"))
                         .stream().findAny().get(); 
     }
     
@@ -221,7 +206,7 @@ public final class DAO {
     private static String getNoteTemplate(int id, String query, String qualifier) {
         return jdbcTemplate.query(query, 
                 new Object[] { id },
-                NoteMapper.getLambda(qualifier))
+                NoteMapper.getStrLambda(qualifier))
                         .stream().findAny().get();
     }
 }
