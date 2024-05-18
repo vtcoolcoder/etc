@@ -21,6 +21,8 @@ import java.util.Random;
 import java.sql.SQLException;
 import java.sql.ResultSet;
 
+import java.util.function.BiFunction;
+
 
 @Component
 public final class DAO {
@@ -34,7 +36,32 @@ public final class DAO {
                     resultSet.getString("note"),
                     resultSet.getTimestamp("timestamp")
             );   
-        }    
+        } 
+        
+        
+        private static BiFunction<ResultSet, Integer, String> getStrLambda(String qualifier) {
+            return (rs, i) -> rs.getString(qualifier);
+        }  
+        
+        
+        private static BiFunction<ResultSet, Integer, Integer> getIntLambda(String qualifier) {
+            return (rs, i) -> rs.getInt(qualifier);
+        }
+        
+        
+        public static <R> BiFunction<ResultSet, Integer, R> getLambda(String qualifier) {
+            return switch (qualifier) {
+                case "note", "fragment", "subject" -> 
+                        (BiFunction<ResultSet, Integer, String>) getStrLambda(qualifier);
+                        
+                case "amount", "id" -> 
+                        (BiFunction<ResultSet, Integer, Integer>) getIntLambda(qualifier);
+                        
+                default -> throw new IllegalArgumentException(
+                        "Переданный аргумент %s не входит в допустимое множество значений!"
+                                .formatted(qualifier));
+            };
+        }
     }
 
 
@@ -63,38 +90,28 @@ public final class DAO {
     
     
     public String getNoteContent(final int id) {
-        return jdbcTemplate.query(queries.getNoteById(), 
-                new Object[] { id },
-                (rs, i) -> rs.getString("note"))
-                        .stream().findAny().get();
+        return getNoteTemplate(id, queries.getNoteById(), "note");
     }
     
     
     public String getNoteFragment(final int id) {
-        return jdbcTemplate.query(queries.getNoteFragment(), 
-                new Object[] { id },
-                (rs, i) -> rs.getString("fragment"))
-                        .stream().findAny().get();
+        return getNoteTemplate(id, queries.getNoteFragment(), "fragment");
     }
     
     
     public List<String> getAllSubjects() {
         return jdbcTemplate.query(queries.getDistinctSubjects(),
-                (rs, i) -> rs.getString("subject"));
+                NoteMapper.getLambda("subject"));
     }
     
     
     public int getAllSubjectsAmount() {
-        return jdbcTemplate.query(queries.getAllSubjectsAmount(),
-                (rs, i) -> rs.getInt("amount"))
-                        .stream().findAny().get();       
+        return getAmountTemplate(queries.getAllSubjectsAmount());     
     }
     
     
     public int getAllNotesAmount() {
-        return jdbcTemplate.query(queries.getAllNotesAmount(),
-                (rs, i) -> rs.getInt("amount"))
-                        .stream().findAny().get();
+        return getAmountTemplate(queries.getAllNotesAmount());
     }
     
     
@@ -185,11 +202,26 @@ public final class DAO {
     
     private List<Integer> getAllId() {
         return jdbcTemplate.query(queries.getAllId(), 
-                (rs, i) -> rs.getInt("id"));
+                NoteMapper.getLambda("id"));
     }
     
     
     private static String wrapLikeContent(final String content) {
         return "%" + content + "%";
+    }
+    
+    
+    private static int getAmountTemplate(final String query) {
+        return jdbcTemplate.query(query,
+                NoteMapper.getLambda("amount"))
+                        .stream().findAny().get(); 
+    }
+    
+    
+    private static String getNoteTemplate(int id, String query, String qualifier) {
+        return jdbcTemplate.query(query, 
+                new Object[] { id },
+                NoteMapper.getLambda(qualifier))
+                        .stream().findAny().get();
     }
 }
