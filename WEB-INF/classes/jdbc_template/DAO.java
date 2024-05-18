@@ -51,11 +51,11 @@ public final class DAO {
         
         public static <R> BiFunction<ResultSet, Integer, R> getLambda(String qualifier) {
             return switch (qualifier) {
-                case "note", "fragment", "subject" -> 
-                        (BiFunction<ResultSet, Integer, String>) getStrLambda(qualifier);
+                case "note", "fragment", "subject" -> (rs, i) -> rs.getString(qualifier);
+                        //(BiFunction<ResultSet, Integer, String>) getStrLambda(qualifier);
                         
-                case "amount", "id" -> 
-                        (BiFunction<ResultSet, Integer, Integer>) getIntLambda(qualifier);
+                case "amount", "id" -> (rs, i) -> rs.getInt(qualifier);
+                        //(BiFunction<ResultSet, Integer, Integer>) getIntLambda(qualifier);
                         
                 default -> throw new IllegalArgumentException(
                         "Переданный аргумент %s не входит в допустимое множество значений!"
