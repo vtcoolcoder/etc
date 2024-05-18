@@ -14,7 +14,7 @@ import jdbc_template.DBConfig;
 @ComponentScan("jdbc_template")
 @PropertySource("jdbc_template/config.properties")
 @PropertySource("jdbc_template/queries.properties")
-class Config {
+public class Config {
     
     @Bean
     public DataSource dataSource(DBConfig config) {
