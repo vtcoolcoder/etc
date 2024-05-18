@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 
 import java.util.Map;
 import java.util.LinkedHashMap;
@@ -39,12 +40,12 @@ public final class DAO {
         } 
         
         
-        public static BiFunction<ResultSet, Integer, String> getStrLambda(String qualifier) {
+        public static RowMapper<String> getStrLambda(String qualifier) {
             return (rs, i) -> rs.getString(qualifier);
         }  
         
         
-        public static BiFunction<ResultSet, Integer, Integer> getIntLambda(String qualifier) {
+        public static RowMapper<Integer> getIntLambda(String qualifier) {
             return (rs, i) -> rs.getInt(qualifier);
         }
     }
