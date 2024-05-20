@@ -71,7 +71,7 @@ public final class DAO {
     
     
     public List<Note> getAllNotes() {
-        return jdbcTemplate.queryForList(queries.getAllNotes(), NoteMapper::fullyMapRow);
+        return jdbcTemplate.query(queries.getAllNotes(), NoteMapper::fullyMapRow);
     }
     
     
@@ -86,7 +86,7 @@ public final class DAO {
     
     
     public List<String> getAllSubjects() {
-        return jdbcTemplate.queryForList(queries.getDistinctSubjects(),
+        return jdbcTemplate.query(queries.getDistinctSubjects(),
                 NoteMapper.getStrLambda("subject"));
     }
     
@@ -142,7 +142,7 @@ public final class DAO {
                             .substring(0, size*REPEATED_SIZE - (REPEATED_SIZE - 1)));
         }
         
-        return jdbcTemplate.queryForList(
+        return jdbcTemplate.query(
                 queries.getNotesBySubjects().formatted(primary),
                 subjects,
                 NoteMapper::fullyMapRow);      
@@ -151,7 +151,7 @@ public final class DAO {
     
     public List<Note> getNotesByContent(String content) {
         content = wrapLikeContent(content);
-        return jdbcTemplate.queryForList(queries.getNotesByContent(), 
+        return jdbcTemplate.query(queries.getNotesByContent(), 
                 new Object[]{content}, 
                 NoteMapper::fullyMapRow);
     }
@@ -187,7 +187,7 @@ public final class DAO {
     
     
     private List<Integer> getAllId() {
-        return jdbcTemplate.queryForList(queries.getAllId(), 
+        return jdbcTemplate.query(queries.getAllId(), 
                 NoteMapper.getIntLambda("id"));
     }
     
