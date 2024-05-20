@@ -18,6 +18,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Arrays;
 import java.util.Random;
+import java.util.Optional;
 
 import java.sql.SQLException;
 import java.sql.ResultSet;
@@ -92,12 +93,12 @@ public final class DAO {
     
     
     public int getAllSubjectsAmount() {
-        return getAmountTemplate(queries.getAllSubjectsAmount());     
+        return getAmountTemplate(queries.getAllSubjectsAmount()).get();     
     }
     
     
     public int getAllNotesAmount() {
-        return getAmountTemplate(queries.getAllNotesAmount());
+        return getAmountTemplate(queries.getAllNotesAmount()).get();
     }
     
     
@@ -197,7 +198,7 @@ public final class DAO {
     }
     
     
-    private Integer getAmountTemplate(final String query) {
+    private Optional<Integer> getAmountTemplate(final String query) {
         return jdbcTemplate.queryForObject(query,
                 NoteMapper.getIntLambda("amount"));
                         //.stream().findAny().get(); 
