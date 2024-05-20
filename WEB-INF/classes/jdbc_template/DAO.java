@@ -93,12 +93,12 @@ public final class DAO {
     
     
     public int getAllSubjectsAmount() {
-        return getAmountTemplate(queries.getAllSubjectsAmount()).get();     
+        return getAmountTemplate(queries.getAllSubjectsAmount());     
     }
     
     
     public int getAllNotesAmount() {
-        return getAmountTemplate(queries.getAllNotesAmount()).get();
+        return getAmountTemplate(queries.getAllNotesAmount());
     }
     
     
@@ -198,10 +198,10 @@ public final class DAO {
     }
     
     
-    private Optional<Integer> getAmountTemplate(final String query) {
-        return Optional.ofNullable(jdbcTemplate.queryForObject(query,
-                NoteMapper.getIntLambda("amount")));
-                        //.stream().findAny().get(); 
+    private int getAmountTemplate(final String query) {
+        return jdbcTemplate.query(query,
+                NoteMapper.getIntLambda("amount"));
+                        .stream().findAny().get(); 
     }
     
     
