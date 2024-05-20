@@ -105,7 +105,7 @@ public final class DAO {
     public Note getRandomNote() {             
         List<Integer> allId = getAllId();   
         
-        return jdbcTemplate.queryForObject(queries.getRandom(),   
+        return jdbcTemplate.query(queries.getRandom(),   
                 new Object[] { allId.get(RANDOM.nextInt(allId.size())) },
                 (rs, i) -> new Note(rs.getString("subject"), rs.getString("note")))
                         .stream().findAny().get();                    
@@ -206,7 +206,7 @@ public final class DAO {
     
     
     private String getNoteTemplate(int id, String query, String qualifier) {
-        return jdbcTemplate.queryForObject(query, 
+        return jdbcTemplate.query(query, 
                 new Object[] { id },
                 NoteMapper.getStrLambda(qualifier))
                         .stream().findAny().get();
