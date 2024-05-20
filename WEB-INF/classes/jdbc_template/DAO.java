@@ -71,7 +71,7 @@ public final class DAO {
     
     
     public List<Note> getAllNotes() {
-        return jdbcTemplate.query(queries.getAllNotes(), NoteMapper::fullyMapRow);
+        return jdbcTemplate.queryForList(queries.getAllNotes(), NoteMapper::fullyMapRow);
     }
     
     
@@ -86,7 +86,7 @@ public final class DAO {
     
     
     public List<String> getAllSubjects() {
-        return jdbcTemplate.query(queries.getDistinctSubjects(),
+        return jdbcTemplate.queryForList(queries.getDistinctSubjects(),
                 NoteMapper.getStrLambda("subject"));
     }
     
@@ -104,10 +104,10 @@ public final class DAO {
     public Note getRandomNote() {             
         List<Integer> allId = getAllId();   
         
-        return jdbcTemplate.query(queries.getRandom(),   
+        return jdbcTemplate.queryForObject(queries.getRandom(),   
                 new Object[] { allId.get(RANDOM.nextInt(allId.size())) },
                 (rs, i) -> new Note(rs.getString("subject"), rs.getString("note")))
-                        .stream().findAny().get();                    
+                        //.stream().findAny().get();                    
     }
     
     
@@ -142,7 +142,7 @@ public final class DAO {
                             .substring(0, size*REPEATED_SIZE - (REPEATED_SIZE - 1)));
         }
         
-        return jdbcTemplate.query(
+        return jdbcTemplate.queryForList(
                 queries.getNotesBySubjects().formatted(primary),
                 subjects,
                 NoteMapper::fullyMapRow);      
@@ -151,7 +151,7 @@ public final class DAO {
     
     public List<Note> getNotesByContent(String content) {
         content = wrapLikeContent(content);
-        return jdbcTemplate.query(queries.getNotesByContent(), 
+        return jdbcTemplate.queryForList(queries.getNotesByContent(), 
                 new Object[]{content}, 
                 NoteMapper::fullyMapRow);
     }
@@ -187,7 +187,7 @@ public final class DAO {
     
     
     private List<Integer> getAllId() {
-        return jdbcTemplate.query(queries.getAllId(), 
+        return jdbcTemplate.queryForList(queries.getAllId(), 
                 NoteMapper.getIntLambda("id"));
     }
     
@@ -198,16 +198,16 @@ public final class DAO {
     
     
     private int getAmountTemplate(final String query) {
-        return jdbcTemplate.query(query,
+        return jdbcTemplate.queryForObject(query,
                 NoteMapper.getIntLambda("amount"))
-                        .stream().findAny().get(); 
+                        //.stream().findAny().get(); 
     }
     
     
     private String getNoteTemplate(int id, String query, String qualifier) {
-        return jdbcTemplate.query(query, 
+        return jdbcTemplate.queryForObject(query, 
                 new Object[] { id },
                 NoteMapper.getStrLambda(qualifier))
-                        .stream().findAny().get();
+                        //.stream().findAny().get();
     }
 }
