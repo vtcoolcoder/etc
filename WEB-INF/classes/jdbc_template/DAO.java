@@ -200,7 +200,7 @@ public final class DAO {
     
     private int getAmountTemplate(final String query) {
         return jdbcTemplate.query(query,
-                NoteMapper.getIntLambda("amount"));
+                NoteMapper.getIntLambda("amount"))
                         .stream().findAny().get(); 
     }
     
