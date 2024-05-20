@@ -199,8 +199,8 @@ public final class DAO {
     
     
     private Optional<Integer> getAmountTemplate(final String query) {
-        return jdbcTemplate.queryForObject(query,
-                NoteMapper.getIntLambda("amount"));
+        return Optional.ofNullable(jdbcTemplate.queryForObject(query,
+                NoteMapper.getIntLambda("amount")));
                         //.stream().findAny().get(); 
     }
     
