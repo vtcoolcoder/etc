@@ -106,7 +106,7 @@ public final class DAO {
         
         return jdbcTemplate.queryForObject(queries.getRandom(),   
                 new Object[] { allId.get(RANDOM.nextInt(allId.size())) },
-                (rs, i) -> new Note(rs.getString("subject"), rs.getString("note")))
+                (rs, i) -> new Note(rs.getString("subject"), rs.getString("note")));
                         //.stream().findAny().get();                    
     }
     
@@ -199,7 +199,7 @@ public final class DAO {
     
     private int getAmountTemplate(final String query) {
         return jdbcTemplate.queryForObject(query,
-                NoteMapper.getIntLambda("amount"))
+                NoteMapper.getIntLambda("amount"));
                         //.stream().findAny().get(); 
     }
     
@@ -207,7 +207,7 @@ public final class DAO {
     private String getNoteTemplate(int id, String query, String qualifier) {
         return jdbcTemplate.queryForObject(query, 
                 new Object[] { id },
-                NoteMapper.getStrLambda(qualifier))
+                NoteMapper.getStrLambda(qualifier));
                         //.stream().findAny().get();
     }
 }
