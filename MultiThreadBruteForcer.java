@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.OptionalLong;
 import java.math.BigInteger;
+import java.util.function.Function;
 
 import java.util.concurrent.*;
 
@@ -37,16 +38,12 @@ public class MultiThreadBruteForcer {
     }
     
     
-    private static void setTasks() {
-        var executorService = Executors.newFixedThreadPool(TASK_AMOUNT);  
-        
+    private static void setTasks() {      
         for (int i = 0; i < TASK_AMOUNT; i++) {
             long start = STEP*i + (i + Long.MIN_VALUE);                       
             long end = (i == TASK_AMOUNT - 1) ? Long.MAX_VALUE : (start + STEP);        
-            TASKS.add(executorService.submit(() -> findNumber(start, end))); 
+            TASKS.add(CompletableFuture.supplyAsync(() -> findNumber(start, end)));
         }
-        
-        executorService.shutdown();
     }
     
     
@@ -54,9 +51,17 @@ public class MultiThreadBruteForcer {
         long medium = (end - start + 1) / 2;
         
         for (
-                long i = start, n = 0, j = 0, k = end; 
+                long i = start, 
+                n = 0, 
+                j = 0, 
+                k = end; 
+                        
                 i <= end && k >= start; 
-                i++, j++, k--, n += (j % 2 != 0) ? 1 : 0
+                
+                i++, 
+                j++, 
+                k--, 
+                n += (j % 2 != 0) ? 1 : 0
         ) {  
             if (! isContinueBruteForce) {
                 return OptionalLong.empty();
@@ -90,14 +95,20 @@ public class MultiThreadBruteForcer {
     
     private static long getFoundNumber() {
         return TASKS.stream()
-                .map(future -> {
-                    try {
-                        return future.get();
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    } 
-                }).filter(OptionalLong::isPresent)
+                .map(tryCatchWrapping())
+                .filter(OptionalLong::isPresent)
                 .mapToLong(OptionalLong::getAsLong)
                 .findAny().getAsLong();
+    }
+    
+    
+    private static Function<Future<OptionalLong>, OptionalLong> tryCatchWrapping() {
+        return future -> {
+            try {
+                return future.get();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            } 
+        };
     }
 }
