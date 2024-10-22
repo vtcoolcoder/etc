@@ -10,6 +10,22 @@ import java.util.concurrent.*;
 
 public class MultiThreadBruteForcer {
 
+    @FunctionalInterface
+    private interface FunctionWithException<T, R, E extends Exception> {
+        R apply(T t) throws E;
+        
+        default Function<T, R> tryCatchWrapping() {
+            return arg -> {
+                try {
+                    return apply(arg);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            };
+        }
+    }
+
+
     private static final BigInteger LIMIT =  
             BigInteger.valueOf(Long.MAX_VALUE).subtract(BigInteger.valueOf(Long.MIN_VALUE));          
     private static final int TASK_AMOUNT = Runtime.getRuntime().availableProcessors();  
@@ -94,21 +110,13 @@ public class MultiThreadBruteForcer {
     
     
     private static long getFoundNumber() {
+        FunctionWithException<Future<OptionalLong>, OptionalLong, ? extends Exception> 
+                mapper = Future::get;
+                
         return TASKS.stream()
-                .map(tryCatchWrapping())
+                .map(mapper.tryCatchWrapping())
                 .filter(OptionalLong::isPresent)
                 .mapToLong(OptionalLong::getAsLong)
                 .findAny().getAsLong();
-    }
-    
-    
-    private static Function<Future<OptionalLong>, OptionalLong> tryCatchWrapping() {
-        return future -> {
-            try {
-                return future.get();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            } 
-        };
     }
 }
