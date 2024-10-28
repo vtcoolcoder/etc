@@ -4,6 +4,7 @@ import java.util.Random;
 import java.util.OptionalLong;
 import java.math.BigInteger;
 import java.util.function.Function;
+import java.util.Objects;
 
 import java.util.concurrent.*;
 
@@ -22,6 +23,12 @@ public class MultiThreadBruteForcer {
                     throw new RuntimeException(e);
                 }
             };
+        }
+        
+        static <T, R, E extends Exception> 
+        Function<T, R> getWrappedFunction(final FunctionWithException<T, R, E> item) {
+            Objects.requireNonNull(item);
+            return item.tryCatchWrapping();
         }
     }
 
@@ -46,6 +53,8 @@ public class MultiThreadBruteForcer {
     
     
     private static void tryParseCLArg(final String[] args) {
+        Objects.requireNonNull(args);
+        
         if (args.length > 0) {
             try {
                 guessedNumber = Long.parseLong(args[0]);
@@ -109,12 +118,9 @@ public class MultiThreadBruteForcer {
     }
     
     
-    private static long getFoundNumber() {
-        FunctionWithException<Future<OptionalLong>, OptionalLong, ? extends Exception> 
-                mapper = Future::get;
-                
+    private static long getFoundNumber() {              
         return TASKS.stream()
-                .map(mapper.tryCatchWrapping())
+                .map(FunctionWithException.getWrappedFunction(Future::get))
                 .filter(OptionalLong::isPresent)
                 .mapToLong(OptionalLong::getAsLong)
                 .findAny().getAsLong();
