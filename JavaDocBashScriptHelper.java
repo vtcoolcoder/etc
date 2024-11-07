@@ -3,6 +3,26 @@ import java.util.function.IntFunction;
 
 
 public record JavaDocBashScriptHelper(String[] names, String formatter) {
+          
+    private record GetWrappedRawParams(
+            String wrappingRaw, 
+            String formatter, 
+            boolean hasPrefix, 
+            boolean isEndingSuffix
+    ) {
+        public GetWrappedRawParams {
+            Objects.requireNonNull(wrappingRaw);
+            Objects.requireNonNull(formatter);
+        }
+    }
+    
+    
+    private record SelectWrappedRawParams(boolean isByDefault, GetWrappedRawParams nested) {
+        public SelectWrappedRawParams {
+            Objects.requireNonNull(nested);
+        }
+    }
+
 
     private static final String PREFIX = " ".repeat(4);
     private static final String ENDING_SUFFIX = ";";
@@ -69,40 +89,36 @@ public record JavaDocBashScriptHelper(String[] names, String formatter) {
             var isEnding = bound - 1 == i;
             var isFirstLine = 1 == i;
             var wrappingRaw = func.apply(i);
-            
-            System.out.println(selectWrappedRaw(
+            var selectWrappedRawArgs = new SelectWrappedRawParams(
                     formatter.isEmpty(),
-                    wrappingRaw,
-                    formatter,
-                    !isFirstLine,
-                    isEnding
+                    new GetWrappedRawParams(
+                            wrappingRaw,
+                            formatter,
+                            !isFirstLine,
+                            isEnding
             ));
+            
+            System.out.println(selectWrappedRaw(selectWrappedRawArgs));
         }
         
         System.out.println("}");
     }
     
     
-    private static String selectWrappedRaw(
-            boolean isByDefault,
-            String wrappingRaw, 
-            String formatter, 
-            boolean hasPrefix, 
-            boolean isEndingSuffix
-    ) {
-        return isByDefault
-                ? getWrappedRaw(wrappingRaw, FORMATTER, hasPrefix, isEndingSuffix)
-                : getWrappedRaw(wrappingRaw, formatter, hasPrefix, isEndingSuffix);
+    private static String selectWrappedRaw(SelectWrappedRawParams params) {
+        return params.isByDefault()
+                ? getWrappedRaw(new GetWrappedRawParams(
+                        params.nested().wrappingRaw(), 
+                        FORMATTER, 
+                        params.nested().hasPrefix(), 
+                        params.nested().isEndingSuffix()))
+                : getWrappedRaw(params.nested());                      
     }
     
     
-    private static String getWrappedRaw(
-            String wrappingRaw, 
-            String formatter, 
-            boolean hasPrefix, 
-            boolean isEndingSuffix
-    ) {
-        return wrapping(wrappingRaw, supplementFormatter(formatter, hasPrefix, isEndingSuffix));
+    private static String getWrappedRaw(GetWrappedRawParams params) {
+        return wrapping(params.wrappingRaw(), supplementFormatter(
+                params.formatter(), params.hasPrefix(), params.isEndingSuffix()));
     }
     
     
