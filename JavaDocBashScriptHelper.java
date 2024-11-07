@@ -1,5 +1,6 @@
 import java.util.Objects;
 import java.util.function.IntFunction;
+import java.util.function.Supplier;
 
 
 public record JavaDocBashScriptHelper(String[] names, String formatter) {
@@ -106,12 +107,15 @@ public record JavaDocBashScriptHelper(String[] names, String formatter) {
     
     
     private static String selectWrappedRaw(SelectWrappedRawParams params) {
+        Supplier<GetWrappedRawParams> getWrappedRawDefaultArgs = () -> new GetWrappedRawParams(
+                params.nested().wrappingRaw(), 
+                FORMATTER, 
+                params.nested().hasPrefix(), 
+                params.nested().isEndingSuffix()
+        );
+        
         return params.isByDefault()
-                ? getWrappedRaw(new GetWrappedRawParams(
-                        params.nested().wrappingRaw(), 
-                        FORMATTER, 
-                        params.nested().hasPrefix(), 
-                        params.nested().isEndingSuffix()))
+                ? getWrappedRaw(getWrappedRawDefaultArgs.get())
                 : getWrappedRaw(params.nested());                      
     }
     
