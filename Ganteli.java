@@ -3,9 +3,12 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
+
 import java.util.function.Consumer;
 import java.util.function.BiConsumer;
 import java.util.function.DoubleConsumer;
+
+import java.util.stream.Collectors;
 
 
 public enum Ganteli {
@@ -21,12 +24,22 @@ public enum Ganteli {
    
    
    private enum Colors { 
-       VIOLET("violet"), 
+   
+       PINK("pink"),
+       VIOLET("violet"),  
+       GOLD("gold"),     
+       LIGHT_BLUE("lightblue"),  
+       ORANGE("orange"),   
+       LIGHT_GREEN("lightgreen"), 
        CORAL("coral");
-       
+                   
        Colors(String colorName) { this.colorName = colorName; }
        
        private String colorName; 
+       
+       public static Colors getFirstColor() {
+           return Arrays.stream(values()).limit(1).findAny().get();
+       }
        
        @Override
        public String toString() { return colorName; }
@@ -34,6 +47,7 @@ public enum Ganteli {
    
    
    private record Represent(double sum, String msg) implements Comparable<Represent> {
+   
        private static final Comparator<Represent> COMPARATOR = Comparator.comparingDouble(Represent::sum);
        
        public double getTotalWeight() { return getTotalWeightByOneDisk(sum); }
@@ -52,10 +66,11 @@ public enum Ganteli {
     private static final String SPACES = " ".repeat(23);
     private static final double GRIF_WEIGHT = 1.5;
     private static final int SIDE_AMOUNT = 2;
+    private static final int COLOR_AMOUNT = Colors.values().length;
     
     
     private static double cachedValue = Double.NEGATIVE_INFINITY;
-    private static Colors currentColor = Colors.CORAL;
+    private static Colors currentColor = Colors.getFirstColor();
     
     
     private double weight; 
@@ -73,18 +88,17 @@ public enum Ganteli {
     
     
     public static void main(String[] args) {   
+        showInfo();
+        separateOutputByLines();
+        showBaseData();    
+    }
+    
+    
+    private static void showInfo() {
         showOneDisksResultPart();
         showTwoDiskComboResultPart();
         showThreeDiskComboResultPart();
         //showFourDiskComboResultPart();
-        
-        separateOutputByLines();
-        
-        preparing();                   
-        printBeginning();      
-        printBaseData();            
-        printAssymetricComboes(getUniqueOneSidedSums());      
-        printEnding();     
     }
     
     
@@ -118,6 +132,15 @@ public enum Ganteli {
         System.err.println();
         showTitle("");
         System.err.println();
+    }
+    
+    
+    private static void showBaseData() {
+        preparing();                   
+        printBeginning();      
+        printBaseData();            
+        printAssymetricComboes(getUniqueOneSidedSums());      
+        printEnding(); 
     }
     
       
@@ -212,13 +235,7 @@ public enum Ganteli {
                         text-align: center;
                     }
                     
-                    .\{Colors.VIOLET} {
-                        background-color: \{Colors.VIOLET};
-                    }
-                    
-                    .\{Colors.CORAL} {
-                        background-color: \{Colors.CORAL};
-                    }
+            \{getAllHTMLInlinedColorNames()}
                 </style>
             </head>
             <body>
@@ -340,12 +357,16 @@ public enum Ganteli {
     }
     
     
-    private static void switchCurrentColor() {
-        if (Colors.VIOLET == currentColor) {
-            currentColor = Colors.CORAL;
-        } else {
-            currentColor = Colors.VIOLET;
-        }
+    private static void switchCurrentColor() { currentColor = getNextColor(); }
+    
+    
+    private static Colors getNextColor() {
+        return Colors.values()[getNextColorOrdinal(currentColor.ordinal())];
+    }
+    
+    
+    private static int getNextColorOrdinal(int currentOrdinal) {
+        return (currentOrdinal == COLOR_AMOUNT - 1) ? 0 : (currentOrdinal + 1);
     }
     
       
@@ -356,4 +377,16 @@ public enum Ganteli {
     
     
     private static void resetCachedValue() { cachedValue = Double.NEGATIVE_INFINITY; }
+    
+    
+    private static String getAllHTMLInlinedColorNames() {                  
+        return Arrays.stream(Colors.values())
+                .map(color -> STR.
+                        """
+                                .\{color} {
+                                    background-color: \{color};   
+                                } 
+                        """
+                ).collect(Collectors.joining("\n"));
+    }
 }
