@@ -269,8 +269,47 @@ public enum Ganteli {
                 <title>Комбинации блинов для разборной гантели</title>
                 <meta charset="UTF-8" />
                 <style>
-                    td {
+                    body {
+                        background-color: black;
                         text-align: center;
+                    }
+                    
+                    h1 {
+                        color: gold;
+                    }
+                    
+                    h2 {
+                        font-style: italic;
+                        font-weight: bold;
+                        color: orange;
+                    }
+                    
+                    .grif {      
+                        color: snow;
+                        font-style: normal;
+                        font-weight: normal;
+                    }
+                    
+                    table {
+                        border-color: snow;
+                        margin: 0 auto;
+                        border-width: 1;
+                        border-color: snow;
+                        border-style: solid;
+                        border-radius: 7px;
+                        font-weight: bold;
+                    }
+                    
+                    th {
+                        background-color: black;
+                        color: snow;
+                        border-width: 1px;
+                        border-style: solid;
+                        border-color: snow;
+                    }
+            
+                    td {
+                        font-style: italic;
                     }
                     
             \{Colors.getAllHTMLInlinedColorNames()}
@@ -278,9 +317,9 @@ public enum Ganteli {
             </head>
             <body>
                 <h1>Комбинации блинов для разборной гантели</h1>
-                
-                <h2>Вес грифа с замками: \{GRIF_WEIGHT} КГ</h2>
-                <table border="1">
+                <h2 class="grif">Вес грифа с замками: \{GRIF_WEIGHT} КГ</h2>
+                <h2>Симметричные комбинации</h2>
+                <table>
             """
         );
     }
@@ -315,12 +354,13 @@ public enum Ganteli {
             """
                 </table>
                 
-                <hr>
-                
                 <h2>Несимметричные комбинации</h2>
-                <table border="1">
+                <table>
                 
-                    <tr><th>Комбинация</th><th>Общий вес с грифом, КГ</th></tr>
+                    <tr>
+                        <th>Комбинация</th>
+                        <th>Общий вес с грифом, КГ</th>
+                    </tr>
             """
         );
                            
