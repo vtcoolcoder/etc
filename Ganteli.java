@@ -39,7 +39,7 @@ public enum Ganteli {
        private static final Colors FIRST_COLOR = Arrays.stream(COLORS).findFirst().get();
        private static final int FIRST_COLOR_ORDINAL = 0; 
        private static final int LAST_COLOR_ORDINAL = COLORS.length - 1;   
-       private static final int STEP_COLOR_ORDINAL = 1;      
+       private static final int STEP_COLOR_ORDINAL = 1;    
        
        
        private String colorName; 
@@ -108,6 +108,8 @@ public enum Ganteli {
     private static final double[] VALUES = Arrays.stream(values()).mapToDouble(Ganteli::getWeight).toArray();  
     private static final List<Represent> RESULTS = new ArrayList<>();
     private static final String SPACES = " ".repeat(23);
+    private static final String OTHERS_STRICTLY_EQUAL_SHORT_PARAM_NAME = "-o";  
+    private static final String OTHERS_STRICTLY_EQUAL_LONG_PARAM_NAME = "--one";
     private static final double GRIF_WEIGHT = 1.5;
     private static final int SIDE_AMOUNT = 2;
     private static final int DISK_AMOUNT_BY_DEFAULT = 3;
@@ -118,6 +120,7 @@ public enum Ganteli {
     private static double cachedValue = Double.NEGATIVE_INFINITY;
     private static Colors currentColor = Colors.getFirstColor();
     private static int diskAmountSetting = DISK_AMOUNT_BY_DEFAULT;
+    private static boolean isOthersStrictlyEqual = false;
     
     
     private double weight; 
@@ -148,8 +151,18 @@ public enum Ganteli {
         if (args.length > 0) {
             try {
                 diskAmountSetting = validateDiskAmountSetting(Integer.parseInt(args[0]));
+                if (isOthersStrictlyEqual(args)) {
+                    isOthersStrictlyEqual = true;
+                }
             } catch (IllegalArgumentException _) {}
         }
+    }
+    
+    
+    private static boolean isOthersStrictlyEqual(String[] args) {
+        return args.length > 1 
+                && (OTHERS_STRICTLY_EQUAL_LONG_PARAM_NAME.equals(args[1]) 
+                        || OTHERS_STRICTLY_EQUAL_SHORT_PARAM_NAME.equals(args[1]));
     }
     
     
@@ -232,7 +245,7 @@ public enum Ganteli {
         Collections.sort(RESULTS); 
     }
     
-    
+      
     private static void runFuncs(Runnable... funcs) {
         requireNonNull(funcs);
         
@@ -245,9 +258,9 @@ public enum Ganteli {
             );
         }
         
-        runFuncIfDiskAmountPermit(MIN_DISK_AMOUNT, funcs[0]);
-        runFuncIfDiskAmountPermit(MIN_DISK_AMOUNT + 1, funcs[1]);
-        runFuncIfDiskAmountPermit(MAX_DISK_AMOUNT - 1, funcs[2]);
+        runFuncIfDiskAmountPermit(MIN_DISK_AMOUNT, funcs[0], isOthersStrictlyEqual);
+        runFuncIfDiskAmountPermit(MIN_DISK_AMOUNT + 1, funcs[1], isOthersStrictlyEqual);
+        runFuncIfDiskAmountPermit(MAX_DISK_AMOUNT - 1, funcs[2], isOthersStrictlyEqual);
         runFuncIfDiskAmountPermit(MAX_DISK_AMOUNT, funcs[3], true);
     }
     
