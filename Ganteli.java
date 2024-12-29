@@ -291,7 +291,6 @@ public enum Ganteli {
                     }
                     
                     table {
-                        border-color: snow;
                         margin: 0 auto;
                         border-width: 1;
                         border-color: snow;
@@ -301,11 +300,10 @@ public enum Ganteli {
                     }
                     
                     th {
-                        background-color: black;
                         color: snow;
                         border-width: 1px;
                         border-style: solid;
-                        border-color: snow;
+                        border-radius: 7px;
                     }
             
                     td {
