@@ -1,3 +1,5 @@
+import static java.util.Objects.requireNonNull;
+
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -43,14 +45,14 @@ public enum Ganteli {
        private String colorName; 
        
        
-       Colors(String colorName) { this.colorName = colorName; }
+       Colors(String colorName) { this.colorName = requireNonNull(colorName); }
        
        
        public static Colors getFirstColor() { return FIRST_COLOR; }
        
        
        public static Colors getNextColor(Colors currentColor) {
-           return COLORS[getNextColorOrdinal(currentColor.ordinal())];
+           return COLORS[getNextColorOrdinal(requireNonNull(currentColor).ordinal())];
        }
     
        
@@ -85,6 +87,9 @@ public enum Ganteli {
        private static final Comparator<Represent> COMPARATOR = Comparator.comparingDouble(Represent::sum);
        
        
+       public Represent { requireNonNull(msg); }
+       
+       
        public double getTotalWeight() { return getTotalWeightByOneDisk(sum); }
        
        
@@ -94,7 +99,7 @@ public enum Ganteli {
       
        
        @Override
-       public int compareTo(Represent another) { return COMPARATOR.compare(this, another); }
+       public int compareTo(Represent another) { return COMPARATOR.compare(this, requireNonNull(another)); }
    }
    
 
@@ -105,10 +110,14 @@ public enum Ganteli {
     private static final String SPACES = " ".repeat(23);
     private static final double GRIF_WEIGHT = 1.5;
     private static final int SIDE_AMOUNT = 2;
+    private static final int DISK_AMOUNT_BY_DEFAULT = 3;
+    private static final int MIN_DISK_AMOUNT = 1;
+    private static final int MAX_DISK_AMOUNT = 4;
     
     
     private static double cachedValue = Double.NEGATIVE_INFINITY;
     private static Colors currentColor = Colors.getFirstColor();
+    private static int diskAmountSetting = DISK_AMOUNT_BY_DEFAULT;
     
     
     private double weight; 
@@ -126,17 +135,50 @@ public enum Ganteli {
     
        
     public static void main(String[] args) {   
+        setDiskAmount(args);        
         showInfo();
         separateOutputByLines();
         showBaseData();    
     }
     
     
+    private static void setDiskAmount(String[] args) {
+        requireNonNull(args);
+        
+        if (args.length > 0) {
+            try {
+                diskAmountSetting = validateDiskAmountSetting(Integer.parseInt(args[0]));
+            } catch (IllegalArgumentException _) {}
+        }
+    }
+    
+    
+    private static int validateDiskAmountSetting(int diskAmount) {
+        if (isDiskAmountBelongToValidRange(diskAmount)) {
+            throw new IllegalArgumentException(
+                    STR."""
+                    Количество дисков должно находиться в диапазоне [\{MIN_DISK_AMOUNT}..\{MAX_DISK_AMOUNT}] !
+                    Переданное количество дисков: \{diskAmount} .
+                    """
+            );
+        }
+        
+        return diskAmount;
+    }
+    
+    
+    private static boolean isDiskAmountBelongToValidRange(int diskAmount) {
+        return (diskAmount > MAX_DISK_AMOUNT) || (diskAmount < MIN_DISK_AMOUNT);
+    }
+    
+    
     private static void showInfo() {
-        showOneDisksResultPart();
-        showTwoDiskComboResultPart();
-        showThreeDiskComboResultPart();
-        //showFourDiskComboResultPart();
+        runFuncs(
+                Ganteli::showOneDisksResultPart,
+                Ganteli::showTwoDiskComboResultPart,
+                Ganteli::showThreeDiskComboResultPart,
+                Ganteli::showFourDiskComboResultPart
+        );
     }
     
     
@@ -149,20 +191,17 @@ public enum Ganteli {
     
        
     public static void showTwoDiskComboResultPart() {
-        showTitle("С двумя дисками:");
-        showing(Ganteli::fillTwoDiskComboResultPart);
+        showing(Ganteli::fillTwoDiskComboResultPart, "С двумя дисками:");
     }
     
     
     public static void showThreeDiskComboResultPart() {
-        showTitle("С тремя дисками:");
-        showing(Ganteli::fillThreeDiskComboResultPart);
+        showing(Ganteli::fillThreeDiskComboResultPart, "С тремя дисками:");
     }
     
     
     public static void showFourDiskComboResultPart() {
-        showTitle("С четырьмя дисками:");
-        showing(Ganteli::fillFourDiskComboResultPart);
+        showing(Ganteli::fillFourDiskComboResultPart, "С четырьмя дисками:");
     }
     
     
@@ -182,22 +221,66 @@ public enum Ganteli {
     }
     
       
-    private static void preparing() {
-        fillOneDisksResultPart();
-        fillTwoDiskComboResultPart();
-        fillThreeDiskComboResultPart();
-        //fillFourDiskComboResultPart();
+    private static void preparing() {       
+        runFuncs(
+                Ganteli::fillOneDisksResultPart,
+                Ganteli::fillTwoDiskComboResultPart,
+                Ganteli::fillThreeDiskComboResultPart,
+                Ganteli::fillFourDiskComboResultPart
+        );
         
         Collections.sort(RESULTS); 
     }
     
     
+    private static void runFuncs(Runnable... funcs) {
+        requireNonNull(funcs);
+        
+        if (funcs.length != MAX_DISK_AMOUNT) {
+            throw new IllegalArgumentException(
+                    STR."""
+                    Количество функций должно быть равно \{MAX_DISK_AMOUNT} !
+                    Переданное количество функций: \{funcs.length} .
+                    """
+            );
+        }
+        
+        runFuncIfDiskAmountPermit(MIN_DISK_AMOUNT, funcs[0]);
+        runFuncIfDiskAmountPermit(MIN_DISK_AMOUNT + 1, funcs[1]);
+        runFuncIfDiskAmountPermit(MAX_DISK_AMOUNT - 1, funcs[2]);
+        runFuncIfDiskAmountPermit(MAX_DISK_AMOUNT, funcs[3], true);
+    }
+    
+    
+    private static void runFuncIfDiskAmountPermit(int number, Runnable func) { 
+        runFuncIfDiskAmountPermit(number, func, false); 
+    }
+    
+    
+    private static void runFuncIfDiskAmountPermit(int number, Runnable func, boolean isStrictlyEqual) {
+        requireNonNull(func);
+        
+        if (isStrictlyEqual(number, isStrictlyEqual)) {
+            func.run();
+        }
+    }
+    
+    
+    private static boolean isStrictlyEqual(int number, boolean isStrictlyEqual) {
+        return isStrictlyEqual 
+                ? (diskAmountSetting == number)
+                : (diskAmountSetting >= number);
+    }
+    
+     
     private static void fillOneDisksResultPart() {       
         processOneDisksResultPart(item -> RESULTS.add(new Represent(item, STR."\{item}")));
     }
     
     
     private static void processOneDisksResultPart(DoubleConsumer func) {
+        requireNonNull(func);
+        
         for (int i = 0; i < VALUES.length; ++i) {
             func.accept(VALUES[i]);
         }      
@@ -207,7 +290,9 @@ public enum Ganteli {
     private static void fillTwoDiskComboResultPart() { fillTwoDiskComboResultPart(RESULTS); }   
     
     
-    private static void fillTwoDiskComboResultPart(List<Represent> represents) {     
+    private static void fillTwoDiskComboResultPart(List<Represent> represents) {  
+        requireNonNull(represents);  
+         
         fillTwoItems(VALUES, (iElement, jElement) -> represents.add(new Represent(
                 iElement + jElement, 
                 STR."\{iElement} + \{jElement}"
@@ -216,6 +301,9 @@ public enum Ganteli {
     
     
     private static void fillTwoItems(double[] source, BiConsumer<Double, Double> func) {
+        requireNonNull(source);
+        requireNonNull(func);
+        
         for (int i = 0; i < source.length - 1; ++i) {
             for (int j = i + 1; j < source.length; ++j) {
                 func.accept(source[i], source[j]);
@@ -228,6 +316,8 @@ public enum Ganteli {
     
     
     private static void fillThreeDiskComboResultPart(List<Represent> represents) {
+        requireNonNull(represents);
+        
         for (int i = 0; i < VALUES.length - 2; ++i) {
             for (int j = i + 1; j < VALUES.length - 1; ++j) {
                 for (int k = j + 1; k < VALUES.length; ++k) {
@@ -245,6 +335,8 @@ public enum Ganteli {
         
       
     private static void fillFourDiskComboResultPart(List<Represent> represents) {
+        requireNonNull(represents);
+        
         for (int i = 0; i < VALUES.length - 3; ++i) {
             for (int j = i + 1; j < VALUES.length - 2; ++j) {
                 for (int k = j + 1; k < VALUES.length - 1; ++k) {
@@ -347,7 +439,7 @@ public enum Ganteli {
     }
     
     
-    private static void printAssymetricComboes(double[] resultSums) {
+    private static void printAssymetricComboes(double[] resultSums) {       
         System.out.println(
             """
                 </table>
@@ -405,7 +497,11 @@ public enum Ganteli {
     }
     
     
-    private static void showing(Consumer<List<Represent>> filling) {
+    private static void showing(Consumer<List<Represent>> filling, String title) {
+        requireNonNull(filling);
+        
+        showTitle(title);
+        
         var result = new ArrayList<Represent>();    
         filling.accept(result);        
         Collections.sort(result);       
@@ -416,6 +512,8 @@ public enum Ganteli {
     
     
     private static void showTitle(String title) {
+        requireNonNull(title);
+        
         var line = "*".repeat(120);
         System.err.println(
             STR."""
@@ -428,10 +526,13 @@ public enum Ganteli {
     }
     
        
-    private static void coloringRows(double currentValue, String info) {   
+    private static void coloringRows(double currentValue, String info) { 
+        requireNonNull(info);
+          
         if (currentValue != cachedValue) {
             switchCurrentColor();
-        }          
+        }  
+                
         System.out.printf(info, currentColor);     
         cachedValue = currentValue;
     }
@@ -441,6 +542,9 @@ public enum Ganteli {
     
         
     private static void printContent(List<Represent> target, Consumer<Represent> func) {
+        requireNonNull(target);
+        requireNonNull(func);
+        
         resetCachedValue();
         target.forEach(func);
     }
