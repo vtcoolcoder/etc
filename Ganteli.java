@@ -1,4 +1,5 @@
 import static java.util.Objects.requireNonNull;
+import static java.util.stream.IntStream.range;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -9,9 +10,11 @@ import java.util.Map;
 import java.util.EnumMap;
 
 import java.util.function.Consumer;
+import java.util.function.IntConsumer;
 import java.util.function.BiConsumer;
 import java.util.function.DoubleConsumer;
 import java.util.function.Predicate;
+import java.util.function.Function;
 
 import java.util.stream.Collectors;
 
@@ -123,6 +126,10 @@ public enum Ganteli {
     private static final int DISK_AMOUNT_BY_DEFAULT = 3;
     private static final int MIN_DISK_AMOUNT = 1;
     private static final int MAX_DISK_AMOUNT = 4;
+    private static final int I_IDX = 0;
+    private static final int J_IDX = 1;
+    private static final int K_IDX = 2;
+    private static final int N_IDX = 3;
     
     private static final Map<Integer, Map<FuncCategories, Runnable>> FUNC_CATEGORIES_BY_DISK_AMOUNT = Map.of(
             1, buildEnumMap(Ganteli::fillOneDisksResultPart, Ganteli::showOneDisksResultPart),
@@ -278,10 +285,11 @@ public enum Ganteli {
     
     private static void runFuncs(FuncCategories funcCategory) {
         requireNonNull(funcCategory);
-        
-        for (var currentDiskAmountNumber : diskAmountNumbers) {
-            FUNC_CATEGORIES_BY_DISK_AMOUNT.get(currentDiskAmountNumber).get(funcCategory).run();
-        }
+               
+        Arrays.stream(diskAmountNumbers)
+                .mapToObj(FUNC_CATEGORIES_BY_DISK_AMOUNT::get)
+                .map(funcsByCategory -> funcsByCategory.get(funcCategory))
+                .forEach(Runnable::run);
     }
     
     
@@ -335,10 +343,8 @@ public enum Ganteli {
     
     private static void processOneDisksResultPart(DoubleConsumer func) {
         requireNonNull(func);
-        
-        for (int i = 0; i < VALUES.length; ++i) {
-            func.accept(VALUES[i]);
-        }      
+                
+        Arrays.stream(VALUES).forEach(func::accept);
     }
     
     
@@ -358,12 +364,12 @@ public enum Ganteli {
     private static void fillTwoItems(double[] source, BiConsumer<Double, Double> func) {
         requireNonNull(source);
         requireNonNull(func);
+              
+        IntConsumer secondLoop = i -> 
+                range(i + 1, source.length)
+                .forEach(j -> func.accept(source[i], source[j]));
         
-        for (int i = 0; i < source.length - 1; ++i) {
-            for (int j = i + 1; j < source.length; ++j) {
-                func.accept(source[i], source[j]);
-            }
-        }
+        range(0, source.length - 1).forEach(secondLoop);
     }
     
     
@@ -372,17 +378,24 @@ public enum Ganteli {
     
     private static void fillThreeDiskComboResultPart(List<Represent> represents) {
         requireNonNull(represents);
-        
-        for (int i = 0; i < VALUES.length - 2; ++i) {
-            for (int j = i + 1; j < VALUES.length - 1; ++j) {
-                for (int k = j + 1; k < VALUES.length; ++k) {
-                    represents.add(new Represent(
-                            VALUES[i] + VALUES[j] + VALUES[k], 
-                            STR."\{VALUES[i]} + \{VALUES[j]} + \{VALUES[k]}"
-                    ));
-                }
-            }
-        }
+                
+        Function<int[], Represent> toRepresent = iJK -> 
+                new Represent(
+                        VALUES[iJK[I_IDX]] + VALUES[iJK[J_IDX]] + VALUES[iJK[K_IDX]], 
+                        STR."\{VALUES[iJK[I_IDX]]} + \{VALUES[iJK[J_IDX]]} + \{VALUES[iJK[K_IDX]]}"
+                );
+                                          
+        BiConsumer<Integer, Integer> thirdLoop = (i, j) -> 
+                range(j + 1, VALUES.length)
+                .mapToObj(k -> new int[] { i, j, k })
+                .map(toRepresent)
+                .forEach(represents::add);
+                
+        IntConsumer secondLoop = i -> 
+                range(i + 1, VALUES.length - 1)
+                .forEach(j -> thirdLoop.accept(i, j));
+                
+        range(0, VALUES.length - 2).forEach(secondLoop);
     }
     
     
@@ -392,18 +405,30 @@ public enum Ganteli {
     private static void fillFourDiskComboResultPart(List<Represent> represents) {
         requireNonNull(represents);
         
-        for (int i = 0; i < VALUES.length - 3; ++i) {
-            for (int j = i + 1; j < VALUES.length - 2; ++j) {
-                for (int k = j + 1; k < VALUES.length - 1; ++k) {
-                    for (int n = k + 1; n < VALUES.length; ++n) {
-                        represents.add(new Represent(
-                                VALUES[i] + VALUES[j] + VALUES[k] + VALUES[n], 
-                                STR."\{VALUES[i]} + \{VALUES[j]} + \{VALUES[k]} + \{VALUES[n]}"
-                        ));
-                    }
-                }
-            }
-        }
+        Function<int[], Represent> toRepresent = iJKN -> 
+                new Represent(
+                        VALUES[iJKN[I_IDX]] + VALUES[iJKN[J_IDX]] + VALUES[iJKN[K_IDX]] + VALUES[iJKN[N_IDX]], 
+                        STR."""
+                        \{VALUES[iJKN[I_IDX]]} + \{VALUES[iJKN[J_IDX]]} + \
+                        \{VALUES[iJKN[K_IDX]]} + \{VALUES[iJKN[N_IDX]]}\
+                        """
+                );
+                
+        Consumer<int[]> fourthLoop = iJK ->
+                range(iJK[K_IDX] + 1, VALUES.length)
+                .mapToObj(n -> new int[] { iJK[I_IDX], iJK[J_IDX], iJK[K_IDX], n })
+                .map(toRepresent)
+                .forEach(represents::add);
+                
+        BiConsumer<Integer, Integer> thirdLoop = (i, j) ->
+                range(j + 1, VALUES.length - 1)   
+                .forEach(k -> fourthLoop.accept(new int[] { i, j, k }));    
+                
+        IntConsumer secondLoop = i ->
+                range(i + 1, VALUES.length - 2)
+                .forEach(j -> thirdLoop.accept(i, j));
+                
+        range(0, VALUES.length - 3).forEach(secondLoop);
     }
     
     
