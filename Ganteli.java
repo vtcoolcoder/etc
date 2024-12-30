@@ -5,10 +5,13 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Map;
+import java.util.EnumMap;
 
 import java.util.function.Consumer;
 import java.util.function.BiConsumer;
 import java.util.function.DoubleConsumer;
+import java.util.function.Predicate;
 
 import java.util.stream.Collectors;
 
@@ -104,6 +107,11 @@ public enum Ganteli {
    
 
 
+
+    private enum FuncCategories { FILLING, SHOWING }
+
+    
+    
     
     private static final double[] VALUES = Arrays.stream(values()).mapToDouble(Ganteli::getWeight).toArray();  
     private static final List<Represent> RESULTS = new ArrayList<>();
@@ -116,11 +124,19 @@ public enum Ganteli {
     private static final int MIN_DISK_AMOUNT = 1;
     private static final int MAX_DISK_AMOUNT = 4;
     
+    private static final Map<Integer, Map<FuncCategories, Runnable>> FUNC_CATEGORIES_BY_DISK_AMOUNT = Map.of(
+            1, buildEnumMap(Ganteli::fillOneDisksResultPart, Ganteli::showOneDisksResultPart),
+            2, buildEnumMap(Ganteli::fillTwoDiskComboResultPart, Ganteli::showTwoDiskComboResultPart), 
+            3, buildEnumMap(Ganteli::fillThreeDiskComboResultPart, Ganteli::showThreeDiskComboResultPart),
+            4, buildEnumMap(Ganteli::fillFourDiskComboResultPart, Ganteli::showFourDiskComboResultPart)
+    );
+    
     
     private static double cachedValue = Double.NEGATIVE_INFINITY;
     private static Colors currentColor = Colors.getFirstColor();
     private static int diskAmountSetting = DISK_AMOUNT_BY_DEFAULT;
     private static boolean isOthersStrictlyEqual = false;
+    private static int[] diskAmountNumbers = null;
     
     
     private double weight; 
@@ -151,23 +167,28 @@ public enum Ganteli {
         if (args.length > 0) {
             try {
                 diskAmountSetting = validateDiskAmountSetting(Integer.parseInt(args[0]));
-                if (isOthersStrictlyEqual(args)) {
-                    isOthersStrictlyEqual = true;
-                }
+                
+                if (args.length > 1) {
+                    if (isOthersStrictlyEqual(args)) {
+                        isOthersStrictlyEqual = true;
+                    } else {
+                        isOthersStrictlyEqual = true;
+                        diskAmountNumbers = getValidUniqueDiskAmountNumbers(args);
+                    }
+                }   
             } catch (IllegalArgumentException _) {}
         }
     }
     
     
     private static boolean isOthersStrictlyEqual(String[] args) {
-        return args.length > 1 
-                && (OTHERS_STRICTLY_EQUAL_LONG_PARAM_NAME.equals(args[1]) 
-                        || OTHERS_STRICTLY_EQUAL_SHORT_PARAM_NAME.equals(args[1]));
+        return (OTHERS_STRICTLY_EQUAL_LONG_PARAM_NAME.equals(args[1]) 
+                || OTHERS_STRICTLY_EQUAL_SHORT_PARAM_NAME.equals(args[1]));
     }
     
     
     private static int validateDiskAmountSetting(int diskAmount) {
-        if (isDiskAmountBelongToValidRange(diskAmount)) {
+        if (! isDiskAmountBelongToValidRange(diskAmount)) {
             throw new IllegalArgumentException(
                     STR."""
                     Количество дисков должно находиться в диапазоне [\{MIN_DISK_AMOUNT}..\{MAX_DISK_AMOUNT}] !
@@ -181,17 +202,32 @@ public enum Ganteli {
     
     
     private static boolean isDiskAmountBelongToValidRange(int diskAmount) {
-        return (diskAmount > MAX_DISK_AMOUNT) || (diskAmount < MIN_DISK_AMOUNT);
+        return (diskAmount >= MIN_DISK_AMOUNT) && (diskAmount <= MAX_DISK_AMOUNT);
+    }
+    
+    
+    private static int[] getValidUniqueDiskAmountNumbers(String[] args) {
+        Predicate<String> isNumber = str -> {
+            try {
+                Integer.valueOf(str);
+                return true;
+            } catch (NumberFormatException _) {
+                return false;
+            }
+        };
+        
+        return Arrays.stream(args)
+                .filter(isNumber)
+                .mapToInt(Integer::valueOf)
+                .sorted()
+                .distinct()
+                .filter(Ganteli::isDiskAmountBelongToValidRange)
+                .toArray();
     }
     
     
     private static void showInfo() {
-        runFuncs(
-                Ganteli::showOneDisksResultPart,
-                Ganteli::showTwoDiskComboResultPart,
-                Ganteli::showThreeDiskComboResultPart,
-                Ganteli::showFourDiskComboResultPart
-        );
+        runFuncsByCategory(FuncCategories.SHOWING);
     }
     
     
@@ -234,16 +270,22 @@ public enum Ganteli {
     }
     
       
-    private static void preparing() {       
-        runFuncs(
-                Ganteli::fillOneDisksResultPart,
-                Ganteli::fillTwoDiskComboResultPart,
-                Ganteli::fillThreeDiskComboResultPart,
-                Ganteli::fillFourDiskComboResultPart
-        );
-        
+    private static void preparing() {          
+        runFuncsByCategory(FuncCategories.FILLING);       
         Collections.sort(RESULTS); 
     }
+    
+    
+    private static void runFuncs(FuncCategories funcCategory) {
+        requireNonNull(funcCategory);
+        
+        for (var currentDiskAmountNumber : diskAmountNumbers) {
+            FUNC_CATEGORIES_BY_DISK_AMOUNT.get(currentDiskAmountNumber).get(funcCategory).run();
+        }
+    }
+    
+    
+    private static boolean hasDiskAmountNumbers() { return null != diskAmountNumbers; }
     
       
     private static void runFuncs(Runnable... funcs) {
@@ -257,7 +299,7 @@ public enum Ganteli {
                     """
             );
         }
-        
+          
         runFuncIfDiskAmountPermit(MIN_DISK_AMOUNT, funcs[0], isOthersStrictlyEqual);
         runFuncIfDiskAmountPermit(MIN_DISK_AMOUNT + 1, funcs[1], isOthersStrictlyEqual);
         runFuncIfDiskAmountPermit(MAX_DISK_AMOUNT - 1, funcs[2], isOthersStrictlyEqual);
@@ -272,10 +314,10 @@ public enum Ganteli {
     
     private static void runFuncIfDiskAmountPermit(int number, Runnable func, boolean isStrictlyEqual) {
         requireNonNull(func);
-        
+               
         if (isStrictlyEqual(number, isStrictlyEqual)) {
             func.run();
-        }
+        }    
     }
     
     
@@ -564,4 +606,33 @@ public enum Ganteli {
     
     
     private static void resetCachedValue() { cachedValue = Double.NEGATIVE_INFINITY; }
+    
+    
+    private static 
+    Map<FuncCategories, Runnable> buildEnumMap(Runnable filler, Runnable shower) {
+        requireNonNull(filler);
+        requireNonNull(shower);
+        
+        return new EnumMap<FuncCategories, Runnable>(FuncCategories.class) {{ 
+                put(FuncCategories.FILLING, filler); 
+                put(FuncCategories.SHOWING, shower); 
+        }};
+    }
+    
+    
+    private static void runFuncsByCategory(FuncCategories category) {
+        requireNonNull(category);
+        
+        if (hasDiskAmountNumbers()) {
+            runFuncs(category);
+        } else {
+            var funcs = FUNC_CATEGORIES_BY_DISK_AMOUNT.entrySet().stream()
+                    .sorted(Map.Entry.comparingByKey())
+                    .map(Map.Entry::getValue)
+                    .map(funcsByCategory -> funcsByCategory.get(category))
+                    .toArray(Runnable[]::new);
+                    
+            runFuncs(funcs);
+        }
+    }
 }
