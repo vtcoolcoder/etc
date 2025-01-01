@@ -17,12 +17,13 @@ import java.util.function.Predicate;
 import java.util.function.Function;
 
 import java.util.stream.Collectors;
+import java.util.stream.DoubleStream;
 
 
 public enum Ganteli {
 
     _0_5(0.5),
-    //_0_75(0.75),
+    _0_75(0.75, 0),
     _1(1.0),
     _1_25(1.25),
     _1_5(1.5),
@@ -115,8 +116,8 @@ public enum Ganteli {
 
     
     
-    
-    private static final double[] VALUES = Arrays.stream(values()).mapToDouble(Ganteli::getWeight).toArray();  
+     
+    private static final double[] VALUES = generateAllWeights(); 
     private static final List<Represent> RESULTS = new ArrayList<>();
     private static final String SPACES = " ".repeat(23);
     private static final String OTHERS_STRICTLY_EQUAL_SHORT_PARAM_NAME = "-o";  
@@ -144,15 +145,29 @@ public enum Ganteli {
     private static int diskAmountSetting = DISK_AMOUNT_BY_DEFAULT;
     private static boolean isOthersStrictlyEqual = false;
     private static int[] diskAmountNumbers = null;
+    private static String cachedRow = "";
     
     
     private double weight; 
+    private int theSameDiskPairAmount;
     
-       
-    Ganteli(double weight) { this.weight = weight; }
+    
+    Ganteli(double weight, int theSameDiskPairAmount) {
+        this.weight = weight;
+        this.theSameDiskPairAmount = theSameDiskPairAmount;
+    }   
+    
+    
+    Ganteli(double weight) { 
+        this.weight = weight; 
+        this.theSameDiskPairAmount = 1;
+    }
     
     
     public double getWeight() { return weight; }
+    
+    
+    public int getTheSameDiskAmount() { return theSameDiskPairAmount; }
     
     
     public String toString() {
@@ -160,12 +175,15 @@ public enum Ganteli {
     }
     
        
-    public static void main(String[] args) {   
+    public static void main(String... args) {   
         setDiskAmount(args);        
         showInfo();
         separateOutputByLines();
         showBaseData();    
     }
+    
+    
+    public static double[] getAllWeights() { return VALUES; }
     
     
     private static void setDiskAmount(String[] args) {
@@ -240,9 +258,14 @@ public enum Ganteli {
     
     public static void showOneDisksResultPart() {
         showTitle("С одним диском:");
-        processOneDisksResultPart(item -> System.err.println(
-                STR."\{item}\{SPACES}\{Represent.getTotalWeightByOneDisk(item)}"
-        ));
+        resetCachedRow();
+        processOneDisksResultPart(item -> {
+                var currentRow = STR."\{item}\{SPACES}\{Represent.getTotalWeightByOneDisk(item)}";
+                if (! cachedRow.equals(currentRow)) {
+                    System.err.println(currentRow);
+                }
+                cachedRow = currentRow;
+        });
     }
     
        
@@ -585,7 +608,10 @@ public enum Ganteli {
         showTitle(title);
         
         var result = new ArrayList<Represent>();    
-        filling.accept(result);        
+        filling.accept(result);    
+                    
+        filteringContainer(result);
+        
         Collections.sort(result);       
         result.forEach(e -> System.err.println(
                 STR."\{e.msg()} \{SPACES} \{e.sum()} \{SPACES} \{e.getTotalWeight()}"
@@ -627,12 +653,17 @@ public enum Ganteli {
         requireNonNull(target);
         requireNonNull(func);
         
+        filteringContainer(target);
+        
         resetCachedValue();
         target.forEach(func);
     }
     
     
     private static void resetCachedValue() { cachedValue = Double.NEGATIVE_INFINITY; }
+    
+    
+    private static void resetCachedRow() { cachedRow = ""; }
     
     
     private static 
@@ -661,5 +692,34 @@ public enum Ganteli {
                     
             runFuncs(funcs);
         }
+    }
+    
+    
+    private static double[] generateAllWeights() {
+        return Arrays.stream(values())
+                .map(Ganteli::getTheSameDiskSequence)
+                .flatMapToDouble(Arrays::stream)
+                .toArray();
+    }
+    
+    
+    private static double[] getTheSameDiskSequence(Ganteli ganteli) {
+        return DoubleStream.generate(ganteli::getWeight)
+                .limit(ganteli.getTheSameDiskAmount())
+                .toArray();
+    }
+    
+    
+    private static void filteringContainer(List<Represent> represents) {
+        Predicate<Represent> isRemoveMsg = e -> {
+                var currentMsg = e.msg();
+                var isRemoved = cachedRow.equals(currentMsg); 
+                cachedRow = currentMsg;
+                return isRemoved;
+        };
+        
+        resetCachedRow();         
+        represents.removeIf(isRemoveMsg);  
+        resetCachedRow(); 
     }
 }
