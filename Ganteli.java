@@ -407,7 +407,9 @@ public enum Ganteli {
         
         Function<int[], Represent> toRepresent = iJKN -> 
                 new Represent(
-                        VALUES[iJKN[I_IDX]] + VALUES[iJKN[J_IDX]] + VALUES[iJKN[K_IDX]] + VALUES[iJKN[N_IDX]], 
+                        VALUES[iJKN[I_IDX]] + VALUES[iJKN[J_IDX]] + 
+                        VALUES[iJKN[K_IDX]] + VALUES[iJKN[N_IDX]], 
+                        
                         STR."""
                         \{VALUES[iJKN[I_IDX]]} + \{VALUES[iJKN[J_IDX]]} + \
                         \{VALUES[iJKN[K_IDX]]} + \{VALUES[iJKN[N_IDX]]}\
