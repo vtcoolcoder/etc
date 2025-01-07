@@ -1,0 +1,10 @@
+export DISPLAY=192.168.1.131:0
+export PULSE_SERVER=tcp:192.168.1.131:4713
+startxfce4
+
+
+
+
+
+
+

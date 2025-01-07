@@ -1,0 +1,1 @@
+public record Note(String subject, String note) {}

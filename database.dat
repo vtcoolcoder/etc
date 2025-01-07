@@ -1,0 +1,45 @@
+import javax.sql.DataSource;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import java.sql.SQLException;
+import java.sql.ResultSet;
+class Config {
+    public DataSource dataSource() {
+        DriverManagerDataSource dataSource = new DriverManagerDataSource();
+        
+        dataSource.setDriverClassName("org.postgresql.Driver");
+        dataSource.setUrl("jdbc:postgresql://localhost:5432/my_rough_notes");
+        dataSource.setUsername("vtszet");
+        dataSource.setPassword("&A7#h0[@W/*z?");
+        
+        return dataSource;
+    }
+    public JdbcTemplate jdbcTemplate() {
+        return new JdbcTemplate(dataSource());
+    }
+}
+class NoteMapper {
+        
+        public static Note fullyMapRow(ResultSet resultSet, int i) throws SQLException {
+            return new Note(
+                    resultSet.getInt("id"),
+                    resultSet.getString("subject"),
+                    resultSet.getString("note"),
+                    resultSet.getTimestamp("timestamp")
+            );   
+        } 
+}
+record Note(int id, String subject, String note, Date timestamp) {}
+List<Note> getAllNotes() {
+        return jdbcTemplate.query(SQL_ALL_NOTES, NoteMapper::fullyMapRow);
+    }
+String SQL_ALL_NOTES = 
+"""
+SELECT *
+FROM java
+ORDER BY LOWER(subject), note
+""";
+JdbcTemplate jdbcTemplate = new Config().jdbcTemplate();
+import static java.util.stream.Collectors.*;
+Map<String, Set<String>> notesBySubjects = jdbcTemplate.queryForStream(SQL_ALL_NOTES, NoteMapper::fullyMapRow).collect(groupingBy(Note::subject, TreeMap::new, mapping(Note::note, toCollection(TreeSet::new))));
+Runnable showAllNotes = () -> notesBySubjects.forEach((subject, notes) -> notes.forEach(note -> System.out.printf("Тема: %s | Заметка:%n%s%n%n", subject, note)));
