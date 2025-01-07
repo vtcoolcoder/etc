@@ -1,0 +1,3 @@
+#!/usr/bin/env zsh
+
+sed -f $HOME/bin/Kastaneda/shift.sed | sed -f $HOME/bin/Kastaneda/enc-sym-ru-en.sed

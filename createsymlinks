@@ -1,0 +1,6 @@
+#!/usr/bin/env zsh
+
+for i in "$@"
+do
+    [[ -e "$i" && ! -d "$i" ]] && ln -s "$i"
+done

@@ -1,0 +1,18 @@
+#!/usr/bin/env zsh
+
+if [[ "$#" -eq 0 ]]
+then
+	{
+	echo 'Неправильное использование!'
+	echo "Использование: $(basename $0) { файл (со списком ссылок) | ссылки в командной строке }"
+	} >&2
+else
+	if [[ -e "$1" ]]
+	then 
+		xargs --arg-file="$1" --max-args=1 youtubedr download --quality hd720
+	else 
+		echo "$@" | xargs --max-args=1 youtubedr download --quality hd720
+	fi
+fi
+
+

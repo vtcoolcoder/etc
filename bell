@@ -1,0 +1,7 @@
+#!/usr/bin/env zsh
+
+while true
+do
+	echo $'\a'
+	sleep 0.25
+done

@@ -1,0 +1,149 @@
+#!/usr/bin/env bash
+
+SOURCE_PATH=~/java-src
+DOCS_PATH=~/in/my-java-docs
+
+trap 'exit' SIGINT SIGTERM
+
+generate() {
+    javadoc -d docs -sourcepath "$i" -subpackages java || \
+    javadoc -d docs -sourcepath "$i" -subpackages javax || \
+    javadoc -d docs -sourcepath "$i" -subpackages java:javax || \
+    javadoc -d docs -sourcepath "$i" -subpackages org || \
+    javadoc -d docs -sourcepath "$i" -subpackages java:org || \
+    javadoc -d docs -sourcepath "$i" -subpackages javax:org || \
+    javadoc -d docs -sourcepath "$i" -subpackages java:javax:org || \
+    javadoc -d docs -sourcepath "$i" -subpackages com || \
+    javadoc -d docs -sourcepath "$i" -subpackages java:com || \
+    javadoc -d docs -sourcepath "$i" -subpackages javax:com || \
+    javadoc -d docs -sourcepath "$i" -subpackages java:javax:com || \
+    javadoc -d docs -sourcepath "$i" -subpackages org:com || \
+    javadoc -d docs -sourcepath "$i" -subpackages java:org:com || \
+    javadoc -d docs -sourcepath "$i" -subpackages javax:org:com || \
+    javadoc -d docs -sourcepath "$i" -subpackages java:javax:org:com || \
+    javadoc -d docs -sourcepath "$i" -subpackages sun || \                                                                                javadoc -d docs -sourcepath "$i" -subpackages java:sun || \
+    javadoc -d docs -sourcepath "$i" -subpackages javax:sun || \                                                                          javadoc -d docs -sourcepath "$i" -subpackages java:javax:sun || \
+    javadoc -d docs -sourcepath "$i" -subpackages org:sun || \
+    javadoc -d docs -sourcepath "$i" -subpackages java:org:sun || \
+    javadoc -d docs -sourcepath "$i" -subpackages javax:org:sun || \                                                                      javadoc -d docs -sourcepath "$i" -subpackages java:javax:org:sun || \
+    javadoc -d docs -sourcepath "$i" -subpackages com:sun || \
+    javadoc -d docs -sourcepath "$i" -subpackages java:com:sun || \
+    javadoc -d docs -sourcepath "$i" -subpackages javax:com:sun || \
+    javadoc -d docs -sourcepath "$i" -subpackages java:javax:com:sun || \
+    javadoc -d docs -sourcepath "$i" -subpackages org:com:sun || \
+    javadoc -d docs -sourcepath "$i" -subpackages java:org:com:sun || \
+    javadoc -d docs -sourcepath "$i" -subpackages javax:org:com:sun || \
+    javadoc -d docs -sourcepath "$i" -subpackages java:javax:org:com:sun || \
+    javadoc -d docs -sourcepath "$i" -subpackages netscape || \
+    javadoc -d docs -sourcepath "$i" -subpackages java:netscape || \
+    javadoc -d docs -sourcepath "$i" -subpackages javax:netscape || \
+    javadoc -d docs -sourcepath "$i" -subpackages java:javax:netscape || \
+    javadoc -d docs -sourcepath "$i" -subpackages org:netscape || \
+    javadoc -d docs -sourcepath "$i" -subpackages java:org:netscape || \
+    javadoc -d docs -sourcepath "$i" -subpackages javax:org:netscape || \
+    javadoc -d docs -sourcepath "$i" -subpackages java:javax:org:netscape || \
+    javadoc -d docs -sourcepath "$i" -subpackages com:netscape || \
+    javadoc -d docs -sourcepath "$i" -subpackages java:com:netscape || \
+    javadoc -d docs -sourcepath "$i" -subpackages javax:com:netscape || \
+    javadoc -d docs -sourcepath "$i" -subpackages java:javax:com:netscape || \
+    javadoc -d docs -sourcepath "$i" -subpackages org:com:netscape || \
+    javadoc -d docs -sourcepath "$i" -subpackages java:org:com:netscape || \
+    javadoc -d docs -sourcepath "$i" -subpackages javax:org:com:netscape || \
+    javadoc -d docs -sourcepath "$i" -subpackages java:javax:org:com:netscape || \
+    javadoc -d docs -sourcepath "$i" -subpackages sun:netscape || \
+    javadoc -d docs -sourcepath "$i" -subpackages java:sun:netscape || \
+    javadoc -d docs -sourcepath "$i" -subpackages javax:sun:netscape || \
+    javadoc -d docs -sourcepath "$i" -subpackages java:javax:sun:netscape || \
+    javadoc -d docs -sourcepath "$i" -subpackages org:sun:netscape || \
+    javadoc -d docs -sourcepath "$i" -subpackages java:org:sun:netscape || \
+    javadoc -d docs -sourcepath "$i" -subpackages javax:org:sun:netscape || \
+    javadoc -d docs -sourcepath "$i" -subpackages java:javax:org:sun:netscape || \
+    javadoc -d docs -sourcepath "$i" -subpackages com:sun:netscape || \
+    javadoc -d docs -sourcepath "$i" -subpackages java:com:sun:netscape || \
+    javadoc -d docs -sourcepath "$i" -subpackages javax:com:sun:netscape || \
+    javadoc -d docs -sourcepath "$i" -subpackages java:javax:com:sun:netscape || \
+    javadoc -d docs -sourcepath "$i" -subpackages org:com:sun:netscape || \
+    javadoc -d docs -sourcepath "$i" -subpackages java:org:com:sun:netscape || \
+    javadoc -d docs -sourcepath "$i" -subpackages javax:org:com:sun:netscape || \
+    javadoc -d docs -sourcepath "$i" -subpackages java:javax:org:com:sun:netscape || \
+    javadoc -d docs -sourcepath "$i" -subpackages jdk || \
+    javadoc -d docs -sourcepath "$i" -subpackages java:jdk || \
+    javadoc -d docs -sourcepath "$i" -subpackages javax:jdk || \
+    javadoc -d docs -sourcepath "$i" -subpackages java:javax:jdk || \
+    javadoc -d docs -sourcepath "$i" -subpackages org:jdk || \
+    javadoc -d docs -sourcepath "$i" -subpackages java:org:jdk || \
+    javadoc -d docs -sourcepath "$i" -subpackages javax:org:jdk || \
+    javadoc -d docs -sourcepath "$i" -subpackages java:javax:org:jdk || \
+    javadoc -d docs -sourcepath "$i" -subpackages com:jdk || \
+    javadoc -d docs -sourcepath "$i" -subpackages java:com:jdk || \
+    javadoc -d docs -sourcepath "$i" -subpackages javax:com:jdk || \
+    javadoc -d docs -sourcepath "$i" -subpackages java:javax:com:jdk || \
+    javadoc -d docs -sourcepath "$i" -subpackages org:com:jdk || \
+    javadoc -d docs -sourcepath "$i" -subpackages java:org:com:jdk || \
+    javadoc -d docs -sourcepath "$i" -subpackages javax:org:com:jdk || \
+    javadoc -d docs -sourcepath "$i" -subpackages java:javax:org:com:jdk || \
+    javadoc -d docs -sourcepath "$i" -subpackages sun:jdk || \
+    javadoc -d docs -sourcepath "$i" -subpackages java:sun:jdk || \
+    javadoc -d docs -sourcepath "$i" -subpackages javax:sun:jdk || \
+    javadoc -d docs -sourcepath "$i" -subpackages java:javax:sun:jdk || \
+    javadoc -d docs -sourcepath "$i" -subpackages org:sun:jdk || \
+    javadoc -d docs -sourcepath "$i" -subpackages java:org:sun:jdk || \
+    javadoc -d docs -sourcepath "$i" -subpackages javax:org:sun:jdk || \
+    javadoc -d docs -sourcepath "$i" -subpackages java:javax:org:sun:jdk || \
+    javadoc -d docs -sourcepath "$i" -subpackages com:sun:jdk || \
+    javadoc -d docs -sourcepath "$i" -subpackages java:com:sun:jdk || \
+    javadoc -d docs -sourcepath "$i" -subpackages javax:com:sun:jdk || \
+    javadoc -d docs -sourcepath "$i" -subpackages java:javax:com:sun:jdk || \
+    javadoc -d docs -sourcepath "$i" -subpackages org:com:sun:jdk || \
+    javadoc -d docs -sourcepath "$i" -subpackages java:org:com:sun:jdk || \
+    javadoc -d docs -sourcepath "$i" -subpackages javax:org:com:sun:jdk || \
+    javadoc -d docs -sourcepath "$i" -subpackages java:javax:org:com:sun:jdk || \
+    javadoc -d docs -sourcepath "$i" -subpackages netscape:jdk || \
+    javadoc -d docs -sourcepath "$i" -subpackages java:netscape:jdk || \
+    javadoc -d docs -sourcepath "$i" -subpackages javax:netscape:jdk || \
+    javadoc -d docs -sourcepath "$i" -subpackages java:javax:netscape:jdk || \
+    javadoc -d docs -sourcepath "$i" -subpackages org:netscape:jdk || \
+    javadoc -d docs -sourcepath "$i" -subpackages java:org:netscape:jdk || \
+    javadoc -d docs -sourcepath "$i" -subpackages javax:org:netscape:jdk || \
+    javadoc -d docs -sourcepath "$i" -subpackages java:javax:org:netscape:jdk || \
+    javadoc -d docs -sourcepath "$i" -subpackages com:netscape:jdk || \
+    javadoc -d docs -sourcepath "$i" -subpackages java:com:netscape:jdk || \
+    javadoc -d docs -sourcepath "$i" -subpackages javax:com:netscape:jdk || \
+    javadoc -d docs -sourcepath "$i" -subpackages java:javax:com:netscape:jdk || \
+    javadoc -d docs -sourcepath "$i" -subpackages org:com:netscape:jdk || \
+    javadoc -d docs -sourcepath "$i" -subpackages java:org:com:netscape:jdk || \
+    javadoc -d docs -sourcepath "$i" -subpackages javax:org:com:netscape:jdk || \
+    javadoc -d docs -sourcepath "$i" -subpackages java:javax:org:com:netscape:jdk || \
+    javadoc -d docs -sourcepath "$i" -subpackages sun:netscape:jdk || \
+    javadoc -d docs -sourcepath "$i" -subpackages java:sun:netscape:jdk || \
+    javadoc -d docs -sourcepath "$i" -subpackages javax:sun:netscape:jdk || \
+    javadoc -d docs -sourcepath "$i" -subpackages java:javax:sun:netscape:jdk || \
+    javadoc -d docs -sourcepath "$i" -subpackages org:sun:netscape:jdk || \
+    javadoc -d docs -sourcepath "$i" -subpackages java:org:sun:netscape:jdk || \
+    javadoc -d docs -sourcepath "$i" -subpackages javax:org:sun:netscape:jdk || \
+    javadoc -d docs -sourcepath "$i" -subpackages java:javax:org:sun:netscape:jdk || \
+    javadoc -d docs -sourcepath "$i" -subpackages com:sun:netscape:jdk || \
+    javadoc -d docs -sourcepath "$i" -subpackages java:com:sun:netscape:jdk || \
+    javadoc -d docs -sourcepath "$i" -subpackages javax:com:sun:netscape:jdk || \
+    javadoc -d docs -sourcepath "$i" -subpackages java:javax:com:sun:netscape:jdk || \
+    javadoc -d docs -sourcepath "$i" -subpackages org:com:sun:netscape:jdk || \
+    javadoc -d docs -sourcepath "$i" -subpackages java:org:com:sun:netscape:jdk || \
+    javadoc -d docs -sourcepath "$i" -subpackages javax:org:com:sun:netscape:jdk || \
+    javadoc -d docs -sourcepath "$i" -subpackages java:javax:org:com:sun:netscape:jdk;
+}
+
+for i in ${SOURCE_PATH}/*; do 
+
+    cd $DOCS_PATH;
+    
+    currentDirName="${i##*/}";
+
+    if [[ ! -d "$currentDirName" ]]; then
+        mkdir "$currentDirName";
+    fi
+
+    cd "$currentDirName";
+    
+    generate;
+
+done

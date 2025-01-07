@@ -1,0 +1,13 @@
+    if [[ "$modeFlag" == "WARNINGS" ]]
+    
+    then
+    
+        modeInline='"$k"'
+        
+    elif [[ "$modeFlag" == "NONE" ]]
+    
+    then
+    
+        modeInline='"$(printf "$PFORMAT_RENAMING" "$k" "${refToContainer["$k"]}" "$renamingMarker")"'
+                      
+    fi

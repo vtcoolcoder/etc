@@ -1,0 +1,53 @@
+#!/usr/bin/env zsh
+# ФАЙЛ СЦЕНАРИЯ: $HOME/bin/wlocate
+
+declare -r SDCARD_DB_PATH="$HOME/.sd.db"
+declare -r INSIDE_DB_PATH="$HOME/.in.db"
+declare -r HOME_DB_PATH="$HOME/.home.db"
+declare -r HDD_DB_PATH="$HOME/.hdd.db"
+
+databases=""
+
+
+add_path()
+{
+	if [[ -e "$1" ]]
+	then
+		databases+="$1"
+		databases+=':'
+	fi
+}
+
+
+add_path "$SDCARD_DB_PATH"
+add_path "$INSIDE_DB_PATH"
+add_path "$HOME_DB_PATH"
+add_path "$HDD_DB_PATH" 
+
+
+if [[ -n "$databases" ]]
+then
+	if locate --database="$databases" "$@"
+	then
+		exit 0
+	else
+		exit 1
+	fi
+else
+	if update-mydatabases.sh
+	then
+		{
+		echo
+		echo "Базы данных обновлены!"
+		echo "Перезапуск сценария $(basename $0) ..."
+		echo
+		} >&2
+		$0 "$@"
+	else
+		{
+		echo
+		echo "Ошибка: Не удалось обновить ни одну базу данных!"
+		} >&2
+		exit 1
+	fi
+fi

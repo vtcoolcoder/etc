@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+trap "exit" SIGINT SIGTERM
+
+for file; do
+    if [[ -e "$file" ]]; then
+        filename="${file##*/}"
+        ffmpeg -i "$file" "${filename%.*}.mp3"
+    fi
+done
+
