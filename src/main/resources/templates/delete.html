@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${title}"/>
+</head>
+<body>   
+    <nav>
+        <h1>Навигация</h1>
+        <h2><a href="/">Домашняя</a></h2>
+        <h2><a href="/create">Создать</a></h2>
+        <h2><a href="/reading/all-notes">Все заметки</a></h2>
+        <h2><a href="/selecting-notes-by-id">Заметки по ID</a></h2>
+        <h2><a href="/update">Обновить</a></h2>
+        <h2><a href="/delete">Удалить</a></h2>   
+    </nav>
+    
+    <h1 th:text="${message}"/>
+    
+    <form method="GET" action="/delete">
+        <select size="15" name="subject">
+            <option th:each="currentSubject : ${allSubjects}"                        
+                    th:value="${currentSubject}" 
+                    th:text="${currentSubject}"/>
+        </select>
+        <button type="submit">Выбрать тему</button>
+    </form>
+    
+    <h2>Фрагменты заметок</h2>
+    <form method="GET" action="/delete"> 
+        <label th:each="entry : ${noteFragmentsBySelectedSubject.entrySet()}">
+            <input type="radio" name="id" th:value="${entry.getKey()}"/>
+            <em th:text="${entry.getValue()}"/>
+            <br/>
+        </label>
+        <button type="submit">Выбрать фрагмент</button>
+    </form>
+    
+    <form method="POST" action="/delete">
+        <input type="hidden" name="deletedNoteId" th:value="${noteId}"/>
+        <strong>
+            <pre th:text="${content}"/>
+        </strong>        
+        <br/>
+        <button type="submit">Удалить заметку</button>
+    </form>
+        
+</body>
+</html>    

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${title}"/>
+</head>
+<body>
+    <nav>
+        <h1>Навигация</h1>
+        <h2><a href="/">Домашняя</a></h2>
+        <h2><a href="/create">Создать</a></h2>
+        <h2><a href="/reading/all-notes">Все заметки</a></h2>
+        <h2><a href="/selecting-notes-by-id">Заметки по ID</a></h2>
+        <h2><a href="/update">Обновить</a></h2>
+        <h2><a href="/delete">Удалить</a></h2>   
+    </nav> 
+    
+    <h1 th:text="${message}"/>
+    <h2>Статистика</h2>
+    <h3>Всего тем: <strong th:text="${subjectsAmount}"/></h3>
+    <h3>Всего заметок: <strong th:text="${notesAmount}"/></h3>
+
+    <div>
+        <form method="GET" action="/reading/notes-by-selected-subjects">
+            <div th:each="subject : ${allSubjects.entrySet()}">
+                <label class="subjectCheckbox">
+                    <input type="checkbox" 
+                           name="subjects"
+                           th:value="${subject.getKey()}"/>
+                    <em th:text="${subject.getKey()}"/>
+                    (<strong th:text="${subject.getValue()}"/>)
+                </label> 
+            </div>
+            <br><button type="submit">Выбрать тему заметки</button>
+        </form>
+    </div>
+    
+</body>
+</html>

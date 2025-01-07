@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${title}"/>
+</head>
+<body>   
+    <nav>
+        <h1>Навигация</h1>
+        <h2><a href="/">Домашняя</a></h2>
+        <h2><a href="/create">Создать</a></h2>
+        <h2><a href="/reading/all-notes">Все заметки</a></h2>
+        <h2><a href="/selecting-notes-by-id">Заметки по ID</a></h2>
+        <h2><a href="/update">Обновить</a></h2>
+        <h2><a href="/delete">Удалить</a></h2>   
+    </nav>
+    
+    <h1 th:text="${message}"/>
+    
+    <form method="GET" action="/update">
+        <select size="15" name="subject">
+            <option th:each="currentSubject : ${allSubjects}"                        
+                    th:value="${currentSubject}" 
+                    th:text="${currentSubject}"/>
+        </select>
+        <button type="submit">Выбрать тему</button>
+    </form>
+    
+    <h2>Фрагменты заметок</h2>
+    <form method="GET" action="/update"> 
+        <label th:each="entry : ${noteFragmentsBySelectedSubject.entrySet()}">
+            <input type="radio" name="id" th:value="${entry.getKey()}"/>
+            <em th:text="${entry.getValue()}"/>
+            <br/>
+        </label>
+        <button type="submit">Выбрать фрагмент</button>
+    </form>
+    
+    <form method="POST" action="/update">
+        <input type="hidden" name="updatedNoteId" th:value="${noteId}"/>
+        <textarea name="updatedNoteContent" 
+                  cols="92" 
+                  rows="23" 
+                  wrap="hard" 
+                  th:text="${content}"/>
+        <br/>
+        <button type="submit">Обновить заметку</button>
+    </form>
+        
+</body>
+</html>    

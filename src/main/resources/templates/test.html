@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${title}"></title>
+</head>
+<body>
+    <h1>Навигация</h1>
+    <nav>
+        <h2><a href="">Читать</a></h2>
+        <h2><a href="">Обновить</a></h2>
+        <h2><a href="">Удалить</a></h2>   
+    </nav>
+    
+    <h1 th:text="${message}"></h1>
+
+    <div>
+        <form method="GET" action="/read">
+            <div th:each="subject : ${allSubjects.entrySet()}">
+                <label class="subjectCheckbox">
+                    <input type="checkbox" 
+                           name="subjects"
+                           th:value="${subject.getKey()}"/>
+                    <em th:text="${subject.getKey()}"></em>
+                    (<strong th:text="${subject.getValue()}"></strong>)
+                </label> 
+            </div>
+            <br><button type="submit">Выбрать тему заметки</button>
+        </form>
+    </div>
+    
+</body>
+</html>

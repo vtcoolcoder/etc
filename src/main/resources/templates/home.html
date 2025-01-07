@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${title}"/>
+</head>
+<body>
+    <h1>Навигация</h1>
+    <nav>
+        <h2><a href="/">Читать</a></h2>
+        <h2><a href="">Обновить</a></h2>
+        <h2><a href="">Удалить</a></h2>   
+    </nav>
+    
+    <h1 th:text="${message}"/>
+    <h2>Случайная заметка</h2>
+    <table border="1">
+        <tr>
+            <th>Тема</th>
+            <th>Заметка</th>
+		      </tr>
+		      <tr>
+			         <td th:text="${randomNote.subject()}"/>
+		         	<td th:text="${randomNote.note()}"/>
+	      	</tr>
+    </table>
+    <br>
+    <h2>Все заметки</h2>
+    <table border="1">
+        <tr>
+            <th>Тема</th>
+            <th>Заметка</th>
+        </tr>
+        <tr th:each="note : ${notes}">
+            <td th:text="${note.subject()}"/>
+            <td th:text="${note.note()}"/>
+        </tr>
+    </table>
+</body>
+</html>

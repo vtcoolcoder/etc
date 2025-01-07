@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${title}"/>
+</head>
+<body>
+    <nav>
+        <h1>Навигация</h1>
+        <h2><a href="/">Домашняя</a></h2>
+        <h2><a href="/create">Создать</a></h2>
+        <h2><a href="/reading/all-notes">Все заметки</a></h2>
+        <h2><a href="/selecting-notes-by-id">Заметки по ID</a></h2>
+        <h2><a href="/update">Обновить</a></h2>
+        <h2><a href="/delete">Удалить</a></h2>   
+    </nav>
+    
+    <h1 th:text="${message}"/>
+    <div>
+	       <pre th:text="${noteById}"/>
+	   </div>
+</body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${title}"/>
+</head>
+<body>   
+    <nav>
+        <h1>Навигация</h1>
+        <h2><a href="/">Домашняя</a></h2>
+        <h2><a href="/create">Создать</a></h2>
+        <h2><a href="/reading/all-notes">Все заметки</a></h2>
+        <h2><a href="/selecting-notes-by-id">Заметки по ID</a></h2>
+        <h2><a href="/update">Обновить</a></h2>
+        <h2><a href="/delete">Удалить</a></h2>   
+    </nav>
+    
+    <h1 th:text="${message}"/>
+    <form method="POST" action="/create">
+        <select size="15" name="subject">
+            <option th:each="currentSubject : ${allSubjects}"                        
+                    th:value="${currentSubject}" 
+                    th:text="${currentSubject}"/>
+        </select>
+        <br/><input type="text" name="subject" placeholder="Новая тема"/><br/>
+        <textarea name="note" 
+                  cols="92" 
+                  rows="23" 
+                  wrap="hard" 
+                  placeholder="Содержимое заметки">
+        </textarea><br/>
+        <button type="submit">Создать заметку</button>
+    </form>
+           
+</body>
+</html>    
