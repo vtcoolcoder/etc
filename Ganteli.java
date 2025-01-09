@@ -171,7 +171,7 @@ public enum Ganteli {
     
     
     public String toString() {
-        return STR."\{weight}";
+        return STR."\{toIntOrFractString(weight)}";
     }
     
        
@@ -260,7 +260,11 @@ public enum Ganteli {
         showTitle("С одним диском:");
         resetCachedRow();
         processOneDisksResultPart(item -> {
-                var currentRow = STR."\{item}\{SPACES}\{Represent.getTotalWeightByOneDisk(item)}";
+                var currentRow = STR."""
+                \{toIntOrFractString(item)}\
+                \{SPACES}\
+                \{toIntOrFractString(Represent.getTotalWeightByOneDisk(item))}\
+                """;
                 if (! cachedRow.equals(currentRow)) {
                     System.err.println(currentRow);
                 }
@@ -360,7 +364,7 @@ public enum Ganteli {
     
      
     private static void fillOneDisksResultPart() {       
-        processOneDisksResultPart(item -> RESULTS.add(new Represent(item, STR."\{item}")));
+        processOneDisksResultPart(item -> RESULTS.add(new Represent(item, STR."\{toIntOrFractString(item)}")));
     }
     
     
@@ -379,7 +383,7 @@ public enum Ganteli {
          
         fillTwoItems(VALUES, (iElement, jElement) -> represents.add(new Represent(
                 iElement + jElement, 
-                STR."\{iElement} + \{jElement}"
+                STR."\{toIntOrFractString(jElement)} + \{toIntOrFractString(iElement)}"
         )));
     }
     
@@ -405,7 +409,11 @@ public enum Ganteli {
         Function<int[], Represent> toRepresent = iJK -> 
                 new Represent(
                         VALUES[iJK[I_IDX]] + VALUES[iJK[J_IDX]] + VALUES[iJK[K_IDX]], 
-                        STR."\{VALUES[iJK[I_IDX]]} + \{VALUES[iJK[J_IDX]]} + \{VALUES[iJK[K_IDX]]}"
+                        STR."""
+                        \{toIntOrFractString(VALUES[iJK[K_IDX]])} + \
+                        \{toIntOrFractString(VALUES[iJK[J_IDX]])} + \
+                        \{toIntOrFractString(VALUES[iJK[I_IDX]])}\
+                        """
                 );
                                           
         BiConsumer<Integer, Integer> thirdLoop = (i, j) -> 
@@ -434,8 +442,10 @@ public enum Ganteli {
                         VALUES[iJKN[K_IDX]] + VALUES[iJKN[N_IDX]], 
                         
                         STR."""
-                        \{VALUES[iJKN[I_IDX]]} + \{VALUES[iJKN[J_IDX]]} + \
-                        \{VALUES[iJKN[K_IDX]]} + \{VALUES[iJKN[N_IDX]]}\
+                        \{toIntOrFractString(VALUES[iJKN[N_IDX]])} + \
+                        \{toIntOrFractString(VALUES[iJKN[K_IDX]])} + \
+                        \{toIntOrFractString(VALUES[iJKN[J_IDX]])} + \
+                        \{toIntOrFractString(VALUES[iJKN[I_IDX]])}\
                         """
                 );
                 
@@ -539,7 +549,11 @@ public enum Ganteli {
                             <td>%s</td>
                         </tr>
                 """
-                    .formatted(e.msg(), e.sum(), e.getTotalWeight())
+                    .formatted(
+                            e.msg(), 
+                            toIntOrFractString(e.sum()), 
+                            toIntOrFractString(e.getTotalWeight())
+                    )
         ));
     }
     
@@ -566,7 +580,7 @@ public enum Ganteli {
                             <td>%s</td>
                         </tr>
                 """
-                    .formatted(e.msg(), e.sum())
+                    .formatted(e.msg(), toIntOrFractString(e.sum()))
         ));
     }  
     
@@ -575,7 +589,7 @@ public enum Ganteli {
         var asymmetricCombo = new ArrayList<Represent>();   
         fillTwoItems(resultSums, (iElement, jElement) -> asymmetricCombo.add(new Represent(
                 iElement + jElement + GRIF_WEIGHT,
-                STR."\{iElement} + \{jElement}"
+                STR."\{toIntOrFractString(jElement)} + \{toIntOrFractString(iElement)}"
         )));           
         Collections.sort(asymmetricCombo);    
         return asymmetricCombo;
@@ -613,8 +627,13 @@ public enum Ganteli {
         filteringContainer(result);
         
         Collections.sort(result);       
-        result.forEach(e -> System.err.println(
-                STR."\{e.msg()} \{SPACES} \{e.sum()} \{SPACES} \{e.getTotalWeight()}"
+        result.forEach(e -> System.err.println(STR."""
+                \{e.msg()} \
+                \{SPACES} \
+                \{toIntOrFractString(e.sum())} \
+                \{SPACES} \
+                \{toIntOrFractString(e.getTotalWeight())}\
+                """
         ));
     }
     
@@ -671,7 +690,7 @@ public enum Ganteli {
         requireNonNull(filler);
         requireNonNull(shower);
         
-        return new EnumMap<FuncCategories, Runnable>(FuncCategories.class) {{ 
+        return new EnumMap<>(FuncCategories.class) {{ 
                 put(FuncCategories.FILLING, filler); 
                 put(FuncCategories.SHOWING, shower); 
         }};
@@ -721,5 +740,12 @@ public enum Ganteli {
         resetCachedRow();         
         represents.removeIf(isRemoveMsg);  
         resetCachedRow(); 
+    }
+    
+    
+    private static String toIntOrFractString(double number) {
+        return (0 == number % 1) 
+                ? "" + (int) number 
+                : "" + number;
     }
 }
