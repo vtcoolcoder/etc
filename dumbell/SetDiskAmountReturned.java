@@ -1,5 +1,6 @@
 package dumbell;
 
-record SetDiskAmountReturned(int diskAmountSetting,
-                             boolean isOthersStrictlyEqual,
-                             int[] diskAmountNumbers) {}
+
+public record SetDiskAmountReturned(int diskAmountSetting,
+                                    boolean isOthersStrictlyEqual,
+                                    int[] diskAmountNumbers) {}

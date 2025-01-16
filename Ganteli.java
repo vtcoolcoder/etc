@@ -1,5 +1,6 @@
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.IntStream.range;
+import static java.util.Map.entry;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -97,11 +98,19 @@ public enum Ganteli {
        public Represent { requireNonNull(msg); }
        
        
-       public double getTotalWeight() { return getTotalWeightByOneDisk(sum); }
+       public double getTotalWeight(int sideAmount, double grifWeight) { 
+           return getTotalWeightByOneDisk(sum, sideAmount, grifWeight); 
+       }
        
        
-       public static double getTotalWeightByOneDisk(double diskWeight) {
-           return diskWeight*SIDE_AMOUNT + GRIF_WEIGHT;
+       public static double getTotalWeightByOneDisk(double diskWeight, int sideAmount, double grifWeight) {
+           return diskWeight*sideAmount + grifWeight;
+       }
+       
+       
+       @Override
+       public String toString() {
+           return "";
        }
       
        
@@ -132,12 +141,14 @@ public enum Ganteli {
     private static final int K_IDX = 2;
     private static final int N_IDX = 3;
     
-    private static final Map<Integer, Map<FuncCategories, Runnable>> FUNC_CATEGORIES_BY_DISK_AMOUNT = Map.of(
-            1, buildEnumMap(Ganteli::fillOneDisksResultPart, Ganteli::showOneDisksResultPart),
-            2, buildEnumMap(Ganteli::fillTwoDiskComboResultPart, Ganteli::showTwoDiskComboResultPart), 
-            3, buildEnumMap(Ganteli::fillThreeDiskComboResultPart, Ganteli::showThreeDiskComboResultPart),
-            4, buildEnumMap(Ganteli::fillFourDiskComboResultPart, Ganteli::showFourDiskComboResultPart)
+    private static final 
+    Map<Integer, Map<FuncCategories, Runnable>> FUNC_CATEGORIES_BY_DISK_AMOUNT = buildAttachmentMap(
+            entry(Ganteli::fillOneDisksResultPart, Ganteli::showOneDisksResultPart),
+            entry(Ganteli::fillTwoDiskComboResultPart, Ganteli::showTwoDiskComboResultPart),
+            entry(Ganteli::fillThreeDiskComboResultPart, Ganteli::showThreeDiskComboResultPart),
+            entry(Ganteli::fillFourDiskComboResultPart, Ganteli::showFourDiskComboResultPart)
     );
+    
     
     
     private static double cachedValue = Double.NEGATIVE_INFINITY;
@@ -685,6 +696,22 @@ public enum Ganteli {
     private static void resetCachedRow() { cachedRow = ""; }
     
     
+    private static Map<Integer, Map<FuncCategories, Runnable>> 
+    buildAttachmentMap(Map.Entry<Runnable, Runnable>... entries) {
+        var entryList = Arrays.asList(entries);
+        return entryList.stream()
+                .map(entry -> buildEnumMap(entry.getKey(), entry.getValue()))
+                .map(map -> Map.entry(entryList.indexOf(map)+1, map))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
+    
+    
+    private static Map.Entry<Integer, Map<FuncCategories, Runnable>> 
+    buildMapEntry(int row, Runnable filler, Runnable shower) {
+        return Map.entry(row, buildEnumMap(filler, shower));
+    }
+    
+    
     private static 
     Map<FuncCategories, Runnable> buildEnumMap(Runnable filler, Runnable shower) {
         requireNonNull(filler);
@@ -696,7 +723,7 @@ public enum Ganteli {
         }};
     }
     
-    
+     
     private static void runFuncsByCategory(FuncCategories category) {
         requireNonNull(category);
         

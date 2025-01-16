@@ -7,31 +7,31 @@ import static java.util.Objects.requireNonNull;
 import java.util.Map;
 
 
-class Validator {
+public class Validator {
     
-   static double validateGripWeight(double gripWeight) {
+   public double validateGripWeight(double gripWeight) {
        return gripWeight;
    }
    
    
-   static double[] validateUniquePairs(double[] uniquePairs) {
+   public double[] validateUniquePairs(double[] uniquePairs) {
        requireNonNull(uniquePairs);
        return uniquePairs;
    }
    
    
-   static Map<Double, Integer> validatePairAmount(Map<Double, Integer> pairAmount) {
+   public Map<Double, Integer> validatePairAmount(Map<Double, Integer> pairAmount) {
        return pairAmount;
    }
    
    
-   static String[] validateBackgroundRowColors(String[] backgroundRowColors) {
+   public String[] validateBackgroundRowColors(String[] backgroundRowColors) {
        requireNonNull(backgroundRowColors);
        return backgroundRowColors;
    }
    
    
-   static int validateDiskAmountSetting(int diskAmount) {
+   public int validateDiskAmountSetting(int diskAmount) {
         if (! Predicates.isDiskAmountBelongToValidRange(diskAmount)) {
             throw new IllegalArgumentException(
                     STR."""

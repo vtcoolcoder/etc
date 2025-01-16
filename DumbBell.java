@@ -285,6 +285,9 @@ public class DumbBell {
     private void setDiskAmount(String[] args) {
         requireNonNull(args);
         
+        //Arrays.stream(args)
+        //        .
+        
         if (args.length > 0) {
             try {
                 diskAmountSetting = validateDiskAmountSetting(Integer.parseInt(args[0]));

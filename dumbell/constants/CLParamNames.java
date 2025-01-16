@@ -1,11 +1,11 @@
 package dumbell.constants;
 
 
-import static dumbell.properties.Properties.getProperties;
+import static dumbell.properties.Properties.PROPERTIES;
 
 
 public interface CLParamNames {
 
-    String OTHERS_STRICTLY_EQUAL_SHORT = getProperties().othersStrictlyEqualShort();  
-    String OTHERS_STRICTLY_EQUAL_LONG = getProperties().othersStrictlyEqualLong();
+    String OTHERS_STRICTLY_EQUAL_SHORT = PROPERTIES.getProperties().othersStrictlyEqualShort();  
+    String OTHERS_STRICTLY_EQUAL_LONG = PROPERTIES.getProperties().othersStrictlyEqualLong();
 }

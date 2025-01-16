@@ -1,7 +1,7 @@
 package dumbell.constants;
 
 
-import static dumbell.properties.Properties.getProperties;
+import static dumbell.properties.Properties.PROPERTIES;
 
 import dumbell.enums.*;
 import java.util.Objects;
@@ -13,11 +13,11 @@ public interface DefaultGripData {
 
     String[] COLORS = DefaultColors.getColors();
     double[] ALL_WEIGHTS = generateAllWeights();
-    double GRIP_WEIGHT = getProperties().gripWeight();
-    int SIDE_AMOUNT = getProperties().sideAmount();
-    int DISK_AMOUNT = getProperties().diskAmount();
-    int MIN_DISK_AMOUNT = getProperties().minDiskAmount();
-    int MAX_DISK_AMOUNT = getProperties().maxDiskAmount();
+    double GRIP_WEIGHT = PROPERTIES.getProperties().gripWeight();
+    int SIDE_AMOUNT = PROPERTIES.getProperties().sideAmount();
+    int DISK_AMOUNT = PROPERTIES.getProperties().diskAmount();
+    int MIN_DISK_AMOUNT = PROPERTIES.getProperties().minDiskAmount();
+    int MAX_DISK_AMOUNT = PROPERTIES.getProperties().maxDiskAmount();
     
     
     private static double[] generateAllWeights() {

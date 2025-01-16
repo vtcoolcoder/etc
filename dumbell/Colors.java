@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 
-class Colors { 
+public class Colors { 
           
    private static final String[] DEFAULT_COLORS = DefaultColors.getColors();   
    private static final String DEFAULT_FIRST_COLOR = getFirstColorByColors(DEFAULT_COLORS);
@@ -20,25 +20,25 @@ class Colors {
    private final int lastColorOrdinal;
    
    
-   Colors() { this(DEFAULT_COLORS); }
+   public Colors() { this(DEFAULT_COLORS); }
    
    
-   Colors(String[] userColors) { 
+   public Colors(String[] userColors) { 
        this.userColors = getTrimmedColorNames(userColors); 
        this.firstColor = getFirstColorByColors(this.userColors);
        this.lastColorOrdinal = getLastOrdinalByColors(this.userColors);
    }
    
         
-   String getFirstColor() { return firstColor; }
+   public String getFirstColor() { return firstColor; }
    
    
-   String getNextColor(String currentColor) {
+   public String getNextColor(String currentColor) {
        return userColors[getNextColorOrdinal(getIndexByColor(currentColor))];
    }
 
    
-   String getAllHTMLInlinedColorNames() {                  
+   public String getAllHTMLInlinedColorNames() {                  
        return Arrays.stream(userColors)
                 .map(color ->
                         STR."""

@@ -44,7 +44,7 @@ public class TestConstants
         
         
     public static void main(String... args) {
-        printConstants(CLASSES);
+        printConstants();
     }
     
     

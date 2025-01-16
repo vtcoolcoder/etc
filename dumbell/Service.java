@@ -20,9 +20,13 @@ import java.util.EnumMap;
 import java.util.Optional;
 
 
-class Service {
+public class Service {
+
+    private final Validator validator = new Validator();
+    private final Predicates predicates = new Predicates();
+    
         
-    static int[] getValidUniqueDiskAmountNumbers(String[] args) {
+    public int[] getValidUniqueDiskAmountNumbers(String[] args) {
         requireNonNull(args);
         
         Predicate<String> isNumber = str -> {
@@ -39,29 +43,29 @@ class Service {
                 .mapToInt(Integer::valueOf)
                 .sorted()
                 .distinct()
-                .filter(Predicates::isDiskAmountBelongToValidRange)
+                .filter(predicates::isDiskAmountBelongToValidRange)
                 .toArray();
     }
     
         
-    static void processOneDisksResultPart(DoubleConsumer func) {
+    public void processOneDisksResultPart(DoubleConsumer func) {
         requireNonNull(func);        
         Arrays.stream(DEFAULT_ALL_WEIGHTS).forEach(func::accept);
     }
     
     
-    static Map<FuncCategories, Runnable> buildEnumMap(Runnable filler, Runnable shower) {
+    public Map<FuncCategories, Runnable> buildEnumMap(Runnable filler, Runnable shower) {
         requireNonNull(filler);
         requireNonNull(shower);
         
-        return new EnumMap<FuncCategories, Runnable>(FuncCategories.class) {{ 
+        return new EnumMap<>(FuncCategories.class) {{ 
                 put(FuncCategories.FILLING, filler); 
                 put(FuncCategories.SHOWING, shower); 
         }};
     }
     
         
-    static void filteringContainer(List<Represent> represents,
+    public void filteringContainer(List<Represent> represents,
                                    DumbBell dumbBell,
                                    Runnable action) {
         requireNonNull(represents);
@@ -81,7 +85,7 @@ class Service {
     }
     
     
-    static Optional<SetDiskAmountReturned> setDiskAmount(String[] args) {
+    public Optional<SetDiskAmountReturned> setDiskAmount(String[] args) {
         requireNonNull(args);
         
         SetDiskAmountReturned result = null;
@@ -106,7 +110,7 @@ class Service {
               
         BiFunction<String[], Integer, SetDiskAmountReturned> 
         getDetailInfo = (params, diskAmount) -> params.length > 1        
-                ? (Predicates.isOthersStrictlyEqual(params)
+                ? (predicates.isOthersStrictlyEqual(params)
                         ? ifBranchIntFunc.apply(diskAmount)
                         : elseBranchIntFunc.apply(diskAmount))
                 : defaultReturnedSupplier.get();
@@ -125,7 +129,7 @@ class Service {
              
         Function<String[], SetDiskAmountReturned> ifBranchFunc = params -> {
                 var parsed = Integer.parseInt(params[0]);
-                var diskAmount = Validator.validateDiskAmountSetting(parsed);
+                var diskAmount = validator.validateDiskAmountSetting(parsed);
                 return getDetailInfo.apply(params, diskAmount);
         };
         

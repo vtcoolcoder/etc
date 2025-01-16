@@ -11,9 +11,9 @@ import java.util.Collections;
 import java.util.function.Consumer;
 
 
-class Shower {
+public class Shower {
 
-    static void showing(Consumer<List<Represent>> filling, 
+    public void showing(Consumer<List<Represent>> filling, 
                         String title, 
                         Consumer<List<Represent>> secondAction) {
         requireNonNull(filling);
@@ -33,7 +33,7 @@ class Shower {
     }
 
 
-    static void showTitle(String title) {
+    public void showTitle(String title) {
         requireNonNull(title);
         
         var line = "*".repeat(120);
@@ -48,7 +48,7 @@ class Shower {
     }
     
     
-    static void separateOutputByLines() {
+    public void separateOutputByLines() {
         System.err.println();
         showTitle("");
         System.err.println();
